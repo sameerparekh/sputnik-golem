@@ -19,6 +19,7 @@ world example {
     buy,
     sell,
   }
+
   record order {
     id: u64,
     timestamp: u64,
@@ -48,6 +49,7 @@ world example {
     price: u64,
     size: u64,
     taker-order-id: u64,
-    maker-order-id: u64
+    maker-order-id: u64,
+    timestamp: u64,
   }
 }
