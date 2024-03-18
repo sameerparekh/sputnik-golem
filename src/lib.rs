@@ -5,8 +5,9 @@ use std::collections::HashMap;
 use priority_queue::PriorityQueue;
 
 use crate::bindings::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
+use crate::bindings::Error::MissingOrder;
 use crate::bindings::Side::{Buy, Sell};
-use crate::bindings::Status::{Filled, Open, PartialFilled};
+use crate::bindings::Status::{Canceled, Filled, Open, PartialFilled};
 
 mod bindings;
 
@@ -136,6 +137,24 @@ impl Guest for Component {
         })
     }
 
+    fn cancel_order(id: u64) -> Result<OrderStatus, Error> {
+        with_state(|state| match state.orders.get(&id) {
+            None => Err(MissingOrder(id)),
+            Some(order) => {
+                state
+                    .order_statuses
+                    .entry(id)
+                    .and_modify(|status| status.status = Canceled);
+                match order.side {
+                    Buy => state.bids.remove(&id),
+                    Sell => state.asks.remove(&id),
+                };
+                state.orders.entry(id).and_modify(|order| order.size = 0);
+                Ok(state.order_statuses.get(&id).unwrap().clone())
+            }
+        })
+    }
+
     fn get_order_book() -> OrderBook {
         with_state(|state| {
             let bids = state
@@ -166,7 +185,7 @@ mod tests {
     use crate::{Component, Guest};
     use crate::bindings::{Fill, Order, OrderBook, OrderStatus};
     use crate::bindings::Side::{Buy, Sell};
-    use crate::bindings::Status::{Filled, Open, PartialFilled};
+    use crate::bindings::Status::{Canceled, Filled, Open, PartialFilled};
 
     impl PartialEq for Order {
         fn eq(&self, other: &Self) -> bool {
@@ -252,6 +271,39 @@ mod tests {
         });
     }
 
+    #[test]
+    fn cancel_an_order() {
+        place_expect_status(
+            Order {
+                id: 0,
+                timestamp: 0,
+                price: 51,
+                size: 1,
+                trader: 0,
+                side: Buy,
+            },
+            OrderStatus {
+                id: 0,
+                fills: vec![],
+                status: Open,
+                original_size: 1,
+            },
+        );
+        <Component as Guest>::cancel_order(0).expect("cancel order succeeds");
+        assert_order_status(
+            0,
+            OrderStatus {
+                id: 0,
+                fills: vec![],
+                status: Canceled,
+                original_size: 1,
+            },
+        );
+        assert_order_book(OrderBook {
+            bids: vec![],
+            asks: vec![],
+        });
+    }
     #[test]
     fn place_multiple_buy_orders() {
         place_expect_status(

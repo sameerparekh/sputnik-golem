@@ -4,9 +4,12 @@ package component: golem-test;
 world example {
   variant error {
     duplicate-id(u64),
+    missing-order(u64),
   }
 
   export place-order: func(order: order) -> result<order-status, error>;
+
+  export cancel-order: func(id: u64) -> result<order-status, error>;
 
   export get-order-book: func() -> order-book;
 
@@ -31,7 +34,7 @@ world example {
   }
 
   enum status {
-    open, filled, partial-filled,
+    open, filled, partial-filled, canceled,
   }
 
   record order-status {
