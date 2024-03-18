@@ -1,7 +1,7 @@
 package component: sputnik;
 
 /// An example world for the component to target.
-world example {
+world matching-engine {
   variant error {
     duplicate-id(u64),
     missing-order(u64),
