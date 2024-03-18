@@ -1,0 +1,50 @@
+package component: golem-test;
+
+/// An example world for the component to target.
+world example {
+  variant error {
+    duplicate-id(u64),
+  }
+
+  export place-order: func(order: order) -> result<order-status, error>;
+
+  export get-order-book: func() -> order-book;
+
+  export get-order-status: func(id: u64) -> option<order-status>;
+
+  enum side {
+    buy,
+    sell,
+  }
+  record order {
+    id: u64,
+    timestamp: u64,
+    side: side,
+    price: u64,
+    size: u64,
+    trader: u64,
+  }
+
+  record order-book {
+    bids: list<order>,
+    asks: list<order>,
+  }
+
+  enum status {
+    open, filled, partial-filled,
+  }
+
+  record order-status {
+    id: u64,
+    fills: list<fill>,
+    status: status,
+    original-size: u64,
+  }
+
+  record fill {
+    price: u64,
+    size: u64,
+    taker-order-id: u64,
+    maker-order-id: u64
+  }
+}
