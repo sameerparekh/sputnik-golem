@@ -21,16 +21,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
-name = "golem-test"
-version = "0.1.0"
-dependencies = [
- "lazy_static",
- "once_cell",
- "priority-queue",
- "wit-bindgen",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -67,6 +57,16 @@ dependencies = [
  "autocfg",
  "equivalent",
  "indexmap",
+]
+
+[[package]]
+name = "sputnik"
+version = "0.1.0"
+dependencies = [
+ "lazy_static",
+ "once_cell",
+ "priority-queue",
+ "wit-bindgen",
 ]
 
 [[package]]

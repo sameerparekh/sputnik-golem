@@ -1,4 +1,4 @@
-package component: golem-test;
+package component: sputnik;
 
 /// An example world for the component to target.
 world example {

@@ -4,10 +4,10 @@ use std::collections::HashMap;
 
 use priority_queue::PriorityQueue;
 
-use crate::bindings::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 use crate::bindings::Error::MissingOrder;
 use crate::bindings::Side::{Buy, Sell};
 use crate::bindings::Status::{Canceled, Filled, Open, PartialFilled};
+use crate::bindings::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 
 mod bindings;
 
@@ -183,10 +183,10 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Component, Guest};
-    use crate::bindings::{Fill, Order, OrderBook, OrderStatus};
     use crate::bindings::Side::{Buy, Sell};
     use crate::bindings::Status::{Canceled, Filled, Open, PartialFilled};
+    use crate::bindings::{Fill, Order, OrderBook, OrderStatus};
+    use crate::{Component, Guest};
 
     impl PartialEq for Order {
         fn eq(&self, other: &Self) -> bool {
