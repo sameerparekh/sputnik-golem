@@ -733,4 +733,199 @@ mod tests {
             }],
         })
     }
+
+    #[test]
+    fn place_two_buys_and_a_partial_matching_sell() {
+        place_expect_status(
+            Order {
+                id: 0,
+                timestamp: 0,
+                price: 51,
+                size: 2,
+                trader: 0,
+                side: Buy,
+            },
+            OrderStatus {
+                id: 0,
+                fills: vec![],
+                status: Open,
+                original_size: 2,
+            },
+        );
+        place_expect_status(
+            Order {
+                id: 1,
+                timestamp: 0,
+                price: 53,
+                size: 2,
+                trader: 0,
+                side: Buy,
+            },
+            OrderStatus {
+                id: 1,
+                fills: vec![],
+                status: Open,
+                original_size: 2,
+            },
+        );
+        place_expect_status(
+            Order {
+                id: 2,
+                timestamp: 0,
+                price: 52,
+                size: 3,
+                trader: 0,
+                side: Sell,
+            },
+            OrderStatus {
+                id: 2,
+                fills: vec![Fill {
+                    price: 53,
+                    size: 2,
+                    taker_order_id: 2,
+                    maker_order_id: 1,
+                }],
+                status: PartialFilled,
+                original_size: 3,
+            },
+        );
+        assert_order_status(
+            0,
+            OrderStatus {
+                id: 0,
+                fills: vec![],
+                status: Open,
+                original_size: 2,
+            },
+        );
+        assert_order_status(
+            1,
+            OrderStatus {
+                id: 1,
+                fills: vec![Fill {
+                    price: 53,
+                    size: 2,
+                    taker_order_id: 2,
+                    maker_order_id: 1,
+                }],
+                status: Filled,
+                original_size: 2,
+            },
+        );
+        assert_order_book(OrderBook {
+            bids: vec![Order {
+                id: 0,
+                timestamp: 0,
+                side: Buy,
+                price: 51,
+                size: 2,
+                trader: 0,
+            }],
+            asks: vec![Order {
+                id: 2,
+                timestamp: 0,
+                side: Sell,
+                price: 52,
+                size: 1,
+                trader: 0,
+            }],
+        })
+    }
+    #[test]
+    fn place_two_sells_and_a_partial_matching_buy() {
+        place_expect_status(
+            Order {
+                id: 0,
+                timestamp: 0,
+                price: 53,
+                size: 2,
+                trader: 0,
+                side: Sell,
+            },
+            OrderStatus {
+                id: 0,
+                fills: vec![],
+                status: Open,
+                original_size: 2,
+            },
+        );
+        place_expect_status(
+            Order {
+                id: 1,
+                timestamp: 0,
+                price: 51,
+                size: 2,
+                trader: 0,
+                side: Sell,
+            },
+            OrderStatus {
+                id: 1,
+                fills: vec![],
+                status: Open,
+                original_size: 2,
+            },
+        );
+        place_expect_status(
+            Order {
+                id: 2,
+                timestamp: 0,
+                price: 52,
+                size: 3,
+                trader: 0,
+                side: Buy,
+            },
+            OrderStatus {
+                id: 2,
+                fills: vec![Fill {
+                    price: 51,
+                    size: 2,
+                    taker_order_id: 2,
+                    maker_order_id: 1,
+                }],
+                status: PartialFilled,
+                original_size: 3,
+            },
+        );
+        assert_order_status(
+            0,
+            OrderStatus {
+                id: 0,
+                fills: vec![],
+                status: Open,
+                original_size: 2,
+            },
+        );
+        assert_order_status(
+            1,
+            OrderStatus {
+                id: 1,
+                fills: vec![Fill {
+                    price: 51,
+                    size: 2,
+                    taker_order_id: 2,
+                    maker_order_id: 1,
+                }],
+                status: Filled,
+                original_size: 2,
+            },
+        );
+        assert_order_book(OrderBook {
+            bids: vec![Order {
+                id: 2,
+                timestamp: 0,
+                side: Buy,
+                price: 52,
+                size: 1,
+                trader: 0,
+            }],
+            asks: vec![Order {
+                id: 0,
+                timestamp: 0,
+                side: Sell,
+                price: 53,
+                size: 2,
+                trader: 0,
+            }],
+        })
+    }
 }
