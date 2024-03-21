@@ -1,17 +1,18 @@
 [package]
-name = "registry"
+name = "accountant"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+priority-queue = "2.0.2"
 wit-bindgen = { version = "0.22.0", default-features = false, features = ["realloc"] }
 
 [lib]
 crate-type = ["cdylib"]
 
 [package.metadata.component]
-package = "sputnik:registry"
+package = "sputnik:accountant"
 
 [package.metadata.component.dependencies]

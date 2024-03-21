@@ -1,0 +1,45 @@
+package sputnik: accountant;
+
+interface api {
+  variant error {
+    duplicate-id(u64),
+  }
+
+  record asset {
+    id: u64,
+    name: string,
+    decimals: u8,
+  }
+
+  record asset-balance {
+    asset: asset,
+    balance: u64,
+  }
+
+  enum side {
+    buy,
+    sell,
+  }
+
+  record order {
+    id: u64,
+    spot-pair: u64,
+    timestamp: u64,
+    side: side,
+    price: u64,
+    size: u64,
+  }
+
+  record order-status {
+    id: u64,
+  }
+
+  get-balances: func() -> list<asset-balance>;
+
+  place-order: func(order: order) -> result<order-status, error>;
+}
+
+world accountant {
+  export api;
+
+}

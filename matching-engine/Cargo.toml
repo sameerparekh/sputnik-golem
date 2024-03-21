@@ -13,6 +13,6 @@ wit-bindgen = { version = "0.22.0", default-features = false, features = ["reall
 crate-type = ["cdylib"]
 
 [package.metadata.component]
-package = "component:sputnik"
+package = "sputnik:matching-engine"
 
 [package.metadata.component.dependencies]
