@@ -2,9 +2,12 @@ package component: sputnik;
 
 world registry {
 
+  record asset-mismatch-details { incoming-asset: asset, expected-asset: asset }
+
   variant error {
     duplicate-id(u64),
     no-such-asset(u64),
+    asset-mismatch(asset-mismatch-details),
   }
 
   export get-assets: func() -> list<asset>;
@@ -18,7 +21,7 @@ world registry {
   record asset {
     id: u64,
     name: string,
-    decimals: u16,
+    decimals: u8,
   }
 
   record spot-pair {
