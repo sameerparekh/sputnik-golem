@@ -1,18 +1,18 @@
-package component: sputnik;
+package sputnik: matching-engine;
 
-world matching-engine {
+interface api {
   variant error {
     duplicate-id(u64),
     missing-order(u64),
   }
 
-  export place-order: func(order: order) -> result<order-status, error>;
+  place-order: func(order: order) -> result<order-status, error>;
 
-  export cancel-order: func(id: u64) -> result<order-status, error>;
+  cancel-order: func(id: u64) -> result<order-status, error>;
 
-  export get-order-book: func() -> order-book;
+  get-order-book: func() -> order-book;
 
-  export get-order-status: func(id: u64) -> option<order-status>;
+  get-order-status: func(id: u64) -> option<order-status>;
 
   enum side {
     buy,
@@ -51,4 +51,8 @@ world matching-engine {
     maker-order-id: u64,
     timestamp: u64,
   }
+}
+
+world matching-engine {
+  export api;
 }

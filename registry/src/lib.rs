@@ -1,8 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use crate::bindings::{Asset, Guest};
-use crate::bindings::{Error, SpotPair};
+use crate::bindings::exports::sputnik::registry::api::{Asset, Error, Guest, SpotPair};
 
 mod bindings;
 

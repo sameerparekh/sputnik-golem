@@ -4,10 +4,12 @@ use std::collections::HashMap;
 
 use priority_queue::PriorityQueue;
 
-use crate::bindings::Error::MissingOrder;
-use crate::bindings::Side::{Buy, Sell};
-use crate::bindings::Status::{Canceled, Filled, Open, PartialFilled};
-use crate::bindings::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
+use sputnik::matching_engine::api::Error::MissingOrder;
+use sputnik::matching_engine::api::Side::{Buy, Sell};
+use sputnik::matching_engine::api::Status::{Canceled, Filled, Open, PartialFilled};
+use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
+
+use crate::bindings::exports::sputnik;
 
 mod bindings;
 
@@ -183,9 +185,13 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
-    use crate::bindings::Side::{Buy, Sell};
-    use crate::bindings::Status::{Canceled, Filled, Open, PartialFilled};
-    use crate::bindings::{Fill, Order, OrderBook, OrderStatus};
+    use crate::bindings::exports::sputnik::matching_engine::api::Side::{Buy, Sell};
+    use crate::bindings::exports::sputnik::matching_engine::api::Status::{
+        Canceled, Filled, Open, PartialFilled,
+    };
+    use crate::bindings::exports::sputnik::matching_engine::api::{
+        Fill, Order, OrderBook, OrderStatus,
+    };
     use crate::{Component, Guest};
 
     impl PartialEq for Order {

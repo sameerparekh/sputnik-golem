@@ -1,7 +1,6 @@
-package component: sputnik;
+package sputnik: registry;
 
-world registry {
-
+interface api {
   record asset-mismatch-details { incoming-asset: asset, expected-asset: asset }
 
   variant error {
@@ -10,13 +9,13 @@ world registry {
     asset-mismatch(asset-mismatch-details),
   }
 
-  export get-assets: func() -> list<asset>;
+  get-assets: func() -> list<asset>;
 
-  export get-spot-pairs: func() -> list<spot-pair>;
+  get-spot-pairs: func() -> list<spot-pair>;
 
-  export add-asset: func(asset: asset) -> result<asset, error>;
+  add-asset: func(asset: asset) -> result<asset, error>;
 
-  export add-spot-pair: func(pair: spot-pair) -> result<spot-pair, error>;
+  add-spot-pair: func(pair: spot-pair) -> result<spot-pair, error>;
 
   record asset {
     id: u64,
@@ -31,7 +30,8 @@ world registry {
     denominator: asset,
   }
 
+}
 
-
-
+world registry {
+  export api;
 }
