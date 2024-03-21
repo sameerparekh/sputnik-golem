@@ -1,0 +1,34 @@
+package component: sputnik;
+
+world registry {
+
+  variant error {
+    duplicate-id(u64),
+    no-such-asset(u64),
+  }
+
+  export get-assets: func() -> list<asset>;
+
+  export get-spot-pairs: func() -> list<spot-pair>;
+
+  export add-asset: func(asset: asset) -> result<asset, error>;
+
+  export add-spot-pair: func(pair: spot-pair) -> result<spot-pair, error>;
+
+  record asset {
+    id: u64,
+    name: string,
+    decimals: u16,
+  }
+
+  record spot-pair {
+    id: u64,
+    name: string,
+    numerator: asset,
+    denominator: asset,
+  }
+
+
+
+
+}
