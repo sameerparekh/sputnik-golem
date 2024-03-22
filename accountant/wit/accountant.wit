@@ -3,6 +3,7 @@ package sputnik: accountant;
 interface api {
   variant error {
     duplicate-id(u64),
+    insufficient-funds(u64),
   }
 
   record asset {
@@ -37,6 +38,10 @@ interface api {
   get-balances: func() -> list<asset-balance>;
 
   place-order: func(order: order) -> result<order-status, error>;
+
+  deposit: func(asset: u64, amount: u64) -> asset-balance;
+
+  withdraw: func(asset: u64, amount: u64) -> result<asset-balance, error>;
 }
 
 world accountant {
