@@ -19,6 +19,6 @@ jobs:
       - name: Install protoc
         run: apt-get install protobuf-compiler
       - name: Build
-        run: cargo build --verbose
+        run: cargo make build-flow
       - name: Run tests
-        run: cargo test --verbose
+        run: cargo test
