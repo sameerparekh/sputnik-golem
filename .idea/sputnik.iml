@@ -7,6 +7,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/accountant/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/registry/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/matching-engine-stub/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/registry-stub/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
