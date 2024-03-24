@@ -12,6 +12,7 @@ interface api {
   record asset-balance {
     asset: asset,
     balance: u64,
+    available-balance: u64,
   }
 
   use sputnik: matching-engine/api.{side};
