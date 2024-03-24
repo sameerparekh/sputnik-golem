@@ -28,14 +28,14 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
     STATE.with_borrow_mut(f)
 }
 
-static REGISTRY: stub_registry::Api = {
+fn get_registry() -> stub_registry::Api {
     let template_id = std::env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
     let uri = Uri {
         value: format!("worker://{template_id}/{}", "registry"),
     };
 
     stub_registry::Api::new(&uri)
-};
+}
 
 impl Guest for Component {
     fn initialize(id: u64) -> Result<u64, Error> {
@@ -49,7 +49,7 @@ impl Guest for Component {
     }
 
     fn get_balances() -> Vec<AssetBalance> {
-        let assets = REGISTRY.get_assets();
+        let assets = get_registry().get_assets();
         with_state(|state| {
             state
                 .balances
