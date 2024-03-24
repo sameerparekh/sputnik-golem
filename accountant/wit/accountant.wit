@@ -4,6 +4,7 @@ interface api {
   variant error {
     duplicate-id(u64),
     insufficient-funds(u64),
+    already-initialized(u64),
   }
 
   record asset {
@@ -35,6 +36,8 @@ interface api {
     id: u64,
   }
 
+  initialize: func(id: u64) -> result<u64, error>;
+
   get-balances: func() -> list<asset-balance>;
 
   place-order: func(order: order) -> result<order-status, error>;
@@ -45,6 +48,7 @@ interface api {
 }
 
 world accountant {
+  import sputnik: matching-engine-stub/stub-matching-engine;
+  import sputnik: registry-stub/stub-registry;
   export api;
-
 }
