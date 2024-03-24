@@ -9,26 +9,26 @@ package = "sputnik:accountant"
 [package.metadata.component.target]
 path = "wit"
 
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
+[package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
+path = "wit/deps/sputnik_matching-engine-stub"
 
 [package.metadata.component.target.dependencies."sputnik:registry"]
 path = "wit/deps/sputnik_registry"
 
-[package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
-path = "wit/deps/sputnik_matching-engine-stub"
-
-[package.metadata.component.target.dependencies."sputnik:matching-engine"]
-path = "wit/deps/sputnik_matching-engine"
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
 
 [package.metadata.component.target.dependencies."sputnik:registry-stub"]
 path = "wit/deps/sputnik_registry-stub"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine"]
+path = "wit/deps/sputnik_matching-engine"
 
 [dependencies]
 priority-queue = "2.0.2"
 
 [dependencies.wit-bindgen]
-version = "0.22.0"
+version = "0.17.0"
 features = ["realloc"]
 default-features = false
 
