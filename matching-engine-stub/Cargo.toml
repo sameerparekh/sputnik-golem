@@ -1,0 +1,37 @@
+[package]
+name = "matching-engine-stub"
+edition = "2021"
+version = "0.0.1"
+
+[package.metadata.component]
+package = "sputnik:matching-engine"
+
+[package.metadata.component.target]
+world = "wasm-rpc-stub-matching-engine"
+path = "wit"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine"]
+path = "wit/deps/sputnik_matching-engine"
+
+[dependencies.golem-wasm-rpc]
+version = "0.0.14"
+features = ["stub"]
+default-features = false
+
+[dependencies.wit-bindgen]
+version = "0.17.0"
+features = ["realloc"]
+default-features = false
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+required-features = []
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

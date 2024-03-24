@@ -1,8 +1,3 @@
 [workspace]
+members = ["matching-engine", "registry", "accountant", "registry-stub", "matching-engine-stub"]
 resolver = "2"
-
-members = [
-    "matching-engine",
-    "registry",
-    "accountant",
-]

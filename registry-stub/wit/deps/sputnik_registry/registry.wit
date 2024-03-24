@@ -1,0 +1,37 @@
+package sputnik: registry;
+
+interface api {
+  record asset-mismatch-details { incoming-asset: asset, expected-asset: asset }
+
+  variant error {
+    duplicate-id(u64),
+    no-such-asset(u64),
+    asset-mismatch(asset-mismatch-details),
+  }
+
+  get-assets: func() -> list<asset>;
+
+  get-spot-pairs: func() -> list<spot-pair>;
+
+  add-asset: func(asset: asset) -> result<asset, error>;
+
+  add-spot-pair: func(pair: spot-pair) -> result<spot-pair, error>;
+
+  record asset {
+    id: u64,
+    name: string,
+    decimals: u8,
+  }
+
+  record spot-pair {
+    id: u64,
+    name: string,
+    numerator: asset,
+    denominator: asset,
+  }
+
+}
+
+world registry {
+  export api;
+}

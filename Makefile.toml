@@ -1,0 +1,71 @@
+[config]
+default_to_workspace = false
+
+[tasks.add-stub-dependency-matching-engine-accountant]
+args = ["add-stub-dependency", "--stub-wit-root", "matching-engine-stub/wit", "--dest-wit-root", "accountant/wit", "--overwrite", "--update-cargo-toml"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+dependencies = ["generate-matching-engine-stub"]
+
+[tasks.add-stub-dependency-registry-accountant]
+args = ["add-stub-dependency", "--stub-wit-root", "registry-stub/wit", "--dest-wit-root", "accountant/wit", "--overwrite", "--update-cargo-toml"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+dependencies = ["generate-registry-stub"]
+
+[tasks.build]
+args = ["build"]
+command = "cargo-component"
+dependencies = ["clean", "regenerate-stubs"]
+
+[tasks.build-flow]
+dependencies = ["build", "post-build"]
+
+[tasks.build-release]
+args = ["build", "--release"]
+command = "cargo-component"
+dependencies = ["clean", "regenerate-stubs"]
+
+[tasks.clean]
+args = ["clean"]
+command = "cargo-component"
+
+[tasks.compose-accountant]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/accountant.wasm", "--stub-wasm", "target/wasm32-wasi/debug/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/debug/matching_engine_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/accountant_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
+[tasks.compose-release-accountant]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/release/accountant.wasm", "--stub-wasm", "target/wasm32-wasi/release/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/matching_engine_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/accountant_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
+[tasks.default]
+alias = "build"
+
+[tasks.generate-matching-engine-stub]
+args = ["generate", "-s", "matching-engine/wit", "-d", "matching-engine-stub"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
+[tasks.generate-registry-stub]
+args = ["generate", "-s", "registry/wit", "-d", "registry-stub"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
+[tasks.post-build]
+dependencies = ["compose-accountant"]
+
+[tasks.post-build-release]
+dependencies = ["compose-release-accountant"]
+
+[tasks.regenerate-stubs]
+dependencies = ["add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant"]
+
+[tasks.release-build-flow]
+dependencies = ["build-release", "post-build-release"]
+
+[tasks.test]
+args = ["test"]
+command = "cargo-component"
+dependencies = ["clean"]
