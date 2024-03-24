@@ -45,6 +45,8 @@ interface api {
 }
 
 world accountant {
+  import sputnik: matching-engine-stub/stub-matching-engine;
+  import sputnik: registry-stub/stub-registry;
   export api;
 
 }
