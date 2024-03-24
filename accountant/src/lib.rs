@@ -40,8 +40,8 @@ impl Guest for Component {
     }
 
     fn get_balances() -> Vec<AssetBalance> {
-        let template_id = std::env::var("PURCHASE_HISTORY_TEMPLATE_ID")
-            .expect("PURCHASE_HISTORY_TEMPLATE_ID not set");
+        let template_id =
+            std::env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
         let uri = Uri {
             value: format!("worker://{template_id}/{}", "blah"),
         };

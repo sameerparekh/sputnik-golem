@@ -7,21 +7,14 @@ interface api {
     already-initialized(u64),
   }
 
-  record asset {
-    id: u64,
-    name: string,
-    decimals: u8,
-  }
+  use sputnik: registry/api.{asset};
 
   record asset-balance {
     asset: asset,
     balance: u64,
   }
 
-  enum side {
-    buy,
-    sell,
-  }
+  use sputnik: matching-engine/api.{side};
 
   record order {
     id: u64,
