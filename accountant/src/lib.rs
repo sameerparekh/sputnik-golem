@@ -167,8 +167,7 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_deposit() {
+    fn setup_mock_registry() {
         let mut mock_registry_api = MockRegistryApi::new();
         mock_registry_api
             .expect_get_assets()
@@ -178,6 +177,11 @@ mod tests {
                 decimals: 8,
             }]);
         with_state(|state| state.registry_api = Box::new(mock_registry_api));
+    }
+    #[test]
+    fn test_deposit() {
+        setup_mock_registry();
+
         <Component as Guest>::deposit(1, 100);
         let balances = <Component as Guest>::get_balances();
         assert_eq!(
