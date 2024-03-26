@@ -10,7 +10,9 @@ use crate::bindings::exports::sputnik::accountant::api::Error::{
     AlreadyInitialized, InsufficientFunds, InvalidAsset,
 };
 use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::sputnik::registry::api::Asset;
+use crate::bindings::sputnik::matching_engine;
+use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
+use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
 use crate::bindings::sputnik::registry_stub::stub_registry;
 
 mod bindings;
@@ -38,6 +40,11 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 trait RegistryApi {
     fn get_registry(&self) -> stub_registry::Api;
     fn get_assets(&self) -> Vec<Asset>;
+    fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api;
+    fn place_order(
+        &self,
+        order: Order,
+    ) -> Result<stub_matching_engine::OrderStatus, stub_matching_engine::Error>;
 }
 
 pub struct RegistryApiProd;
@@ -55,6 +62,31 @@ impl RegistryApi for RegistryApiProd {
 
     fn get_assets(&self) -> Vec<Asset> {
         self.get_registry().get_assets()
+    }
+
+    fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api {
+        let template_id = std::env::var("MATCHING_ENGINE_TEMPLATE_ID")
+            .expect("MATCHING_ENGINE_TEMPLATE_ID not set");
+        let uri = Uri {
+            value: format!("worker://{template_id}/{spot_pair_id}"),
+        };
+
+        stub_matching_engine::Api::new(&uri)
+    }
+
+    fn place_order(
+        &self,
+        order: Order,
+    ) -> Result<stub_matching_engine::OrderStatus, stub_matching_engine::Error> {
+        self.get_matching_engine(order.spot_pair)
+            .place_order(matching_engine::api::Order {
+                id: order.id,
+                timestamp: order.timestamp,
+                side: order.side,
+                price: order.price,
+                size: order.size,
+                trader: with_state(|state| state.id.unwrap()),
+            })
     }
 }
 
@@ -177,11 +209,19 @@ mod tests {
             }]);
         with_state(|state| state.registry_api = Box::new(mock_registry_api));
     }
+
+    fn perform_deposit() -> AssetBalance {
+        <Component as Guest>::deposit(1, 100).expect("successful deposit")
+    }
+
+    fn perform_withdrawal() -> AssetBalance {
+        <Component as Guest>::withdraw(1, 50).expect("successful withdrawal")
+    }
     #[test]
     fn test_deposit() {
         setup_mock_registry();
 
-        let asset_balance = <Component as Guest>::deposit(1, 100).expect("successful deposit");
+        let asset_balance = perform_deposit();
         assert_eq!(
             asset_balance,
             AssetBalance {
@@ -194,6 +234,33 @@ mod tests {
                 available_balance: 100
             }
         );
+    }
+
+    #[test]
+    fn test_withdrawal() {
+        setup_mock_registry();
+
+        perform_deposit();
+        let asset_balance = perform_withdrawal();
+        assert_eq!(
+            asset_balance,
+            AssetBalance {
+                asset: Asset {
+                    id: 1,
+                    name: "BTC".to_string(),
+                    decimals: 8
+                },
+                balance: 50,
+                available_balance: 50
+            }
+        );
+    }
+
+    #[test]
+    fn test_get_balances() {
+        setup_mock_registry();
+
+        perform_deposit();
         let balances = <Component as Guest>::get_balances();
         assert_eq!(
             balances,
@@ -207,5 +274,20 @@ mod tests {
                 available_balance: 100
             }]
         );
+        perform_withdrawal();
+        let balances = <Component as Guest>::get_balances();
+        assert_eq!(
+            balances,
+            vec![AssetBalance {
+                asset: Asset {
+                    id: 1,
+                    name: "BTC".to_string(),
+                    decimals: 8
+                },
+                balance: 50,
+                available_balance: 50
+            }]
+        );
+
     }
 }
