@@ -42,7 +42,6 @@ trait RegistryApi {
 
 pub struct RegistryApiProd;
 
-#[automock]
 impl RegistryApi for RegistryApiProd {
     fn get_registry(&self) -> stub_registry::Api {
         let template_id =
