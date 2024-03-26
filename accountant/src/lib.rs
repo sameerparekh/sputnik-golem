@@ -7,7 +7,7 @@ use crate::bindings::exports::sputnik::accountant::api::{
     AssetBalance, Error, Guest, Order, OrderStatus,
 };
 use crate::bindings::exports::sputnik::accountant::api::Error::{
-    AlreadyInitialized, InsufficientFunds,
+    AlreadyInitialized, InsufficientFunds, InvalidAsset,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::registry::api::Asset;
@@ -106,18 +106,18 @@ impl Guest for Component {
         todo!()
     }
 
-    fn deposit(asset_id: u64, amount: u64) -> AssetBalance {
+    fn deposit(asset_id: u64, amount: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
             let assets = state.registry_api.get_assets();
             let balance = state.balances.entry(asset_id).or_insert_with(|| ZERO);
             *balance += amount;
             match assets.iter().find(|asset| asset.id == asset_id) {
-                Some(asset) => AssetBalance {
+                Some(asset) => Ok(AssetBalance {
                     asset: asset.clone(),
                     balance: *balance,
                     available_balance: available_balance(state, asset_id),
-                },
-                None => panic!("No asset_id {}", asset_id),
+                }),
+                None => Err(InvalidAsset(asset_id)),
             }
         })
     }
@@ -139,7 +139,7 @@ impl Guest for Component {
                         balance: state.balances.get(&asset_id).unwrap().clone(),
                         available_balance: available_balance(state, asset_id),
                     }),
-                    None => panic!("No asset_id {}", asset_id),
+                    None => Err(InvalidAsset(asset_id)),
                 }
             }
         })
@@ -181,7 +181,19 @@ mod tests {
     fn test_deposit() {
         setup_mock_registry();
 
-        <Component as Guest>::deposit(1, 100);
+        let asset_balance = <Component as Guest>::deposit(1, 100).expect("successful deposit");
+        assert_eq!(
+            asset_balance,
+            AssetBalance {
+                asset: Asset {
+                    id: 1,
+                    name: "BTC".to_string(),
+                    decimals: 8
+                },
+                balance: 100,
+                available_balance: 100
+            }
+        );
         let balances = <Component as Guest>::get_balances();
         assert_eq!(
             balances,
