@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use mockall::automock;
 
 use crate::bindings::exports::sputnik::accountant::api::{
-    AssetBalance, Error, Guest, Order, OrderStatus,
+    AssetBalance, Error, Fill, Guest, Order, OrderStatus,
 };
 use crate::bindings::exports::sputnik::accountant::api::Error::{
     AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
@@ -36,6 +36,7 @@ thread_local! {
         balances: HashMap::new(),
         id: None,
         registry_api: Box::new(RegistryApiProd),
+        orders: HashMap::new(),
     });
 }
 fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
@@ -112,9 +113,7 @@ fn decimal_power(decimals: u8) -> u64 {
 }
 
 fn decrease_balance(state: &mut State, asset_id: u64, qty: u64) -> u64 {
-    let balance = state
-        .balances
-        .entry(asset_id).or_insert_with(|| ZERO);
+    let balance = state.balances.entry(asset_id).or_insert_with(|| ZERO);
     *balance -= qty;
     balance.clone()
 }
@@ -131,25 +130,28 @@ fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::
         false => fill.maker_order_id,
     };
     match state.orders.get(&order_id) {
-        Some(OrderAndStatus { order, status: _status }) => {
+        Some(OrderAndStatus {
+            order,
+            status: _status,
+        }) => {
             let spot_pairs = state.registry_api.get_spot_pairs();
             let spot_pair = match spot_pairs.iter().find(|pair| pair.id == order.spot_pair) {
                 Some(spot_pair) => spot_pair,
                 None => panic!("No spot pair found {}", order.spot_pair),
             };
             let numerator_change = fill.size;
-            let denominator_change = fill.size * fill.price / decimal_power(spot_pair.numerator.decimals);
+            let denominator_change =
+                fill.size * fill.price / decimal_power(spot_pair.numerator.decimals);
             match order.side {
                 Buy => {
                     decrease_balance(state, spot_pair.denominator.id, denominator_change);
                     increase_balance(state, spot_pair.numerator.id, numerator_change);
-                },
+                }
                 Sell => {
                     increase_balance(state, spot_pair.denominator.id, denominator_change);
                     decrease_balance(state, spot_pair.numerator.id, numerator_change);
                 }
             }
-
         }
         None => panic!("Order not found: {}", order_id),
     }
@@ -224,8 +226,8 @@ impl Guest for Component {
                                 state.orders.insert(
                                     order.id,
                                     OrderAndStatus {
-                                        order: order,
-                                        status: order_status,
+                                        order,
+                                        status: order_status.clone(),
                                     },
                                 );
                                 order_status
@@ -273,6 +275,29 @@ impl Guest for Component {
                     }),
                     None => Err(InvalidAsset(asset_id)),
                 }
+            }
+        })
+    }
+
+    fn process_maker_fill(fill: Fill) {
+        with_state(|state| {
+            process_fill(
+                state,
+                false,
+                &matching_engine::api::Fill {
+                    price: fill.price,
+                    size: fill.size,
+                    taker_order_id: fill.taker_order_id,
+                    maker_order_id: fill.maker_order_id,
+                    timestamp: fill.timestamp,
+                },
+            );
+            match state.orders.get_mut(&fill.maker_order_id) {
+                None => panic!("No order {}", fill.maker_order_id),
+                Some(OrderAndStatus {
+                    order: _order,
+                    status,
+                }) => status.fills.push(fill),
             }
         })
     }
