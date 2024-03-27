@@ -7,10 +7,10 @@ use crate::bindings::exports::sputnik::accountant::api::{
     AssetBalance, Error, Guest, Order, OrderStatus,
 };
 use crate::bindings::exports::sputnik::accountant::api::Error::{
-    AlreadyInitialized, InsufficientFunds, InvalidAsset,
+    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
 };
 use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::sputnik::matching_engine;
+use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
 use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
 use crate::bindings::sputnik::registry_stub::stub_registry;
@@ -40,10 +40,12 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 trait RegistryApi {
     fn get_registry(&self) -> stub_registry::Api;
     fn get_assets(&self) -> Vec<Asset>;
+    fn get_spot_pairs(&self) -> Vec<SpotPair>;
     fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api;
     fn place_order(
         &self,
-        order: Order,
+        spot_pair: u64,
+        order: stub_matching_engine::Order,
     ) -> Result<stub_matching_engine::OrderStatus, stub_matching_engine::Error>;
 }
 
@@ -64,6 +66,10 @@ impl RegistryApi for RegistryApiProd {
         self.get_registry().get_assets()
     }
 
+    fn get_spot_pairs(&self) -> Vec<SpotPair> {
+        self.get_registry().get_spot_pairs()
+    }
+
     fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api {
         let template_id = std::env::var("MATCHING_ENGINE_TEMPLATE_ID")
             .expect("MATCHING_ENGINE_TEMPLATE_ID not set");
@@ -76,17 +82,10 @@ impl RegistryApi for RegistryApiProd {
 
     fn place_order(
         &self,
-        order: Order,
+        spot_pair: u64,
+        order: stub_matching_engine::Order,
     ) -> Result<stub_matching_engine::OrderStatus, stub_matching_engine::Error> {
-        self.get_matching_engine(order.spot_pair)
-            .place_order(matching_engine::api::Order {
-                id: order.id,
-                timestamp: order.timestamp,
-                side: order.side,
-                price: order.price,
-                size: order.size,
-                trader: with_state(|state| state.id.unwrap()),
-            })
+        self.get_matching_engine(spot_pair).place_order(order)
     }
 }
 
@@ -135,7 +134,42 @@ impl Guest for Component {
     }
 
     fn place_order(order: Order) -> Result<OrderStatus, Error> {
-        todo!()
+        with_state(|state| {
+            let spot_pairs = state.registry_api.get_spot_pairs();
+            match spot_pairs.iter().find(|pair| pair.id == order.spot_pair) {
+                Some(spot_pair) => {
+                    let (required_asset, required_balance) = match order.side {
+                        Buy => (
+                            spot_pair.denominator.clone(),
+                            order.size * order.price / spot_pair.numerator.decimals as u64,
+                        ),
+                        Sell => (spot_pair.numerator.clone(), order.size),
+                    };
+                    let available_balance = available_balance(state, required_asset.id);
+                    if available_balance < required_balance {
+                        Err(InsufficientFunds(available_balance))
+                    } else {
+                        match state.registry_api.place_order(
+                            order.spot_pair,
+                            stub_matching_engine::Order {
+                                id: order.id,
+                                timestamp: order.timestamp,
+                                side: order.side,
+                                price: order.price,
+                                size: order.size,
+                                trader: state.id.unwrap(),
+                            },
+                        ) {
+                            Err(matching_engine_error) => {
+                                Err(MatchingEngineError(matching_engine_error))
+                            }
+                            Ok(_) => Ok(OrderStatus { id: order.id }),
+                        }
+                    }
+                }
+                None => Err(InvalidSpotPair(order.spot_pair)),
+            }
+        })
     }
 
     fn deposit(asset_id: u64, amount: u64) -> Result<AssetBalance, Error> {
@@ -288,6 +322,5 @@ mod tests {
                 available_balance: 50
             }]
         );
-
     }
 }

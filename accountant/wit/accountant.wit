@@ -1,12 +1,17 @@
 package sputnik: accountant;
 
 interface api {
+
   variant error {
     duplicate-id(u64),
     insufficient-funds(u64),
     already-initialized(u64),
     invalid-asset(u64),
+    invalid-spot-pair(u64),
+    matching-engine-error(matching-engine-error),
   }
+
+  use sputnik: matching-engine/api.{error as matching-engine-error};
 
   use sputnik: registry/api.{asset};
 
