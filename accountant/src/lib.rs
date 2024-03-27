@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use mockall::automock;
 
@@ -20,6 +20,7 @@ mod bindings;
 
 struct Component;
 
+#[derive(Clone)]
 struct OrderAndStatus {
     order: Order,
     status: stub_matching_engine::OrderStatus,
@@ -100,8 +101,35 @@ const ZERO: u64 = 0u64;
 
 // TODO: Actually calculate available balance given orders
 fn available_balance(state: &mut State, asset_id: u64) -> u64 {
+    let spot_pairs = state.registry_api.get_spot_pairs();
+    let relevant_spot_pairs: HashSet<u64> = HashSet::from_iter(
+        spot_pairs
+            .iter()
+            .filter_map(|spot_pair| {
+                if spot_pair.numerator.id == asset_id || spot_pair.denominator.id == asset_id {
+                    Some(&spot_pair.id)
+                } else {
+                    None
+                }
+            })
+            .cloned(),
+    );
     match state.balances.get(&asset_id) {
-        Some(balance) => *balance,
+        Some(balance) => {
+            let relevant_orders: Vec<OrderAndStatus> = state
+                .orders
+                .iter()
+                .filter(|(id, order_and_status)| match order_and_status {
+                    OrderAndStatus {
+                        order,
+                        status: _status,
+                    } => relevant_spot_pairs.contains(&order.spot_pair),
+                })
+                .map(|(id, order_and_status)| order_and_status)
+                .cloned()
+                .collect();
+            *balance
+        }
         None => ZERO,
     }
 }
