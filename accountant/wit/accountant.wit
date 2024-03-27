@@ -21,7 +21,7 @@ interface api {
     available-balance: u64,
   }
 
-  use sputnik: matching-engine/api.{side};
+  use sputnik: matching-engine/api.{side, fill};
 
   record order {
     id: u64,
@@ -45,6 +45,8 @@ interface api {
   deposit: func(asset: u64, amount: u64) -> result<asset-balance, error>;
 
   withdraw: func(asset: u64, amount: u64) -> result<asset-balance, error>;
+
+  process-maker-fill: func(fill: fill) -> ();
 }
 
 world accountant {

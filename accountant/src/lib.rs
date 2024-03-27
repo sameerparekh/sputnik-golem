@@ -10,19 +10,25 @@ use crate::bindings::exports::sputnik::accountant::api::Error::{
     AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
 };
 use crate::bindings::golem::rpc::types::Uri;
+use crate::bindings::sputnik::matching_engine;
 use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
-use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
+use crate::bindings::sputnik::registry::api::{Asset, get_spot_pairs, SpotPair};
 use crate::bindings::sputnik::registry_stub::stub_registry;
 
 mod bindings;
 
 struct Component;
 
+struct OrderAndStatus {
+    order: Order,
+    status: stub_matching_engine::OrderStatus,
+}
 struct State {
     id: Option<u64>,
     balances: HashMap<u64, u64>,
     registry_api: Box<dyn RegistryApi>,
+    orders: HashMap<u64, OrderAndStatus>,
 }
 
 thread_local! {
@@ -99,6 +105,56 @@ fn available_balance(state: &mut State, asset_id: u64) -> u64 {
     }
 }
 
+const TEN: u64 = 10;
+
+fn decimal_power(decimals: u8) -> u64 {
+    TEN.pow(decimals as u32)
+}
+
+fn decrease_balance(state: &mut State, asset_id: u64, qty: u64) -> u64 {
+    let balance = state
+        .balances
+        .entry(asset_id).or_insert_with(|| ZERO);
+    *balance -= qty;
+    balance.clone()
+}
+
+fn increase_balance(state: &mut State, asset_id: u64, qty: u64) -> u64 {
+    let balance = state.balances.entry(asset_id).or_insert_with(|| ZERO);
+    *balance += qty;
+    balance.clone()
+}
+
+fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::Fill) {
+    let order_id = match is_taker {
+        true => fill.taker_order_id,
+        false => fill.maker_order_id,
+    };
+    match state.orders.get(&order_id) {
+        Some(OrderAndStatus { order, status: _status }) => {
+            let spot_pairs = state.registry_api.get_spot_pairs();
+            let spot_pair = match spot_pairs.iter().find(|pair| pair.id == order.spot_pair) {
+                Some(spot_pair) => spot_pair,
+                None => panic!("No spot pair found {}", order.spot_pair),
+            };
+            let numerator_change = fill.size;
+            let denominator_change = fill.size * fill.price / decimal_power(spot_pair.numerator.decimals);
+            match order.side {
+                Buy => {
+                    decrease_balance(state, spot_pair.denominator.id, denominator_change);
+                    increase_balance(state, spot_pair.numerator.id, numerator_change);
+                },
+                Sell => {
+                    increase_balance(state, spot_pair.denominator.id, denominator_change);
+                    decrease_balance(state, spot_pair.numerator.id, numerator_change);
+                }
+            }
+
+        }
+        None => panic!("Order not found: {}", order_id),
+    }
+}
+
 impl Guest for Component {
     fn initialize(id: u64) -> Result<u64, Error> {
         with_state(|state| match state.id {
@@ -149,21 +205,35 @@ impl Guest for Component {
                     if available_balance < required_balance {
                         Err(InsufficientFunds(available_balance))
                     } else {
-                        match state.registry_api.place_order(
-                            order.spot_pair,
-                            stub_matching_engine::Order {
-                                id: order.id,
-                                timestamp: order.timestamp,
-                                side: order.side,
-                                price: order.price,
-                                size: order.size,
-                                trader: state.id.unwrap(),
-                            },
-                        ) {
+                        let matching_engine_order = stub_matching_engine::Order {
+                            id: order.id,
+                            timestamp: order.timestamp,
+                            side: order.side,
+                            price: order.price,
+                            size: order.size,
+                            trader: state.id.unwrap(),
+                        };
+                        match state
+                            .registry_api
+                            .place_order(order.spot_pair, matching_engine_order)
+                        {
                             Err(matching_engine_error) => {
                                 Err(MatchingEngineError(matching_engine_error))
                             }
-                            Ok(_) => Ok(OrderStatus { id: order.id }),
+                            Ok(order_status) => {
+                                state.orders.insert(
+                                    order.id,
+                                    OrderAndStatus {
+                                        order: order,
+                                        status: order_status,
+                                    },
+                                );
+                                order_status
+                                    .fills
+                                    .iter()
+                                    .for_each(|fill| process_fill(state, true, fill));
+                                Ok(OrderStatus { id: order.id })
+                            }
                         }
                     }
                 }
@@ -175,12 +245,11 @@ impl Guest for Component {
     fn deposit(asset_id: u64, amount: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
             let assets = state.registry_api.get_assets();
-            let balance = state.balances.entry(asset_id).or_insert_with(|| ZERO);
-            *balance += amount;
+            let balance = increase_balance(state, asset_id, amount);
             match assets.iter().find(|asset| asset.id == asset_id) {
                 Some(asset) => Ok(AssetBalance {
                     asset: asset.clone(),
-                    balance: *balance,
+                    balance,
                     available_balance: available_balance(state, asset_id),
                 }),
                 None => Err(InvalidAsset(asset_id)),
@@ -195,14 +264,11 @@ impl Guest for Component {
             if available <= amount {
                 Err(InsufficientFunds(available))
             } else {
-                state
-                    .balances
-                    .entry(asset_id)
-                    .and_modify(|amt| *amt -= amount);
+                let new_balance = decrease_balance(state, asset_id, amount);
                 match assets.iter().find(|asset| asset.id == asset_id) {
                     Some(asset) => Ok(AssetBalance {
                         asset: asset.clone(),
-                        balance: state.balances.get(&asset_id).unwrap().clone(),
+                        balance: new_balance,
                         available_balance: available_balance(state, asset_id),
                     }),
                     None => Err(InvalidAsset(asset_id)),
