@@ -3,11 +3,11 @@ use std::collections::HashMap;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::accountant::api::Error::{
-    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
-};
 use crate::bindings::exports::sputnik::accountant::api::{
     AssetBalance, Error, Fill, Guest, Order, OrderStatus,
+};
+use crate::bindings::exports::sputnik::accountant::api::Error::{
+    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
@@ -355,13 +355,13 @@ mod tests {
 
     use assert_unordered::assert_eq_unordered;
 
+    use crate::{Component, Guest, MockRegistryApi, with_state};
     use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
     use crate::bindings::sputnik::matching_engine::api::Fill;
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
-    use crate::{with_state, Component, Guest, MockRegistryApi};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {
@@ -502,7 +502,6 @@ mod tests {
     #[test]
     fn test_withdrawal() {
         setup_mock_registry(0f32);
-
         perform_btc_deposit();
         let asset_balance = perform_withdrawal();
         assert_eq!(
@@ -682,7 +681,6 @@ mod tests {
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
         );
         let balances = <Component as Guest>::get_balances();
-        println!("{:?}", &balances);
         assert_eq_unordered!(
             &balances,
             &vec![
@@ -727,7 +725,6 @@ mod tests {
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
         );
         let balances = <Component as Guest>::get_balances();
-        println!("{:?}", &balances);
         assert_eq_unordered!(
             &balances,
             &vec![
@@ -772,7 +769,6 @@ mod tests {
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
         );
         let balances = <Component as Guest>::get_balances();
-        println!("{:?}", &balances);
         assert_eq_unordered!(
             &balances,
             &vec![
@@ -795,6 +791,192 @@ mod tests {
                     available_balance: 4500000,
                 },
             ],
+        );
+    }
+
+    #[test]
+    fn test_place_multiple_orders() {
+        init();
+        setup_mock_registry(0f32);
+        perform_usd_deposit();
+        perform_btc_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Buy,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        let status = <Component as Guest>::place_order(Order {
+            id: 2,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Buy,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 2 }
+        );
+        let status = <Component as Guest>::place_order(Order {
+            id: 3,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Sell,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 3 }
+        );
+        let status = <Component as Guest>::place_order(Order {
+            id: 4,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Sell,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 4 }
+        );
+        let balances = <Component as Guest>::get_balances();
+        assert_eq_unordered!(
+            &balances,
+            &vec![
+                AssetBalance {
+                    asset: Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8,
+                    },
+                    balance: 100000000,
+                    available_balance: 50000000,
+                },
+                AssetBalance {
+                    asset: Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2,
+                    },
+                    balance: 6000000,
+                    available_balance: 3000000,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn test_place_buy_order_maker_fill() {
+        init();
+        setup_mock_registry(0f32);
+        perform_usd_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Buy,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        <Component as Guest>::process_maker_fill(Fill {
+            price: 5500000,
+            size: 12500000,
+            taker_order_id: 0,
+            maker_order_id: 1,
+            timestamp: 0,
+        });
+        let balances = <Component as Guest>::get_balances();
+        assert_eq_unordered!(
+            &balances,
+            &vec![
+                AssetBalance {
+                    asset: Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8,
+                    },
+                    balance: 12500000,
+                    available_balance: 12500000,
+                },
+                AssetBalance {
+                    asset: Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2,
+                    },
+                    balance: 5312500,
+                    available_balance: 4562500,
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn test_place_sell_order_maker_fill() {
+        init();
+        setup_mock_registry(0f32);
+        perform_btc_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Sell,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        <Component as Guest>::process_maker_fill(Fill {
+            price: 6500000,
+            size: 12500000,
+            taker_order_id: 0,
+            maker_order_id: 1,
+            timestamp: 0,
+        });
+        let balances = <Component as Guest>::get_balances();
+        assert_eq_unordered!(
+            &balances,
+            &vec![
+                AssetBalance {
+                    asset: Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8
+                    },
+                    balance: 87500000,
+                    available_balance: 75000000
+                },
+                AssetBalance {
+                    asset: Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2
+                    },
+                    balance: 812500,
+                    available_balance: 812500
+                }
+            ]
         );
     }
 }
