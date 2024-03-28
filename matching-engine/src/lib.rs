@@ -4,10 +4,10 @@ use std::collections::HashMap;
 
 use priority_queue::PriorityQueue;
 
+use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 use sputnik::matching_engine::api::Error::MissingOrder;
 use sputnik::matching_engine::api::Side::{Buy, Sell};
 use sputnik::matching_engine::api::Status::{Canceled, Filled, Open, PartialFilled};
-use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 
 use crate::bindings::exports::sputnik;
 
@@ -95,6 +95,7 @@ impl Guest for Component {
                             maker_order_id: matched_id.clone(),
                             timestamp: order.timestamp,
                         };
+                        // TODO: Send fill to accountant for maker trader -- matched_order.trader
                         state.fills.push(fill);
                         state
                             .order_statuses
@@ -185,14 +186,14 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
+    use crate::{Component, Guest};
+    use crate::bindings::exports::sputnik::matching_engine::api::{
+        Fill, Order, OrderBook, OrderStatus,
+    };
     use crate::bindings::exports::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::exports::sputnik::matching_engine::api::Status::{
         Canceled, Filled, Open, PartialFilled,
     };
-    use crate::bindings::exports::sputnik::matching_engine::api::{
-        Fill, Order, OrderBook, OrderStatus,
-    };
-    use crate::{Component, Guest};
 
     impl PartialEq for Order {
         fn eq(&self, other: &Self) -> bool {

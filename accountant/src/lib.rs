@@ -898,7 +898,14 @@ mod tests {
         );
         <Component as Guest>::process_maker_fill(Fill {
             price: 5500000,
-            size: 12500000,
+            size: 10000000,
+            taker_order_id: 0,
+            maker_order_id: 1,
+            timestamp: 0,
+        });
+        <Component as Guest>::process_maker_fill(Fill {
+            price: 5500000,
+            size: 2500000,
             taker_order_id: 0,
             maker_order_id: 1,
             timestamp: 0,
@@ -949,7 +956,14 @@ mod tests {
         );
         <Component as Guest>::process_maker_fill(Fill {
             price: 6500000,
-            size: 12500000,
+            size: 10000000,
+            taker_order_id: 0,
+            maker_order_id: 1,
+            timestamp: 0,
+        });
+        <Component as Guest>::process_maker_fill(Fill {
+            price: 6500000,
+            size: 2500000,
             taker_order_id: 0,
             maker_order_id: 1,
             timestamp: 0,
