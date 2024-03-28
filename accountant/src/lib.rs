@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use cached::proc_macro::{cached, once};
 use mockall::automock;
 
 use crate::bindings::exports::sputnik::accountant::api::Error::{
@@ -61,7 +60,6 @@ trait ExternalServiceApi {
 pub struct ExternalServiceApiProd;
 
 impl ExternalServiceApi for ExternalServiceApiProd {
-    #[cached]
     fn get_registry(&self) -> stub_registry::Api {
         let template_id =
             std::env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
@@ -72,7 +70,6 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         stub_registry::Api::new(&uri)
     }
 
-    #[once(time = 60, option = true, sync_writes = true)]
     fn get_assets(&self) -> HashMap<u64, Asset> {
         HashMap::from_iter(
             self.get_registry()
@@ -82,7 +79,6 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         )
     }
 
-    #[once(time = 60, option = true, sync_writes = true)]
     fn get_spot_pairs(&self) -> HashMap<u64, SpotPair> {
         HashMap::from_iter(
             self.get_registry()
@@ -92,7 +88,6 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         )
     }
 
-    #[cached]
     fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api {
         let template_id = std::env::var("MATCHING_ENGINE_TEMPLATE_ID")
             .expect("MATCHING_ENGINE_TEMPLATE_ID not set");
