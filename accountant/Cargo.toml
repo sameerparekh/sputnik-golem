@@ -25,6 +25,7 @@ path = "wit/deps/sputnik_matching-engine-stub"
 path = "wit/deps/sputnik_registry"
 
 [dependencies]
+assert_unordered = "0.3.5"
 mockall = "0.12.1"
 priority-queue = "2.0.2"
 

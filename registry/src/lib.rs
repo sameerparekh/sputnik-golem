@@ -86,8 +86,9 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-    use std::hash::{Hash, Hasher};
+    use std::hash::Hash;
+
+    use assert_unordered::assert_eq_unordered;
 
     use crate::bindings::exports::sputnik::registry::api::{Asset, Guest, SpotPair};
     use crate::Component;
@@ -124,26 +125,6 @@ mod tests {
         .expect("add spotpair returns ok");
     }
 
-    impl Eq for Asset {
-        fn assert_receiver_is_total_eq(&self) {}
-    }
-
-    impl Hash for Asset {
-        fn hash<H: Hasher>(&self, state: &mut H) {
-            (self.id, self.decimals, &self.name).hash(state);
-        }
-    }
-
-    fn same_elements<T>(a: &[T], b: &[T]) -> bool
-    where
-        T: Eq + Hash,
-    {
-        let a: HashSet<_> = a.iter().collect();
-        let b: HashSet<_> = b.iter().collect();
-
-        a == b
-    }
-
     impl PartialEq for SpotPair {
         fn eq(&self, other: &Self) -> bool {
             self.id == other.id
@@ -157,7 +138,7 @@ mod tests {
     fn get_assets_returns_assets() {
         populate();
         let assets = <Component as Guest>::get_assets();
-        assert!(same_elements(
+        assert_eq_unordered!(
             &assets,
             &vec![
                 Asset {
@@ -171,7 +152,7 @@ mod tests {
                     decimals: 4
                 }
             ]
-        ));
+        );
     }
 
     #[test]

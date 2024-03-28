@@ -3,11 +3,11 @@ use std::collections::HashMap;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::accountant::api::{
-    AssetBalance, Error, Fill, Guest, Order, OrderStatus,
-};
 use crate::bindings::exports::sputnik::accountant::api::Error::{
     AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
+};
+use crate::bindings::exports::sputnik::accountant::api::{
+    AssetBalance, Error, Fill, Guest, Order, OrderStatus,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
@@ -350,38 +350,24 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::{HashMap, HashSet};
-    use std::hash::{Hash, Hasher};
+    use std::collections::HashMap;
+    use std::hash::Hash;
 
-    use crate::{Component, Guest, MockRegistryApi, with_state};
+    use assert_unordered::assert_eq_unordered;
+
     use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
     use crate::bindings::sputnik::matching_engine::api::Fill;
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
+    use crate::{with_state, Component, Guest, MockRegistryApi};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {
             self.balance == other.balance
                 && self.available_balance == other.available_balance
                 && self.asset == other.asset
-        }
-    }
-
-    impl Eq for AssetBalance {
-        fn assert_receiver_is_total_eq(&self) {}
-    }
-
-    impl Hash for AssetBalance {
-        fn hash<H: Hasher>(&self, state: &mut H) {
-            (self.available_balance, &self.asset, self.balance).hash(state);
-        }
-    }
-
-    impl Hash for Asset {
-        fn hash<H: Hasher>(&self, state: &mut H) {
-            (self.id, self.decimals, &self.name).hash(state)
         }
     }
 
@@ -633,16 +619,6 @@ mod tests {
         );
     }
 
-    fn same_elements<T>(a: &[T], b: &[T]) -> bool
-    where
-        T: Eq + Hash,
-    {
-        let a: HashSet<_> = a.iter().collect();
-        let b: HashSet<_> = b.iter().collect();
-
-        a == b
-    }
-
     #[test]
     fn test_place_sell_order_partial_fill() {
         init();
@@ -662,7 +638,7 @@ mod tests {
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
         );
         let balances = <Component as Guest>::get_balances();
-        assert!(same_elements(
+        assert_eq_unordered!(
             &balances,
             &vec![
                 AssetBalance {
@@ -684,7 +660,7 @@ mod tests {
                     available_balance: 125000000
                 }
             ]
-        ));
+        );
     }
 
     #[test]
@@ -707,7 +683,7 @@ mod tests {
         );
         let balances = <Component as Guest>::get_balances();
         println!("{:?}", &balances);
-        assert!(same_elements(
+        assert_eq_unordered!(
             &balances,
             &vec![
                 AssetBalance {
@@ -729,7 +705,7 @@ mod tests {
                     available_balance: 4500000,
                 },
             ],
-        ));
+        );
     }
 
     #[test]
@@ -752,7 +728,7 @@ mod tests {
         );
         let balances = <Component as Guest>::get_balances();
         println!("{:?}", &balances);
-        assert!(same_elements(
+        assert_eq_unordered!(
             &balances,
             &vec![
                 AssetBalance {
@@ -775,7 +751,7 @@ mod tests {
                     available_balance: 250000000,
                 },
             ],
-        ));
+        );
     }
 
     #[test]
@@ -798,7 +774,7 @@ mod tests {
         );
         let balances = <Component as Guest>::get_balances();
         println!("{:?}", &balances);
-        assert!(same_elements(
+        assert_eq_unordered!(
             &balances,
             &vec![
                 AssetBalance {
@@ -820,6 +796,6 @@ mod tests {
                     available_balance: 4500000,
                 },
             ],
-        ));
+        );
     }
 }
