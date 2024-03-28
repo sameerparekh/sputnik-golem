@@ -3,11 +3,11 @@ use std::collections::HashMap;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::accountant::api::{
-    AssetBalance, Error, Fill, Guest, Order, OrderStatus,
-};
 use crate::bindings::exports::sputnik::accountant::api::Error::{
     AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
+};
+use crate::bindings::exports::sputnik::accountant::api::{
+    AssetBalance, Error, Fill, Guest, Order, OrderStatus,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
@@ -28,7 +28,7 @@ struct OrderAndStatus {
 struct State {
     id: Option<u64>,
     balances: HashMap<u64, u64>,
-    registry_api: Box<dyn RegistryApi>,
+    external_service_api: Box<dyn ExternalServiceApi>,
     orders: HashMap<u64, OrderAndStatus>,
 }
 
@@ -36,7 +36,7 @@ thread_local! {
     static STATE: RefCell<State> = RefCell::new(State {
         balances: HashMap::new(),
         id: None,
-        registry_api: Box::new(RegistryApiProd),
+        external_service_api: Box::new(ExternalServiceApiProd),
         orders: HashMap::new(),
     });
 }
@@ -45,7 +45,7 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 }
 
 #[automock]
-trait RegistryApi {
+trait ExternalServiceApi {
     fn get_registry(&self) -> stub_registry::Api;
     fn get_assets(&self) -> HashMap<u64, Asset>;
     fn get_spot_pairs(&self) -> HashMap<u64, SpotPair>;
@@ -57,9 +57,9 @@ trait RegistryApi {
     ) -> Result<stub_matching_engine::OrderStatus, stub_matching_engine::Error>;
 }
 
-pub struct RegistryApiProd;
+pub struct ExternalServiceApiProd;
 
-impl RegistryApi for RegistryApiProd {
+impl ExternalServiceApi for ExternalServiceApiProd {
     fn get_registry(&self) -> stub_registry::Api {
         let template_id =
             std::env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
@@ -110,7 +110,7 @@ impl RegistryApi for RegistryApiProd {
 const ZERO: u64 = 0u64;
 
 fn available_balance(state: &mut State, asset_id: u64) -> u64 {
-    let spot_pairs = state.registry_api.get_spot_pairs();
+    let spot_pairs = state.external_service_api.get_spot_pairs();
     match state.balances.get(&asset_id) {
         Some(balance) => {
             *balance
@@ -179,7 +179,7 @@ fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::
             order,
             status: _status,
         }) => {
-            let spot_pairs = state.registry_api.get_spot_pairs();
+            let spot_pairs = state.external_service_api.get_spot_pairs();
             let spot_pair = match spot_pairs.get(&order.spot_pair) {
                 Some(spot_pair) => spot_pair,
                 None => panic!("No spot pair found {}", order.spot_pair),
@@ -215,7 +215,7 @@ impl Guest for Component {
 
     fn get_balances() -> Vec<AssetBalance> {
         with_state(|state| {
-            let assets = state.registry_api.get_assets();
+            let assets = state.external_service_api.get_assets();
             state
                 .balances
                 .iter()
@@ -236,7 +236,7 @@ impl Guest for Component {
 
     fn place_order(order: Order) -> Result<OrderStatus, Error> {
         with_state(|state| {
-            let spot_pairs = state.registry_api.get_spot_pairs();
+            let spot_pairs = state.external_service_api.get_spot_pairs();
             match spot_pairs.get(&order.spot_pair) {
                 Some(spot_pair) => {
                     let (required_asset, required_balance) = match order.side {
@@ -261,7 +261,7 @@ impl Guest for Component {
                                 .expect("accountant should be initialized with trader id"),
                         };
                         match state
-                            .registry_api
+                            .external_service_api
                             .place_order(order.spot_pair, matching_engine_order)
                         {
                             Err(matching_engine_error) => {
@@ -291,7 +291,7 @@ impl Guest for Component {
 
     fn deposit(asset_id: u64, amount: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
-            let assets = state.registry_api.get_assets();
+            let assets = state.external_service_api.get_assets();
             let balance = increase_balance(state, asset_id, amount);
             match assets.get(&asset_id) {
                 Some(asset) => Ok(AssetBalance {
@@ -306,7 +306,7 @@ impl Guest for Component {
 
     fn withdraw(asset_id: u64, amount: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
-            let assets = state.registry_api.get_assets();
+            let assets = state.external_service_api.get_assets();
             let available = available_balance(state, asset_id);
             if available <= amount {
                 Err(InsufficientFunds(available))
@@ -355,13 +355,13 @@ mod tests {
 
     use assert_unordered::assert_eq_unordered;
 
-    use crate::{Component, Guest, MockRegistryApi, with_state};
     use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
     use crate::bindings::sputnik::matching_engine::api::Fill;
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
+    use crate::{with_state, Component, Guest, MockExternalServiceApi};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {
@@ -388,7 +388,7 @@ mod tests {
     }
 
     fn setup_mock_registry(fills: f32) {
-        let mut mock_registry_api = MockRegistryApi::new();
+        let mut mock_registry_api = MockExternalServiceApi::new();
         mock_registry_api
             .expect_get_assets()
             .return_const(HashMap::from_iter(vec![
@@ -466,7 +466,7 @@ mod tests {
                     })
                 }
             });
-        with_state(|state| state.registry_api = Box::new(mock_registry_api));
+        with_state(|state| state.external_service_api = Box::new(mock_registry_api));
     }
 
     fn perform_btc_deposit() -> AssetBalance {
