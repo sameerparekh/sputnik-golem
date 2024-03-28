@@ -563,7 +563,7 @@ mod tests {
             spot_pair: 1,
             timestamp: 0,
             side: Sell,
-            price: 1000000000,
+            price: 6000000,
             size: 25000000,
         })
         .expect("success");
@@ -629,7 +629,7 @@ mod tests {
             spot_pair: 1,
             timestamp: 0,
             side: Sell,
-            price: 1000000000,
+            price: 6000000,
             size: 25000000,
         })
         .expect("success");
@@ -656,8 +656,8 @@ mod tests {
                         name: "USD".to_string(),
                         decimals: 2
                     },
-                    balance: 125000000,
-                    available_balance: 125000000
+                    balance: 750000,
+                    available_balance: 750000
                 }
             ]
         );
@@ -718,7 +718,7 @@ mod tests {
             spot_pair: 1,
             timestamp: 0,
             side: Sell,
-            price: 1000000000,
+            price: 6000000,
             size: 25000000,
         })
         .expect("success");
@@ -746,9 +746,8 @@ mod tests {
                         name: "USD".to_string(),
                         decimals: 2,
                     },
-                    // WRONG
-                    balance: 250000000,
-                    available_balance: 250000000,
+                    balance: 1500000,
+                    available_balance: 1500000,
                 },
             ],
         );
