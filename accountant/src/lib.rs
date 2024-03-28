@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use mockall::automock;
 
@@ -13,7 +13,7 @@ use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
 use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
-use crate::bindings::sputnik::registry::api::{Asset, get_spot_pairs, SpotPair};
+use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
 use crate::bindings::sputnik::registry_stub::stub_registry;
 
 mod bindings;
@@ -47,8 +47,8 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 #[automock]
 trait RegistryApi {
     fn get_registry(&self) -> stub_registry::Api;
-    fn get_assets(&self) -> Vec<Asset>;
-    fn get_spot_pairs(&self) -> Vec<SpotPair>;
+    fn get_assets(&self) -> HashMap<u64, Asset>;
+    fn get_spot_pairs(&self) -> HashMap<u64, SpotPair>;
     fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api;
     fn place_order(
         &self,
@@ -70,12 +70,22 @@ impl RegistryApi for RegistryApiProd {
         stub_registry::Api::new(&uri)
     }
 
-    fn get_assets(&self) -> Vec<Asset> {
-        self.get_registry().get_assets()
+    fn get_assets(&self) -> HashMap<u64, Asset> {
+        HashMap::from_iter(
+            self.get_registry()
+                .get_assets()
+                .iter()
+                .map(|asset| (asset.id, asset.clone())),
+        )
     }
 
-    fn get_spot_pairs(&self) -> Vec<SpotPair> {
-        self.get_registry().get_spot_pairs()
+    fn get_spot_pairs(&self) -> HashMap<u64, SpotPair> {
+        HashMap::from_iter(
+            self.get_registry()
+                .get_spot_pairs()
+                .iter()
+                .map(|spot_pair| (spot_pair.id, spot_pair.clone())),
+        )
     }
 
     fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api {
@@ -99,36 +109,43 @@ impl RegistryApi for RegistryApiProd {
 
 const ZERO: u64 = 0u64;
 
-// TODO: Actually calculate available balance given orders
 fn available_balance(state: &mut State, asset_id: u64) -> u64 {
     let spot_pairs = state.registry_api.get_spot_pairs();
-    let relevant_spot_pairs: HashSet<u64> = HashSet::from_iter(
-        spot_pairs
-            .iter()
-            .filter_map(|spot_pair| {
-                if spot_pair.numerator.id == asset_id || spot_pair.denominator.id == asset_id {
-                    Some(&spot_pair.id)
-                } else {
-                    None
-                }
-            })
-            .cloned(),
-    );
     match state.balances.get(&asset_id) {
         Some(balance) => {
-            let relevant_orders: Vec<OrderAndStatus> = state
-                .orders
-                .iter()
-                .filter(|(id, order_and_status)| match order_and_status {
-                    OrderAndStatus {
-                        order,
-                        status: _status,
-                    } => relevant_spot_pairs.contains(&order.spot_pair),
-                })
-                .map(|(id, order_and_status)| order_and_status)
-                .cloned()
-                .collect();
             *balance
+                - state
+                    .orders
+                    .iter()
+                    .filter_map(|(_, order_and_status)| match order_and_status {
+                        OrderAndStatus { order, status } => {
+                            let spot_pair = spot_pairs.get(&order.spot_pair);
+                            let remaining_size = status.original_size
+                                - status.fills.iter().map(|fill| fill.size).sum::<u64>();
+                            match order.side {
+                                Buy => {
+                                    if spot_pair.unwrap().denominator.id == asset_id {
+                                        Some(
+                                            remaining_size * order.price
+                                                / decimal_power(
+                                                    spot_pair.unwrap().numerator.decimals,
+                                                ),
+                                        )
+                                    } else {
+                                        None
+                                    }
+                                }
+                                Sell => {
+                                    if spot_pair.unwrap().numerator.id == asset_id {
+                                        Some(remaining_size)
+                                    } else {
+                                        None
+                                    }
+                                }
+                            }
+                        }
+                    })
+                    .sum::<u64>()
         }
         None => ZERO,
     }
@@ -163,7 +180,7 @@ fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::
             status: _status,
         }) => {
             let spot_pairs = state.registry_api.get_spot_pairs();
-            let spot_pair = match spot_pairs.iter().find(|pair| pair.id == order.spot_pair) {
+            let spot_pair = match spot_pairs.get(&order.spot_pair) {
                 Some(spot_pair) => spot_pair,
                 None => panic!("No spot pair found {}", order.spot_pair),
             };
@@ -202,11 +219,9 @@ impl Guest for Component {
             state
                 .balances
                 .iter()
-                .filter_map(|(asset_id, balance)| {
-                    match assets.iter().find(|asset| asset.id == *asset_id) {
-                        Some(asset) => Some((asset.clone(), *balance)),
-                        None => None,
-                    }
+                .filter_map(|(asset_id, balance)| match assets.get(asset_id) {
+                    Some(asset) => Some((asset.clone(), *balance)),
+                    None => None,
                 })
                 .collect::<Vec<(Asset, u64)>>()
                 .iter()
@@ -222,7 +237,7 @@ impl Guest for Component {
     fn place_order(order: Order) -> Result<OrderStatus, Error> {
         with_state(|state| {
             let spot_pairs = state.registry_api.get_spot_pairs();
-            match spot_pairs.iter().find(|pair| pair.id == order.spot_pair) {
+            match spot_pairs.get(&order.spot_pair) {
                 Some(spot_pair) => {
                     let (required_asset, required_balance) = match order.side {
                         Buy => (
@@ -276,7 +291,7 @@ impl Guest for Component {
         with_state(|state| {
             let assets = state.registry_api.get_assets();
             let balance = increase_balance(state, asset_id, amount);
-            match assets.iter().find(|asset| asset.id == asset_id) {
+            match assets.get(&asset_id) {
                 Some(asset) => Ok(AssetBalance {
                     asset: asset.clone(),
                     balance,
@@ -295,7 +310,7 @@ impl Guest for Component {
                 Err(InsufficientFunds(available))
             } else {
                 let new_balance = decrease_balance(state, asset_id, amount);
-                match assets.iter().find(|asset| asset.id == asset_id) {
+                match assets.get(&asset_id) {
                     Some(asset) => Ok(AssetBalance {
                         asset: asset.clone(),
                         balance: new_balance,
@@ -333,9 +348,11 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use crate::{Component, Guest, MockRegistryApi, with_state};
     use crate::bindings::exports::sputnik::accountant::api::AssetBalance;
-    use crate::bindings::sputnik::registry::api::Asset;
+    use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {
@@ -355,11 +372,43 @@ mod tests {
         let mut mock_registry_api = MockRegistryApi::new();
         mock_registry_api
             .expect_get_assets()
-            .return_const(vec![Asset {
-                id: 1,
-                name: "BTC".to_string(),
-                decimals: 8,
-            }]);
+            .return_const(HashMap::from_iter(vec![
+                (
+                    1,
+                    Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8,
+                    },
+                ),
+                (
+                    2,
+                    Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2,
+                    },
+                ),
+            ]));
+        mock_registry_api
+            .expect_get_spot_pairs()
+            .return_const(HashMap::from_iter(vec![(
+                1,
+                SpotPair {
+                    id: 1,
+                    name: "BTCUSD".to_string(),
+                    numerator: Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8,
+                    },
+                    denominator: Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2,
+                    },
+                },
+            )]));
         with_state(|state| state.registry_api = Box::new(mock_registry_api));
     }
 
