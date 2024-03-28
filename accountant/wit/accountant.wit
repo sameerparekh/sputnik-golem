@@ -6,6 +6,7 @@ interface api {
     duplicate-id(u64),
     insufficient-funds(u64),
     already-initialized(u64),
+    not-initialized,
     invalid-asset(u64),
     invalid-spot-pair(u64),
     matching-engine-error(matching-engine-error),
