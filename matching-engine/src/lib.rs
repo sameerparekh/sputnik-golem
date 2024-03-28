@@ -222,8 +222,10 @@ mod tests {
 
     impl PartialEq for Fill {
         fn eq(&self, other: &Self) -> bool {
-            self.size == other.size
+            self.timestamp == other.timestamp
+                && self.size == other.size
                 && self.price == other.price
+                && self.size == other.size
                 && self.taker_order_id == other.taker_order_id
                 && self.maker_order_id == other.maker_order_id
         }

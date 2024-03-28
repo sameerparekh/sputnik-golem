@@ -119,24 +119,24 @@ fn available_balance(state: &mut State, asset_id: u64) -> u64 {
                     .iter()
                     .filter_map(|(_, order_and_status)| match order_and_status {
                         OrderAndStatus { order, status } => {
-                            let spot_pair = spot_pairs.get(&order.spot_pair);
+                            let spot_pair = spot_pairs
+                                .get(&order.spot_pair)
+                                .expect("spot pair map should have pair");
                             let remaining_size = status.original_size
                                 - status.fills.iter().map(|fill| fill.size).sum::<u64>();
                             match order.side {
                                 Buy => {
-                                    if spot_pair.unwrap().denominator.id == asset_id {
+                                    if spot_pair.denominator.id == asset_id {
                                         Some(
                                             remaining_size * order.price
-                                                / decimal_power(
-                                                    spot_pair.unwrap().numerator.decimals,
-                                                ),
+                                                / decimal_power(spot_pair.numerator.decimals),
                                         )
                                     } else {
                                         None
                                     }
                                 }
                                 Sell => {
-                                    if spot_pair.unwrap().numerator.id == asset_id {
+                                    if spot_pair.numerator.id == asset_id {
                                         Some(remaining_size)
                                     } else {
                                         None
@@ -242,7 +242,7 @@ impl Guest for Component {
                     let (required_asset, required_balance) = match order.side {
                         Buy => (
                             spot_pair.denominator.clone(),
-                            order.size * order.price / spot_pair.numerator.decimals as u64,
+                            order.size * order.price / decimal_power(spot_pair.numerator.decimals),
                         ),
                         Sell => (spot_pair.numerator.clone(), order.size),
                     };
@@ -256,7 +256,9 @@ impl Guest for Component {
                             side: order.side,
                             price: order.price,
                             size: order.size,
-                            trader: state.id.unwrap(),
+                            trader: state
+                                .id
+                                .expect("accountant should be initialized with trader id"),
                         };
                         match state
                             .registry_api
@@ -348,10 +350,15 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
+    use std::hash::{Hash, Hasher};
 
     use crate::{Component, Guest, MockRegistryApi, with_state};
-    use crate::bindings::exports::sputnik::accountant::api::AssetBalance;
+    use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
+    use crate::bindings::sputnik::matching_engine::api::Fill;
+    use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
+    use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
+    use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
 
     impl PartialEq for AssetBalance {
@@ -362,13 +369,39 @@ mod tests {
         }
     }
 
+    impl Eq for AssetBalance {
+        fn assert_receiver_is_total_eq(&self) {}
+    }
+
+    impl Hash for AssetBalance {
+        fn hash<H: Hasher>(&self, state: &mut H) {
+            (self.available_balance, &self.asset, self.balance).hash(state);
+        }
+    }
+
+    impl Hash for Asset {
+        fn hash<H: Hasher>(&self, state: &mut H) {
+            (self.id, self.decimals, &self.name).hash(state)
+        }
+    }
+
     impl PartialEq for Asset {
         fn eq(&self, other: &Self) -> bool {
             self.id == other.id && self.name == other.name && self.decimals == other.decimals
         }
     }
 
-    fn setup_mock_registry() {
+    impl PartialEq for crate::bindings::exports::sputnik::accountant::api::OrderStatus {
+        fn eq(&self, other: &Self) -> bool {
+            self.id == other.id
+        }
+    }
+
+    fn init() {
+        <Component as Guest>::initialize(1).expect("successful initialization");
+    }
+
+    fn setup_mock_registry(fills: f32) {
         let mut mock_registry_api = MockRegistryApi::new();
         mock_registry_api
             .expect_get_assets()
@@ -409,21 +442,63 @@ mod tests {
                     },
                 },
             )]));
+        mock_registry_api
+            .expect_place_order()
+            .returning(move |_, order| {
+                if fills == 0f32 {
+                    Ok(OrderStatus {
+                        id: order.id,
+                        fills: vec![],
+                        status: Open,
+                        original_size: order.size,
+                    })
+                } else if fills < 1f32 {
+                    Ok(OrderStatus {
+                        id: order.id,
+                        fills: vec![Fill {
+                            price: order.price,
+                            size: order.size / (1.0 / fills) as u64,
+                            taker_order_id: order.id,
+                            maker_order_id: 0,
+                            timestamp: 0,
+                        }],
+                        status: PartialFilled,
+                        original_size: order.size,
+                    })
+                } else {
+                    Ok(OrderStatus {
+                        id: order.id,
+                        fills: vec![Fill {
+                            price: order.price,
+                            size: order.size,
+                            taker_order_id: order.id,
+                            maker_order_id: 0,
+                            timestamp: 0,
+                        }],
+                        status: Filled,
+                        original_size: order.size,
+                    })
+                }
+            });
         with_state(|state| state.registry_api = Box::new(mock_registry_api));
     }
 
-    fn perform_deposit() -> AssetBalance {
-        <Component as Guest>::deposit(1, 100).expect("successful deposit")
+    fn perform_btc_deposit() -> AssetBalance {
+        <Component as Guest>::deposit(1, 100000000).expect("successful deposit")
+    }
+
+    fn perform_usd_deposit() -> AssetBalance {
+        <Component as Guest>::deposit(2, 6000000).expect("successful deposit")
     }
 
     fn perform_withdrawal() -> AssetBalance {
-        <Component as Guest>::withdraw(1, 50).expect("successful withdrawal")
+        <Component as Guest>::withdraw(1, 50000000).expect("successful withdrawal")
     }
     #[test]
     fn test_deposit() {
-        setup_mock_registry();
+        setup_mock_registry(0f32);
 
-        let asset_balance = perform_deposit();
+        let asset_balance = perform_btc_deposit();
         assert_eq!(
             asset_balance,
             AssetBalance {
@@ -432,17 +507,17 @@ mod tests {
                     name: "BTC".to_string(),
                     decimals: 8
                 },
-                balance: 100,
-                available_balance: 100
+                balance: 100000000,
+                available_balance: 100000000,
             }
         );
     }
 
     #[test]
     fn test_withdrawal() {
-        setup_mock_registry();
+        setup_mock_registry(0f32);
 
-        perform_deposit();
+        perform_btc_deposit();
         let asset_balance = perform_withdrawal();
         assert_eq!(
             asset_balance,
@@ -452,17 +527,17 @@ mod tests {
                     name: "BTC".to_string(),
                     decimals: 8
                 },
-                balance: 50,
-                available_balance: 50
+                balance: 50000000,
+                available_balance: 50000000,
             }
         );
     }
 
     #[test]
     fn test_get_balances() {
-        setup_mock_registry();
+        setup_mock_registry(0f32);
 
-        perform_deposit();
+        perform_btc_deposit();
         let balances = <Component as Guest>::get_balances();
         assert_eq!(
             balances,
@@ -472,8 +547,8 @@ mod tests {
                     name: "BTC".to_string(),
                     decimals: 8
                 },
-                balance: 100,
-                available_balance: 100
+                balance: 100000000,
+                available_balance: 100000000,
             }]
         );
         perform_withdrawal();
@@ -486,9 +561,265 @@ mod tests {
                     name: "BTC".to_string(),
                     decimals: 8
                 },
-                balance: 50,
-                available_balance: 50
+                balance: 50000000,
+                available_balance: 50000000,
             }]
         );
+    }
+
+    #[test]
+    fn test_place_sell_order_no_fills() {
+        init();
+        setup_mock_registry(0f32);
+        perform_btc_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Sell,
+            price: 1000000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        let balances = <Component as Guest>::get_balances();
+        assert_eq!(
+            balances,
+            vec![AssetBalance {
+                asset: Asset {
+                    id: 1,
+                    name: "BTC".to_string(),
+                    decimals: 8
+                },
+                balance: 100000000,
+                available_balance: 75000000,
+            }]
+        );
+    }
+
+    #[test]
+    fn test_place_buy_order_no_fills() {
+        init();
+        setup_mock_registry(0f32);
+        perform_usd_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Buy,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        let balances = <Component as Guest>::get_balances();
+        assert_eq!(
+            balances,
+            vec![AssetBalance {
+                asset: Asset {
+                    id: 2,
+                    name: "USD".to_string(),
+                    decimals: 2
+                },
+                balance: 6000000,
+                available_balance: 4500000,
+            }]
+        );
+    }
+
+    fn same_elements<T>(a: &[T], b: &[T]) -> bool
+    where
+        T: Eq + Hash,
+    {
+        let a: HashSet<_> = a.iter().collect();
+        let b: HashSet<_> = b.iter().collect();
+
+        a == b
+    }
+
+    #[test]
+    fn test_place_sell_order_partial_fill() {
+        init();
+        setup_mock_registry(0.50f32);
+        perform_btc_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Sell,
+            price: 1000000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        let balances = <Component as Guest>::get_balances();
+        assert!(same_elements(
+            &balances,
+            &vec![
+                AssetBalance {
+                    asset: Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8
+                    },
+                    balance: 87500000,
+                    available_balance: 75000000
+                },
+                AssetBalance {
+                    asset: Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2
+                    },
+                    balance: 125000000,
+                    available_balance: 125000000
+                }
+            ]
+        ));
+    }
+
+    #[test]
+    fn test_place_buy_order_partial_fill() {
+        init();
+        setup_mock_registry(0.50f32);
+        perform_usd_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Buy,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        let balances = <Component as Guest>::get_balances();
+        println!("{:?}", &balances);
+        assert!(same_elements(
+            &balances,
+            &vec![
+                AssetBalance {
+                    asset: Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8,
+                    },
+                    balance: 12500000,
+                    available_balance: 12500000,
+                },
+                AssetBalance {
+                    asset: Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2,
+                    },
+                    balance: 5250000,
+                    available_balance: 4500000,
+                },
+            ],
+        ));
+    }
+
+    #[test]
+    fn test_place_sell_order_complete_fill() {
+        init();
+        setup_mock_registry(1f32);
+        perform_btc_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Sell,
+            price: 1000000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        let balances = <Component as Guest>::get_balances();
+        println!("{:?}", &balances);
+        assert!(same_elements(
+            &balances,
+            &vec![
+                AssetBalance {
+                    asset: Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8,
+                    },
+                    balance: 75000000,
+                    available_balance: 75000000,
+                },
+                AssetBalance {
+                    asset: Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2,
+                    },
+                    // WRONG
+                    balance: 250000000,
+                    available_balance: 250000000,
+                },
+            ],
+        ));
+    }
+
+    #[test]
+    fn test_place_buy_order_complete_fill() {
+        init();
+        setup_mock_registry(1f32);
+        perform_usd_deposit();
+        let status = <Component as Guest>::place_order(Order {
+            id: 1,
+            spot_pair: 1,
+            timestamp: 0,
+            side: Buy,
+            price: 6000000,
+            size: 25000000,
+        })
+        .expect("success");
+        assert_eq!(
+            status,
+            crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
+        );
+        let balances = <Component as Guest>::get_balances();
+        println!("{:?}", &balances);
+        assert!(same_elements(
+            &balances,
+            &vec![
+                AssetBalance {
+                    asset: Asset {
+                        id: 1,
+                        name: "BTC".to_string(),
+                        decimals: 8,
+                    },
+                    balance: 25000000,
+                    available_balance: 25000000,
+                },
+                AssetBalance {
+                    asset: Asset {
+                        id: 2,
+                        name: "USD".to_string(),
+                        decimals: 2,
+                    },
+                    balance: 4500000,
+                    available_balance: 4500000,
+                },
+            ],
+        ));
     }
 }
