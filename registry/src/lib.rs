@@ -167,12 +167,12 @@ mod tests {
                 numerator: Asset {
                     id: 1,
                     name: "USD".to_string(),
-                    decimals: 4
+                    decimals: 4,
                 },
                 denominator: Asset {
                     id: 1,
                     name: "USD".to_string(),
-                    decimals: 4
+                    decimals: 4,
                 }
             }]
         );
