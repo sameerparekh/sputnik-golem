@@ -1,4 +1,4 @@
-package sputnik: matching-engine;
+package sputnik: ids;
 
 interface api {
   get-new-id: func() -> u64;
