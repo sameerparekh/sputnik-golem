@@ -86,8 +86,6 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
-    use std::hash::Hash;
-
     use assert_unordered::assert_eq_unordered;
 
     use crate::bindings::exports::sputnik::registry::api::{Asset, Guest, SpotPair};
@@ -112,9 +110,9 @@ mod tests {
             id: 2,
             name: "BTCUSD".to_string(),
             numerator: Asset {
-                id: 1,
-                name: "USD".to_string(),
-                decimals: 4,
+                id: 0,
+                name: "BTC".to_string(),
+                decimals: 8,
             },
             denominator: Asset {
                 id: 1,
@@ -165,9 +163,9 @@ mod tests {
                 id: 2,
                 name: "BTCUSD".to_string(),
                 numerator: Asset {
-                    id: 1,
-                    name: "USD".to_string(),
-                    decimals: 4,
+                    id: 0,
+                    name: "BTC".to_string(),
+                    decimals: 8,
                 },
                 denominator: Asset {
                     id: 1,
