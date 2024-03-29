@@ -351,7 +351,7 @@ impl Guest for Component {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
-    use std::hash::Hash;
+    
 
     use assert_unordered::assert_eq_unordered;
 
