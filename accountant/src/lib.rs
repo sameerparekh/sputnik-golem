@@ -13,7 +13,7 @@ use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
 use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
-use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
+use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair, SpotPair};
 use crate::bindings::sputnik::registry_stub::stub_registry;
 
 mod bindings;
@@ -48,7 +48,7 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 trait ExternalServiceApi {
     fn get_registry(&self) -> stub_registry::Api;
     fn get_assets(&self) -> HashMap<u64, Asset>;
-    fn get_spot_pairs(&self) -> HashMap<u64, SpotPair>;
+    fn get_spot_pairs(&self) -> HashMap<u64, HydratedSpotPair>;
     fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api;
     fn place_order(
         &self,
@@ -79,7 +79,7 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         )
     }
 
-    fn get_spot_pairs(&self) -> HashMap<u64, SpotPair> {
+    fn get_spot_pairs(&self) -> HashMap<u64, HydratedSpotPair> {
         HashMap::from_iter(
             self.get_registry()
                 .get_spot_pairs()
@@ -351,7 +351,6 @@ impl Guest for Component {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
-    
 
     use assert_unordered::assert_eq_unordered;
 
@@ -360,7 +359,7 @@ mod tests {
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
-    use crate::bindings::sputnik::registry::api::{Asset, SpotPair};
+    use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair};
     use crate::{with_state, Component, Guest, MockExternalServiceApi};
 
     impl PartialEq for AssetBalance {
@@ -413,7 +412,7 @@ mod tests {
             .expect_get_spot_pairs()
             .return_const(HashMap::from_iter(vec![(
                 1,
-                SpotPair {
+                HydratedSpotPair {
                     id: 1,
                     name: "BTCUSD".to_string(),
                     numerator: Asset {

@@ -48,7 +48,9 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
             })
             .expect("list not found"))
     }
-    fn get_spot_pairs(&self) -> Vec<crate::bindings::sputnik::registry::api::SpotPair> {
+    fn get_spot_pairs(
+        &self,
+    ) -> Vec<crate::bindings::sputnik::registry::api::HydratedSpotPair> {
         let result = self
             .rpc
             .invoke_and_await("sputnik:registry/api/get-spot-pairs", &[])
@@ -62,7 +64,7 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
             .expect("tuple not found")
             .list_elements(|item| {
                 let record = item;
-                crate::bindings::sputnik::registry::api::SpotPair {
+                crate::bindings::sputnik::registry::api::HydratedSpotPair {
                     id: record
                         .field(0usize)
                         .expect("record field not found")
@@ -203,59 +205,6 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
                                         .expect("u64 not found"),
                                 )
                             }
-                            2u32 => {
-                                crate::bindings::sputnik::registry::api::Error::AssetMismatch({
-                                    let record = inner.expect("variant case not found");
-                                    crate::bindings::sputnik::registry::api::AssetMismatchDetails {
-                                        incoming_asset: {
-                                            let record = record
-                                                .field(0usize)
-                                                .expect("record field not found");
-                                            crate::bindings::sputnik::registry::api::Asset {
-                                                id: record
-                                                    .field(0usize)
-                                                    .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
-                                                name: record
-                                                    .field(1usize)
-                                                    .expect("record field not found")
-                                                    .string()
-                                                    .expect("string not found")
-                                                    .to_string(),
-                                                decimals: record
-                                                    .field(2usize)
-                                                    .expect("record field not found")
-                                                    .u8()
-                                                    .expect("u8 not found"),
-                                            }
-                                        },
-                                        expected_asset: {
-                                            let record = record
-                                                .field(1usize)
-                                                .expect("record field not found");
-                                            crate::bindings::sputnik::registry::api::Asset {
-                                                id: record
-                                                    .field(0usize)
-                                                    .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
-                                                name: record
-                                                    .field(1usize)
-                                                    .expect("record field not found")
-                                                    .string()
-                                                    .expect("string not found")
-                                                    .to_string(),
-                                                decimals: record
-                                                    .field(2usize)
-                                                    .expect("record field not found")
-                                                    .u8()
-                                                    .expect("u8 not found"),
-                                            }
-                                        },
-                                    }
-                                })
-                            }
                             _ => unreachable!("invalid variant case index"),
                         }
                     })
@@ -267,7 +216,7 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
         &self,
         pair: crate::bindings::sputnik::registry::api::SpotPair,
     ) -> Result<
-        crate::bindings::sputnik::registry::api::SpotPair,
+        crate::bindings::sputnik::registry::api::HydratedSpotPair,
         crate::bindings::sputnik::registry::api::Error,
     > {
         let result = self
@@ -282,23 +231,9 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
                         .item()
                         .string(&pair.name)
                         .item()
-                        .record()
+                        .u64(pair.numerator_id)
                         .item()
-                        .u64(pair.numerator.id)
-                        .item()
-                        .string(&pair.numerator.name)
-                        .item()
-                        .u8(pair.numerator.decimals)
-                        .finish()
-                        .item()
-                        .record()
-                        .item()
-                        .u64(pair.denominator.id)
-                        .item()
-                        .string(&pair.denominator.name)
-                        .item()
-                        .u8(pair.denominator.decimals)
-                        .finish()
+                        .u64(pair.denominator_id)
                         .finish(),
                 ],
             )
@@ -317,7 +252,7 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
                 Ok(ok_value) => {
                     Ok({
                         let record = ok_value.expect("result ok value not found");
-                        crate::bindings::sputnik::registry::api::SpotPair {
+                        crate::bindings::sputnik::registry::api::HydratedSpotPair {
                             id: record
                                 .field(0usize)
                                 .expect("record field not found")
@@ -400,59 +335,6 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
                                         .u64()
                                         .expect("u64 not found"),
                                 )
-                            }
-                            2u32 => {
-                                crate::bindings::sputnik::registry::api::Error::AssetMismatch({
-                                    let record = inner.expect("variant case not found");
-                                    crate::bindings::sputnik::registry::api::AssetMismatchDetails {
-                                        incoming_asset: {
-                                            let record = record
-                                                .field(0usize)
-                                                .expect("record field not found");
-                                            crate::bindings::sputnik::registry::api::Asset {
-                                                id: record
-                                                    .field(0usize)
-                                                    .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
-                                                name: record
-                                                    .field(1usize)
-                                                    .expect("record field not found")
-                                                    .string()
-                                                    .expect("string not found")
-                                                    .to_string(),
-                                                decimals: record
-                                                    .field(2usize)
-                                                    .expect("record field not found")
-                                                    .u8()
-                                                    .expect("u8 not found"),
-                                            }
-                                        },
-                                        expected_asset: {
-                                            let record = record
-                                                .field(1usize)
-                                                .expect("record field not found");
-                                            crate::bindings::sputnik::registry::api::Asset {
-                                                id: record
-                                                    .field(0usize)
-                                                    .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
-                                                name: record
-                                                    .field(1usize)
-                                                    .expect("record field not found")
-                                                    .string()
-                                                    .expect("string not found")
-                                                    .to_string(),
-                                                decimals: record
-                                                    .field(2usize)
-                                                    .expect("record field not found")
-                                                    .u8()
-                                                    .expect("u8 not found"),
-                                            }
-                                        },
-                                    }
-                                })
                             }
                             _ => unreachable!("invalid variant case index"),
                         }

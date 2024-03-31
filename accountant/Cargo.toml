@@ -18,11 +18,11 @@ path = "wit/deps/sputnik_registry-stub"
 [package.metadata.component.target.dependencies."sputnik:matching-engine"]
 path = "wit/deps/sputnik_matching-engine"
 
-[package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
-path = "wit/deps/sputnik_matching-engine-stub"
-
 [package.metadata.component.target.dependencies."sputnik:registry"]
 path = "wit/deps/sputnik_registry"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
+path = "wit/deps/sputnik_matching-engine-stub"
 
 [dependencies]
 assert_unordered = "0.3.5"

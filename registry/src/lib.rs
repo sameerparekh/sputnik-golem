@@ -6,7 +6,7 @@ use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 
 use crate::bindings::exports::sputnik::registry::api::{
-    Asset, AssetMismatchDetails, Error, Guest, HydratedSpotPair, SpotPair,
+    Asset, Error, Guest, HydratedSpotPair, SpotPair,
 };
 
 mod bindings;
