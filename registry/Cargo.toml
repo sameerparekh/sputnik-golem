@@ -8,8 +8,6 @@ edition = "2021"
 [dependencies]
 assert_unordered = "0.3.5"
 wit-bindgen = { version = "0.17.0", default-features = false, features = ["realloc"] }
-reqwest = { git = "https://github.com/zivergetech/reqwest", branch = "update-feb-2024", features = ["json", "blocking"] }
-serde = { version = "1.0.197", features = ["derive"] }
 
 [lib]
 crate-type = ["cdylib"]

@@ -1,0 +1,10 @@
+package sputnik: ids;
+
+interface api {
+  get-new-id: func() -> u64;
+  get-new-ids: func(qty: u8) -> list<u64>;
+}
+
+world ids {
+  export api;
+}

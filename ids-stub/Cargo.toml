@@ -1,20 +1,20 @@
 [package]
-name = "registry-stub"
+name = "ids-stub"
 edition = "2021"
 version = "0.0.1"
 
 [package.metadata.component]
-package = "sputnik:registry"
+package = "sputnik:ids"
 
 [package.metadata.component.target]
-world = "wasm-rpc-stub-registry"
+world = "wasm-rpc-stub-ids"
 path = "wit"
-
-[package.metadata.component.target.dependencies."sputnik:registry"]
-path = "wit/deps/sputnik_registry"
 
 [package.metadata.component.target.dependencies."golem:rpc"]
 path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:ids"]
+path = "wit/deps/sputnik_ids"
 
 [dependencies.golem-wasm-rpc]
 version = "0.0.14"

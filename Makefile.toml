@@ -13,6 +13,18 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 dependencies = ["generate-registry-stub"]
 
+[tasks.add-stub-dependency-ids-admin-api]
+args = ["add-stub-dependency", "--stub-wit-root", "ids-stub/wit", "--dest-wit-root", "admin-api/wit", "--overwrite", "--update-cargo-toml"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+dependencies = ["generate-ids-stub"]
+
+[tasks.add-stub-dependency-registry-admin-api]
+args = ["add-stub-dependency", "--stub-wit-root", "registry-stub/wit", "--dest-wit-root", "admin-api/wit", "--overwrite", "--update-cargo-toml"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+dependencies = ["generate-registry-stub"]
+
 [tasks.build]
 args = ["build"]
 command = "cargo-component"
@@ -40,6 +52,16 @@ args = ["compose", "--source-wasm", "target/wasm32-wasi/release/accountant.wasm"
 command = "wasm-rpc-stubgen"
 cwd = "."
 
+[tasks.compose-admin-api]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/admin_api.wasm", "--stub-wasm", "target/wasm32-wasi/debug/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/debug/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/admin_api_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
+[tasks.compose-release-admin-api]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/release/admin_api.wasm", "--stub-wasm", "target/wasm32-wasi/release/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/admin_api_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
 [tasks.default]
 alias = "build"
 
@@ -53,14 +75,19 @@ args = ["generate", "-s", "registry/wit", "-d", "registry-stub"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 
+[tasks.generate-ids-stub]
+args = ["generate", "-s", "ids/wit", "-d", "ids-stub"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
 [tasks.post-build]
-dependencies = ["compose-accountant"]
+dependencies = ["compose-accountant", "compose-admin-api"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-accountant"]
+dependencies = ["compose-release-accountant", "compose-release-admin-api"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant"]
+dependencies = ["add-stub-dependency-registry-admin-api", "add-stub-dependency-ids-admin-api", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]

@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/matching-engine-stub/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/registry-stub/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/admin-api/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ids-stub/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ids/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>

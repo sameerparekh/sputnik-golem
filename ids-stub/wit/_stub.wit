@@ -1,0 +1,16 @@
+package sputnik:ids-stub;
+
+interface stub-ids {
+  use golem:rpc/types@0.1.0.{uri};
+
+  resource api {
+    constructor(location: uri);
+    get-new-id: func() -> u64;
+    get-new-ids: func(qty: u8) -> list<u64>;
+  }
+
+}
+
+world wasm-rpc-stub-ids {
+  export stub-ids;
+}
