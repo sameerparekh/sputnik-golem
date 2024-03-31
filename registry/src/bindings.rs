@@ -59,15 +59,27 @@ pub mod exports {
         
         impl std::error::Error for Error {}
         #[derive(Clone)]
-        pub struct SpotPair {
+        pub struct HydratedSpotPair {
           pub id: u64,
           pub name: wit_bindgen::rt::string::String,
           pub numerator: Asset,
           pub denominator: Asset,
         }
+        impl ::core::fmt::Debug for HydratedSpotPair {
+          fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+            f.debug_struct("HydratedSpotPair").field("id", &self.id).field("name", &self.name).field("numerator", &self.numerator).field("denominator", &self.denominator).finish()
+          }
+        }
+        #[derive(Clone)]
+        pub struct SpotPair {
+          pub id: u64,
+          pub name: wit_bindgen::rt::string::String,
+          pub numerator_id: u64,
+          pub denominator_id: u64,
+        }
         impl ::core::fmt::Debug for SpotPair {
           fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_struct("SpotPair").field("id", &self.id).field("name", &self.name).field("numerator", &self.numerator).field("denominator", &self.denominator).finish()
+            f.debug_struct("SpotPair").field("id", &self.id).field("name", &self.name).field("numerator-id", &self.numerator_id).field("denominator-id", &self.denominator_id).finish()
           }
         }
         const _: () = {
@@ -191,7 +203,7 @@ pub mod exports {
             for (i, e) in vec8.into_iter().enumerate() {
               let base = result8 as i32 + (i as i32) * 64;
               {
-                let SpotPair{ id:id2, name:name2, numerator:numerator2, denominator:denominator2, } = e;
+                let HydratedSpotPair{ id:id2, name:name2, numerator:numerator2, denominator:denominator2, } = e;
                 *((base + 0) as *mut i64) = wit_bindgen::rt::as_i64(id2);
                 let vec3 = (name2.into_bytes()).into_boxed_slice();
                 let ptr3 = vec3.as_ptr() as i32;
@@ -369,7 +381,7 @@ pub mod exports {
           #[doc(hidden)]
           #[export_name = "sputnik:registry/api#add-spot-pair"]
           #[allow(non_snake_case)]
-          unsafe extern "C" fn __export_add_spot_pair(arg0: i64,arg1: i32,arg2: i32,arg3: i64,arg4: i32,arg5: i32,arg6: i32,arg7: i64,arg8: i32,arg9: i32,arg10: i32,) -> i32 {
+          unsafe extern "C" fn __export_add_spot_pair(arg0: i64,arg1: i32,arg2: i32,arg3: i64,arg4: i64,) -> i32 {
             #[allow(unused_imports)]
             use wit_bindgen::rt::{alloc, vec::Vec, string::String};
             
@@ -389,91 +401,79 @@ pub mod exports {
             
             let len0 = arg2 as usize;
             let bytes0 = Vec::from_raw_parts(arg1 as *mut _, len0, len0);
-            let len1 = arg5 as usize;
-            let bytes1 = Vec::from_raw_parts(arg4 as *mut _, len1, len1);
-            let len2 = arg9 as usize;
-            let bytes2 = Vec::from_raw_parts(arg8 as *mut _, len2, len2);
-            let result3 = <_GuestImpl as Guest>::add_spot_pair(SpotPair{
+            let result1 = <_GuestImpl as Guest>::add_spot_pair(SpotPair{
               id: arg0 as u64,
               name: wit_bindgen::rt::string_lift(bytes0),
-              numerator: Asset{
-                id: arg3 as u64,
-                name: wit_bindgen::rt::string_lift(bytes1),
-                decimals: arg6 as u8,
-              },
-              denominator: Asset{
-                id: arg7 as u64,
-                name: wit_bindgen::rt::string_lift(bytes2),
-                decimals: arg10 as u8,
-              },
+              numerator_id: arg3 as u64,
+              denominator_id: arg4 as u64,
             });
-            let ptr4 = _RET_AREA.0.as_mut_ptr() as i32;
-            match result3 {
+            let ptr2 = _RET_AREA.0.as_mut_ptr() as i32;
+            match result1 {
               Ok(e) => { {
-                *((ptr4 + 0) as *mut u8) = (0i32) as u8;
-                let SpotPair{ id:id5, name:name5, numerator:numerator5, denominator:denominator5, } = e;
-                *((ptr4 + 8) as *mut i64) = wit_bindgen::rt::as_i64(id5);
+                *((ptr2 + 0) as *mut u8) = (0i32) as u8;
+                let HydratedSpotPair{ id:id3, name:name3, numerator:numerator3, denominator:denominator3, } = e;
+                *((ptr2 + 8) as *mut i64) = wit_bindgen::rt::as_i64(id3);
+                let vec4 = (name3.into_bytes()).into_boxed_slice();
+                let ptr4 = vec4.as_ptr() as i32;
+                let len4 = vec4.len() as i32;
+                ::core::mem::forget(vec4);
+                *((ptr2 + 20) as *mut i32) = len4;
+                *((ptr2 + 16) as *mut i32) = ptr4;
+                let Asset{ id:id5, name:name5, decimals:decimals5, } = numerator3;
+                *((ptr2 + 24) as *mut i64) = wit_bindgen::rt::as_i64(id5);
                 let vec6 = (name5.into_bytes()).into_boxed_slice();
                 let ptr6 = vec6.as_ptr() as i32;
                 let len6 = vec6.len() as i32;
                 ::core::mem::forget(vec6);
-                *((ptr4 + 20) as *mut i32) = len6;
-                *((ptr4 + 16) as *mut i32) = ptr6;
-                let Asset{ id:id7, name:name7, decimals:decimals7, } = numerator5;
-                *((ptr4 + 24) as *mut i64) = wit_bindgen::rt::as_i64(id7);
+                *((ptr2 + 36) as *mut i32) = len6;
+                *((ptr2 + 32) as *mut i32) = ptr6;
+                *((ptr2 + 40) as *mut u8) = (wit_bindgen::rt::as_i32(decimals5)) as u8;
+                let Asset{ id:id7, name:name7, decimals:decimals7, } = denominator3;
+                *((ptr2 + 48) as *mut i64) = wit_bindgen::rt::as_i64(id7);
                 let vec8 = (name7.into_bytes()).into_boxed_slice();
                 let ptr8 = vec8.as_ptr() as i32;
                 let len8 = vec8.len() as i32;
                 ::core::mem::forget(vec8);
-                *((ptr4 + 36) as *mut i32) = len8;
-                *((ptr4 + 32) as *mut i32) = ptr8;
-                *((ptr4 + 40) as *mut u8) = (wit_bindgen::rt::as_i32(decimals7)) as u8;
-                let Asset{ id:id9, name:name9, decimals:decimals9, } = denominator5;
-                *((ptr4 + 48) as *mut i64) = wit_bindgen::rt::as_i64(id9);
-                let vec10 = (name9.into_bytes()).into_boxed_slice();
-                let ptr10 = vec10.as_ptr() as i32;
-                let len10 = vec10.len() as i32;
-                ::core::mem::forget(vec10);
-                *((ptr4 + 60) as *mut i32) = len10;
-                *((ptr4 + 56) as *mut i32) = ptr10;
-                *((ptr4 + 64) as *mut u8) = (wit_bindgen::rt::as_i32(decimals9)) as u8;
+                *((ptr2 + 60) as *mut i32) = len8;
+                *((ptr2 + 56) as *mut i32) = ptr8;
+                *((ptr2 + 64) as *mut u8) = (wit_bindgen::rt::as_i32(decimals7)) as u8;
               } },
               Err(e) => { {
-                *((ptr4 + 0) as *mut u8) = (1i32) as u8;
+                *((ptr2 + 0) as *mut u8) = (1i32) as u8;
                 match e {
                   Error::DuplicateId(e) => {
-                    *((ptr4 + 8) as *mut u8) = (0i32) as u8;
-                    *((ptr4 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                    *((ptr2 + 8) as *mut u8) = (0i32) as u8;
+                    *((ptr2 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
                   },
                   Error::NoSuchAsset(e) => {
-                    *((ptr4 + 8) as *mut u8) = (1i32) as u8;
-                    *((ptr4 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                    *((ptr2 + 8) as *mut u8) = (1i32) as u8;
+                    *((ptr2 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
                   },
                   Error::AssetMismatch(e) => {
-                    *((ptr4 + 8) as *mut u8) = (2i32) as u8;
-                    let AssetMismatchDetails{ incoming_asset:incoming_asset11, expected_asset:expected_asset11, } = e;
-                    let Asset{ id:id12, name:name12, decimals:decimals12, } = incoming_asset11;
-                    *((ptr4 + 16) as *mut i64) = wit_bindgen::rt::as_i64(id12);
+                    *((ptr2 + 8) as *mut u8) = (2i32) as u8;
+                    let AssetMismatchDetails{ incoming_asset:incoming_asset9, expected_asset:expected_asset9, } = e;
+                    let Asset{ id:id10, name:name10, decimals:decimals10, } = incoming_asset9;
+                    *((ptr2 + 16) as *mut i64) = wit_bindgen::rt::as_i64(id10);
+                    let vec11 = (name10.into_bytes()).into_boxed_slice();
+                    let ptr11 = vec11.as_ptr() as i32;
+                    let len11 = vec11.len() as i32;
+                    ::core::mem::forget(vec11);
+                    *((ptr2 + 28) as *mut i32) = len11;
+                    *((ptr2 + 24) as *mut i32) = ptr11;
+                    *((ptr2 + 32) as *mut u8) = (wit_bindgen::rt::as_i32(decimals10)) as u8;
+                    let Asset{ id:id12, name:name12, decimals:decimals12, } = expected_asset9;
+                    *((ptr2 + 40) as *mut i64) = wit_bindgen::rt::as_i64(id12);
                     let vec13 = (name12.into_bytes()).into_boxed_slice();
                     let ptr13 = vec13.as_ptr() as i32;
                     let len13 = vec13.len() as i32;
                     ::core::mem::forget(vec13);
-                    *((ptr4 + 28) as *mut i32) = len13;
-                    *((ptr4 + 24) as *mut i32) = ptr13;
-                    *((ptr4 + 32) as *mut u8) = (wit_bindgen::rt::as_i32(decimals12)) as u8;
-                    let Asset{ id:id14, name:name14, decimals:decimals14, } = expected_asset11;
-                    *((ptr4 + 40) as *mut i64) = wit_bindgen::rt::as_i64(id14);
-                    let vec15 = (name14.into_bytes()).into_boxed_slice();
-                    let ptr15 = vec15.as_ptr() as i32;
-                    let len15 = vec15.len() as i32;
-                    ::core::mem::forget(vec15);
-                    *((ptr4 + 52) as *mut i32) = len15;
-                    *((ptr4 + 48) as *mut i32) = ptr15;
-                    *((ptr4 + 56) as *mut u8) = (wit_bindgen::rt::as_i32(decimals14)) as u8;
+                    *((ptr2 + 52) as *mut i32) = len13;
+                    *((ptr2 + 48) as *mut i32) = ptr13;
+                    *((ptr2 + 56) as *mut u8) = (wit_bindgen::rt::as_i32(decimals12)) as u8;
                   },
                 }
               } },
-            };ptr4
+            };ptr2
           }
           
           const _: () = {
@@ -516,9 +516,9 @@ pub mod exports {
         use super::super::super::super::super::Component as _GuestImpl;
         pub trait Guest {
           fn get_assets() -> wit_bindgen::rt::vec::Vec::<Asset>;
-          fn get_spot_pairs() -> wit_bindgen::rt::vec::Vec::<SpotPair>;
+          fn get_spot_pairs() -> wit_bindgen::rt::vec::Vec::<HydratedSpotPair>;
           fn add_asset(asset: Asset,) -> Result<Asset,Error>;
-          fn add_spot_pair(pair: SpotPair,) -> Result<SpotPair,Error>;
+          fn add_spot_pair(pair: SpotPair,) -> Result<HydratedSpotPair,Error>;
         }
         
         #[allow(unused_imports)]
@@ -537,7 +537,7 @@ pub mod exports {
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:registry"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 899] = [3, 0, 8, 114, 101, 103, 105, 115, 116, 114, 121, 0, 97, 115, 109, 13, 0, 1, 0, 7, 234, 2, 1, 65, 2, 1, 66, 20, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 0, 1, 114, 2, 14, 105, 110, 99, 111, 109, 105, 110, 103, 45, 97, 115, 115, 101, 116, 1, 14, 101, 120, 112, 101, 99, 116, 101, 100, 45, 97, 115, 115, 101, 116, 1, 4, 0, 22, 97, 115, 115, 101, 116, 45, 109, 105, 115, 109, 97, 116, 99, 104, 45, 100, 101, 116, 97, 105, 108, 115, 3, 0, 2, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 14, 97, 115, 115, 101, 116, 45, 109, 105, 115, 109, 97, 116, 99, 104, 1, 3, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 1, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 1, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 112, 1, 1, 64, 0, 0, 8, 4, 0, 10, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 9, 1, 112, 7, 1, 64, 0, 0, 10, 4, 0, 14, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 11, 1, 106, 1, 1, 1, 5, 1, 64, 1, 5, 97, 115, 115, 101, 116, 1, 0, 12, 4, 0, 9, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 13, 1, 106, 1, 7, 1, 5, 1, 64, 1, 4, 112, 97, 105, 114, 7, 0, 14, 4, 0, 13, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 15, 4, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 0, 11, 9, 1, 0, 3, 97, 112, 105, 3, 0, 0, 7, 139, 3, 1, 65, 2, 1, 65, 2, 1, 66, 20, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 0, 1, 114, 2, 14, 105, 110, 99, 111, 109, 105, 110, 103, 45, 97, 115, 115, 101, 116, 1, 14, 101, 120, 112, 101, 99, 116, 101, 100, 45, 97, 115, 115, 101, 116, 1, 4, 0, 22, 97, 115, 115, 101, 116, 45, 109, 105, 115, 109, 97, 116, 99, 104, 45, 100, 101, 116, 97, 105, 108, 115, 3, 0, 2, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 14, 97, 115, 115, 101, 116, 45, 109, 105, 115, 109, 97, 116, 99, 104, 1, 3, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 1, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 1, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 112, 1, 1, 64, 0, 0, 8, 4, 0, 10, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 9, 1, 112, 7, 1, 64, 0, 0, 10, 4, 0, 14, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 11, 1, 106, 1, 1, 1, 5, 1, 64, 1, 5, 97, 115, 115, 101, 116, 1, 0, 12, 4, 0, 9, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 13, 1, 106, 1, 7, 1, 5, 1, 64, 1, 4, 112, 97, 105, 114, 7, 0, 14, 4, 0, 13, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 15, 4, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 0, 4, 1, 25, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 114, 101, 103, 105, 115, 116, 114, 121, 4, 0, 11, 14, 1, 0, 8, 114, 101, 103, 105, 115, 116, 114, 121, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 1033] = [3, 0, 8, 114, 101, 103, 105, 115, 116, 114, 121, 0, 97, 115, 109, 13, 0, 1, 0, 7, 173, 3, 1, 65, 2, 1, 66, 22, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 0, 1, 114, 2, 14, 105, 110, 99, 111, 109, 105, 110, 103, 45, 97, 115, 115, 101, 116, 1, 14, 101, 120, 112, 101, 99, 116, 101, 100, 45, 97, 115, 115, 101, 116, 1, 4, 0, 22, 97, 115, 115, 101, 116, 45, 109, 105, 115, 109, 97, 116, 99, 104, 45, 100, 101, 116, 97, 105, 108, 115, 3, 0, 2, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 14, 97, 115, 115, 101, 116, 45, 109, 105, 115, 109, 97, 116, 99, 104, 1, 3, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 1, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 1, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 8, 1, 112, 1, 1, 64, 0, 0, 10, 4, 0, 10, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 11, 1, 112, 7, 1, 64, 0, 0, 12, 4, 0, 14, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 13, 1, 106, 1, 1, 1, 5, 1, 64, 1, 5, 97, 115, 115, 101, 116, 1, 0, 14, 4, 0, 9, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 15, 1, 106, 1, 7, 1, 5, 1, 64, 1, 4, 112, 97, 105, 114, 9, 0, 16, 4, 0, 13, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 17, 4, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 0, 11, 9, 1, 0, 3, 97, 112, 105, 3, 0, 0, 7, 206, 3, 1, 65, 2, 1, 65, 2, 1, 66, 22, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 0, 1, 114, 2, 14, 105, 110, 99, 111, 109, 105, 110, 103, 45, 97, 115, 115, 101, 116, 1, 14, 101, 120, 112, 101, 99, 116, 101, 100, 45, 97, 115, 115, 101, 116, 1, 4, 0, 22, 97, 115, 115, 101, 116, 45, 109, 105, 115, 109, 97, 116, 99, 104, 45, 100, 101, 116, 97, 105, 108, 115, 3, 0, 2, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 14, 97, 115, 115, 101, 116, 45, 109, 105, 115, 109, 97, 116, 99, 104, 1, 3, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 1, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 1, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 8, 1, 112, 1, 1, 64, 0, 0, 10, 4, 0, 10, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 11, 1, 112, 7, 1, 64, 0, 0, 12, 4, 0, 14, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 13, 1, 106, 1, 1, 1, 5, 1, 64, 1, 5, 97, 115, 115, 101, 116, 1, 0, 14, 4, 0, 9, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 15, 1, 106, 1, 7, 1, 5, 1, 64, 1, 4, 112, 97, 105, 114, 9, 0, 16, 4, 0, 13, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 17, 4, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 0, 4, 1, 25, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 114, 101, 103, 105, 115, 116, 114, 121, 4, 0, 11, 14, 1, 0, 8, 114, 101, 103, 105, 115, 116, 114, 121, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
 
 #[inline(never)]
 #[doc(hidden)]

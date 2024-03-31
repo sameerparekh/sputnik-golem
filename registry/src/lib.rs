@@ -6,7 +6,7 @@ use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 
 use crate::bindings::exports::sputnik::registry::api::{
-    Asset, AssetMismatchDetails, Error, Guest, SpotPair,
+    Asset, AssetMismatchDetails, Error, Guest, HydratedSpotPair, SpotPair,
 };
 
 mod bindings;
@@ -52,6 +52,23 @@ impl CreateWorkerBody {
     }
 }
 
+impl SpotPair {
+    fn hydrate(&self, state: &State) -> Result<HydratedSpotPair, Error> {
+        let numerator = state.assets.get(&self.numerator_id);
+        let denominator = state.assets.get(&self.denominator_id);
+        match (numerator, denominator) {
+            (None, _) => Err(Error::NoSuchAsset(self.numerator_id)),
+            (_, None) => Err(Error::NoSuchAsset(self.denominator_id)),
+            (Some(num), Some(denom)) => Ok(HydratedSpotPair {
+                id: self.id,
+                name: self.name.clone(),
+                numerator: num.clone(),
+                denominator: denom.clone(),
+            }),
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 struct InvocationKey {
     value: String,
@@ -80,8 +97,17 @@ impl Guest for Component {
         with_state(|state| state.assets.values().cloned().collect())
     }
 
-    fn get_spot_pairs() -> Vec<SpotPair> {
-        with_state(|state| state.spot_pairs.values().cloned().collect())
+    fn get_spot_pairs() -> Vec<HydratedSpotPair> {
+        with_state(|state| {
+            let spot_pair_values: Vec<SpotPair> = state.spot_pairs.values().cloned().collect();
+            spot_pair_values
+                .iter()
+                .flat_map(move |pair| match pair.hydrate(state) {
+                    Ok(hydrated_pair) => Some(hydrated_pair.clone()),
+                    Err(_) => None,
+                })
+                .collect()
+        })
     }
 
     fn add_asset(asset: Asset) -> Result<Asset, Error> {
@@ -95,33 +121,16 @@ impl Guest for Component {
         })
     }
 
-    fn add_spot_pair(pair: SpotPair) -> Result<SpotPair, Error> {
+    fn add_spot_pair(pair: SpotPair) -> Result<HydratedSpotPair, Error> {
         let result = with_state(|state| {
             if state.spot_pairs.contains_key(&pair.id) {
                 Err(Error::DuplicateId(pair.id))
             } else {
-                let numerator = state.assets.get(&pair.numerator.id);
-                let denominator = state.assets.get(&pair.denominator.id);
-                match (numerator, denominator) {
-                    (None, _) => Err(Error::NoSuchAsset(pair.numerator.id)),
-                    (_, None) => Err(Error::NoSuchAsset(pair.denominator.id)),
-                    (Some(num), Some(denom)) => {
-                        if *num != pair.numerator {
-                            Err(Error::AssetMismatch(AssetMismatchDetails {
-                                incoming_asset: pair.numerator,
-                                expected_asset: num.clone(),
-                            }))
-                        } else if *denom != pair.denominator {
-                            Err(Error::AssetMismatch(AssetMismatchDetails {
-                                incoming_asset: pair.denominator,
-                                expected_asset: denom.clone(),
-                            }))
-                        } else {
-                            state.spot_pairs.insert(pair.id, pair.clone());
-                            Ok(pair)
-                        }
-                    }
+                let hydrated_pair = pair.hydrate(state);
+                if hydrated_pair.is_ok() {
+                    state.spot_pairs.insert(pair.id, pair.clone());
                 }
+                hydrated_pair
             }
         });
         // create_matching_engine(pair.id.clone());
@@ -133,7 +142,9 @@ impl Guest for Component {
 mod tests {
     use assert_unordered::assert_eq_unordered;
 
-    use crate::bindings::exports::sputnik::registry::api::{Asset, Guest, SpotPair};
+    use crate::bindings::exports::sputnik::registry::api::{
+        Asset, Guest, HydratedSpotPair, SpotPair,
+    };
     use crate::Component;
 
     fn populate() {
@@ -154,21 +165,22 @@ mod tests {
         <Component as Guest>::add_spot_pair(SpotPair {
             id: 2,
             name: "BTCUSD".to_string(),
-            numerator: Asset {
-                id: 0,
-                name: "BTC".to_string(),
-                decimals: 8,
-            },
-            denominator: Asset {
-                id: 1,
-                name: "USD".to_string(),
-                decimals: 4,
-            },
+            numerator_id: 0,
+            denominator_id: 1,
         })
         .expect("add spotpair returns ok");
     }
 
     impl PartialEq for SpotPair {
+        fn eq(&self, other: &Self) -> bool {
+            self.id == other.id
+                && self.name == other.name
+                && self.denominator_id == other.denominator_id
+                && self.numerator_id == other.numerator_id
+        }
+    }
+
+    impl PartialEq for HydratedSpotPair {
         fn eq(&self, other: &Self) -> bool {
             self.id == other.id
                 && self.name == other.name
@@ -204,7 +216,7 @@ mod tests {
         let spot_pairs = <Component as Guest>::get_spot_pairs();
         assert_eq!(
             spot_pairs,
-            vec![SpotPair {
+            vec![HydratedSpotPair {
                 id: 2,
                 name: "BTCUSD".to_string(),
                 numerator: Asset {
