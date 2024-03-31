@@ -1,0 +1,10 @@
+package sputnik: admin-api;
+
+interface api {
+  create-asset: func() -> u64;
+  create-spot-pair: func() -> u64;
+}
+
+world admin-api {
+  export api;
+}
