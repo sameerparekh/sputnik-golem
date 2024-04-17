@@ -104,6 +104,7 @@ impl ExternalServiceApi for ExternalServiceApiProd {
             .json(&body)
             .header("Authorization", format!("Bearer {}", token))
             .send()
+            .await
         {
             Ok(_) => Ok(()),
             Err(err) => Err(UnableToMakeEngine(format!("{}", err))),

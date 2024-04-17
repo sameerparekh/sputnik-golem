@@ -10,11 +10,11 @@ package = "sputnik:ids"
 world = "wasm-rpc-stub-ids"
 path = "wit"
 
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
-
 [package.metadata.component.target.dependencies."sputnik:ids"]
 path = "wit/deps/sputnik_ids"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
 
 [dependencies.golem-wasm-rpc]
 version = "0.0.14"
