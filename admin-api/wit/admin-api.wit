@@ -1,13 +1,21 @@
 package sputnik: admin-api;
 
 interface api {
+  use sputnik: registry/api.{asset};
+  use sputnik: registry/api.{hydrated-spot-pair};
   use sputnik: ids-stub/stub-ids.{api as ids-api};
-  use sputnik: registry-stub/stub-registry.{api as registry-api};
 
-  create-asset: func() -> u64;
-  create-spot-pair: func() -> u64;
+  variant error {
+    unable-to-make-engine(string),
+    internal(string),
+  }
+
+  create-asset: func(name: string, decimals: u8) -> result<asset, error>;
+  create-spot-pair: func(name: string, numerator: u64, denominator: u64) -> result<hydrated-spot-pair, error>;
 }
 
 world admin-api {
+  import sputnik: ids-stub/stub-ids;
+  import sputnik: registry-stub/stub-registry;
   export api;
 }

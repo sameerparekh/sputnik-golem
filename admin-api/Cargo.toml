@@ -9,20 +9,20 @@ package = "sputnik:admin-api"
 [package.metadata.component.target]
 path = "wit"
 
+[package.metadata.component.target.dependencies."sputnik:registry-stub"]
+path = "wit/deps/sputnik_registry-stub"
+
 [package.metadata.component.target.dependencies."sputnik:ids-stub"]
 path = "wit/deps/sputnik_ids-stub"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
 
 [package.metadata.component.target.dependencies."sputnik:registry"]
 path = "wit/deps/sputnik_registry"
 
-[package.metadata.component.target.dependencies."sputnik:registry-stub"]
-path = "wit/deps/sputnik_registry-stub"
-
 [package.metadata.component.target.dependencies."sputnik:ids"]
 path = "wit/deps/sputnik_ids"
-
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
 
 [dependencies]
 mockall = "0.12.1"
@@ -30,14 +30,14 @@ mockall = "0.12.1"
 [dependencies.reqwest]
 git = "https://github.com/zivergetech/reqwest"
 branch = "update-feb-2024"
-features = ["json", "blocking"]
+features = ["json"]
 
 [dependencies.serde]
 version = "1.0.197"
 features = ["derive"]
 
 [dependencies.wit-bindgen]
-version = "0.17.0"
+version = "0.16.0"
 features = ["realloc"]
 default-features = false
 
