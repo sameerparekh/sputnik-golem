@@ -54,7 +54,7 @@ trait ExternalServiceApi {
 
     fn create_spot_pair(&self, spot_pair: &SpotPair) -> Result<HydratedSpotPair, RegistryError>;
 
-    fn create_matching_engine(&self, spot_pair_id: u64) -> Result<(), Error>;
+    fn create_matching_engine(&self, spot_pair_id: u64);
 }
 
 pub struct ExternalServiceApiProd;
@@ -89,7 +89,7 @@ impl ExternalServiceApi for ExternalServiceApiProd {
     fn create_spot_pair(&self, spot_pair: &SpotPair) -> Result<HydratedSpotPair, RegistryError> {
         self.get_registry().add_spot_pair(spot_pair)
     }
-    fn create_matching_engine(&self, spot_pair_id: u64) -> Result<(), Error> {
+    fn create_matching_engine(&self, spot_pair_id: u64) {
         let client = Client::new();
         let template_id =
             env::var("MATCHING_ENGINE_TEMPLATE_ID").expect("MATCHING_ENGINE_TEMPLATE_ID not set");
@@ -99,16 +99,11 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         );
         let body = CreateWorkerBody::new(format!("{}", spot_pair_id));
         let token = env::var("GOLEM_TOKEN_SECRET").expect("GOLEM_TOKEN_SECRET not set");
-        match client
+        let _ = client
             .post(url)
             .json(&body)
             .header("Authorization", format!("Bearer {}", token))
-            .send()
-            .await
-        {
-            Ok(_) => Ok(()),
-            Err(err) => Err(UnableToMakeEngine(format!("{}", err))),
-        }
+            .send();
     }
 }
 
@@ -137,7 +132,7 @@ impl Guest for Component {
     ) -> Result<HydratedSpotPair, Error> {
         with_state(|state| {
             let pair_id = state.external_service_api.get_new_id();
-            state.external_service_api.create_matching_engine(pair_id)?;
+            state.external_service_api.create_matching_engine(pair_id);
             match state.external_service_api.create_spot_pair(&SpotPair {
                 id: pair_id,
                 name,
