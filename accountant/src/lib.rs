@@ -13,7 +13,7 @@ use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
 use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
-use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair, SpotPair};
+use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair};
 use crate::bindings::sputnik::registry_stub::stub_registry;
 
 mod bindings;
