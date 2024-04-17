@@ -126,6 +126,36 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
             })
             .expect("list not found"))
     }
+    fn get_traders(&self) -> Vec<crate::bindings::sputnik::registry::api::Trader> {
+        let result = self
+            .rpc
+            .invoke_and_await("sputnik:registry/api/get-traders", &[])
+            .expect(
+                &format!(
+                    "Failed to invoke remote {}", "sputnik:registry/api/get-traders"
+                ),
+            );
+        (result
+            .tuple_element(0)
+            .expect("tuple not found")
+            .list_elements(|item| {
+                let record = item;
+                crate::bindings::sputnik::registry::api::Trader {
+                    id: record
+                        .field(0usize)
+                        .expect("record field not found")
+                        .u64()
+                        .expect("u64 not found"),
+                    name: record
+                        .field(1usize)
+                        .expect("record field not found")
+                        .string()
+                        .expect("string not found")
+                        .to_string(),
+                }
+            })
+            .expect("list not found"))
+    }
     fn add_asset(
         &self,
         asset: crate::bindings::sputnik::registry::api::Asset,
@@ -310,6 +340,85 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
                                         .expect("u8 not found"),
                                 }
                             },
+                        }
+                    })
+                }
+                Err(err_value) => {
+                    Err({
+                        let (case_idx, inner) = err_value
+                            .expect("result err value not found")
+                            .variant()
+                            .expect("variant not found");
+                        match case_idx {
+                            0u32 => {
+                                crate::bindings::sputnik::registry::api::Error::DuplicateId(
+                                    inner
+                                        .expect("variant case not found")
+                                        .u64()
+                                        .expect("u64 not found"),
+                                )
+                            }
+                            1u32 => {
+                                crate::bindings::sputnik::registry::api::Error::NoSuchAsset(
+                                    inner
+                                        .expect("variant case not found")
+                                        .u64()
+                                        .expect("u64 not found"),
+                                )
+                            }
+                            _ => unreachable!("invalid variant case index"),
+                        }
+                    })
+                }
+            }
+        })
+    }
+    fn add_trader(
+        &self,
+        trader: crate::bindings::sputnik::registry::api::Trader,
+    ) -> Result<
+        crate::bindings::sputnik::registry::api::Trader,
+        crate::bindings::sputnik::registry::api::Error,
+    > {
+        let result = self
+            .rpc
+            .invoke_and_await(
+                "sputnik:registry/api/add-trader",
+                &[
+                    WitValue::builder()
+                        .record()
+                        .item()
+                        .u64(trader.id)
+                        .item()
+                        .string(&trader.name)
+                        .finish(),
+                ],
+            )
+            .expect(
+                &format!("Failed to invoke remote {}", "sputnik:registry/api/add-trader"),
+            );
+        ({
+            let result = result
+                .tuple_element(0)
+                .expect("tuple not found")
+                .result()
+                .expect("result not found");
+            match result {
+                Ok(ok_value) => {
+                    Ok({
+                        let record = ok_value.expect("result ok value not found");
+                        crate::bindings::sputnik::registry::api::Trader {
+                            id: record
+                                .field(0usize)
+                                .expect("record field not found")
+                                .u64()
+                                .expect("u64 not found"),
+                            name: record
+                                .field(1usize)
+                                .expect("record field not found")
+                                .string()
+                                .expect("string not found")
+                                .to_string(),
                         }
                     })
                 }

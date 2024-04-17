@@ -3,6 +3,7 @@ package sputnik: adminapi;
 interface api {
   use sputnik: registry/api.{asset};
   use sputnik: registry/api.{hydrated-spot-pair};
+  use sputnik: registry/api.{trader};
   use sputnik: ids-stub/stub-ids.{api as ids-api};
 
   variant error {
@@ -12,6 +13,7 @@ interface api {
 
   create-asset: func(name: string, decimals: u8) -> result<asset, error>;
   create-spot-pair: func(name: string, numerator: u64, denominator: u64) -> result<hydrated-spot-pair, error>;
+  create-trader: func(name: string) -> result<trader, error>;
 }
 
 world adminapi {

@@ -5,7 +5,7 @@ use mockall::automock;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest};
+use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
 use crate::bindings::exports::sputnik::adminapi::api::Error::Internal;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::ids_stub::stub_ids;
@@ -143,6 +143,10 @@ impl Guest for Component {
                 Err(err) => Err(Internal(format!("{}", err))),
             }
         })
+    }
+
+    fn create_trader(name: String) -> Result<Trader, Error> {
+        todo!()
     }
 }
 

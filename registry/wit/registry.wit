@@ -11,9 +11,13 @@ interface api {
 
   get-spot-pairs: func() -> list<hydrated-spot-pair>;
 
+  get-traders: func() -> list<trader>;
+
   add-asset: func(asset: asset) -> result<asset, error>;
 
   add-spot-pair: func(pair: spot-pair) -> result<hydrated-spot-pair, error>;
+
+  add-trader: func(trader: trader) -> result<trader, error>;
 
   record asset {
     id: u64,
@@ -34,6 +38,12 @@ interface api {
     numerator-id: u64,
     denominator-id: u64,
   }
+
+  record trader {
+    id: u64,
+    name: string,
+  }
+
 
 }
 

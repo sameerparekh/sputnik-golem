@@ -1,9 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use crate::bindings::exports::sputnik::registry::api::{
-    Asset, Error, Guest, HydratedSpotPair, SpotPair,
-};
+use crate::bindings::exports::sputnik::registry::api::{Asset, Error, Guest, HydratedSpotPair, SpotPair, Trader};
 
 mod bindings;
 
@@ -12,6 +10,7 @@ struct Component;
 struct State {
     assets: HashMap<u64, Asset>,
     spot_pairs: HashMap<u64, SpotPair>,
+    traders: HashMap<u64, Trader>,
 }
 
 impl PartialEq for Asset {
@@ -24,6 +23,7 @@ thread_local! {
     static STATE: RefCell<State> = RefCell::new(State {
         assets: HashMap::new(),
         spot_pairs: HashMap::new(),
+        traders: HashMap::new(),
     });
 }
 
@@ -49,6 +49,7 @@ impl SpotPair {
 }
 
 impl Guest for Component {
+
     fn get_assets() -> Vec<Asset> {
         with_state(|state| state.assets.values().cloned().collect())
     }
@@ -64,6 +65,10 @@ impl Guest for Component {
                 })
                 .collect()
         })
+    }
+
+    fn get_traders() -> Vec<Trader> {
+        todo!()
     }
 
     fn add_asset(asset: Asset) -> Result<Asset, Error> {
@@ -91,6 +96,10 @@ impl Guest for Component {
         });
         // create_matching_engine(pair.id.clone());
         result
+    }
+
+    fn add_trader(trader: Trader) -> Result<Trader, Error> {
+        todo!()
     }
 }
 
