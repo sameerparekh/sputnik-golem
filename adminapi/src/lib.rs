@@ -5,8 +5,8 @@ use mockall::automock;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-use crate::bindings::exports::sputnik::admin_api::api::{Error, Guest};
-use crate::bindings::exports::sputnik::admin_api::api::Error::{Internal, UnableToMakeEngine};
+use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest};
+use crate::bindings::exports::sputnik::adminapi::api::Error::Internal;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::ids_stub::stub_ids;
 use crate::bindings::sputnik::registry::api::{

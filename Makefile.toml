@@ -13,14 +13,14 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 dependencies = ["generate-registry-stub"]
 
-[tasks.add-stub-dependency-ids-admin-api]
-args = ["add-stub-dependency", "--stub-wit-root", "ids-stub/wit", "--dest-wit-root", "admin-api/wit", "--overwrite", "--update-cargo-toml"]
+[tasks.add-stub-dependency-ids-adminapi]
+args = ["add-stub-dependency", "--stub-wit-root", "ids-stub/wit", "--dest-wit-root", "adminapi/wit", "--overwrite", "--update-cargo-toml"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 dependencies = ["generate-ids-stub"]
 
-[tasks.add-stub-dependency-registry-admin-api]
-args = ["add-stub-dependency", "--stub-wit-root", "registry-stub/wit", "--dest-wit-root", "admin-api/wit", "--overwrite", "--update-cargo-toml"]
+[tasks.add-stub-dependency-registry-adminapi]
+args = ["add-stub-dependency", "--stub-wit-root", "registry-stub/wit", "--dest-wit-root", "adminapi/wit", "--overwrite", "--update-cargo-toml"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 dependencies = ["generate-registry-stub"]
@@ -52,13 +52,13 @@ args = ["compose", "--source-wasm", "target/wasm32-wasi/release/accountant.wasm"
 command = "wasm-rpc-stubgen"
 cwd = "."
 
-[tasks.compose-admin-api]
-args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/admin_api.wasm", "--stub-wasm", "target/wasm32-wasi/debug/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/debug/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/admin_api_composed.wasm"]
+[tasks.compose-adminapi]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/adminapi.wasm", "--stub-wasm", "target/wasm32-wasi/debug/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/debug/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/adminapi_composed.wasm"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 
-[tasks.compose-release-admin-api]
-args = ["compose", "--source-wasm", "target/wasm32-wasi/release/admin_api.wasm", "--stub-wasm", "target/wasm32-wasi/release/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/admin_api_composed.wasm"]
+[tasks.compose-release-adminapi]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/release/adminapi.wasm", "--stub-wasm", "target/wasm32-wasi/release/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/adminapi_composed.wasm"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 
@@ -81,13 +81,13 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 
 [tasks.post-build]
-dependencies = ["compose-accountant", "compose-admin-api"]
+dependencies = ["compose-accountant", "compose-adminapi"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-accountant", "compose-release-admin-api"]
+dependencies = ["compose-release-accountant", "compose-release-adminapi"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-registry-admin-api", "add-stub-dependency-ids-admin-api", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant"]
+dependencies = ["add-stub-dependency-registry-adminapi", "add-stub-dependency-ids-adminapi", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]

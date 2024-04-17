@@ -1,4 +1,4 @@
-package sputnik: admin-api;
+package sputnik: adminapi;
 
 interface api {
   use sputnik: registry/api.{asset};
@@ -14,7 +14,7 @@ interface api {
   create-spot-pair: func(name: string, numerator: u64, denominator: u64) -> result<hydrated-spot-pair, error>;
 }
 
-world admin-api {
+world adminapi {
   import sputnik: ids-stub/stub-ids;
   import sputnik: registry-stub/stub-registry;
   export api;

@@ -1,25 +1,25 @@
 [package]
-name = "admin-api"
+name = "adminapi"
 edition = "2021"
 version = "0.1.0"
 
 [package.metadata.component]
-package = "sputnik:admin-api"
+package = "sputnik:adminapi"
 
 [package.metadata.component.target]
 path = "wit"
-
-[package.metadata.component.target.dependencies."sputnik:registry-stub"]
-path = "wit/deps/sputnik_registry-stub"
-
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
 
 [package.metadata.component.target.dependencies."sputnik:ids"]
 path = "wit/deps/sputnik_ids"
 
 [package.metadata.component.target.dependencies."sputnik:registry"]
 path = "wit/deps/sputnik_registry"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:registry-stub"]
+path = "wit/deps/sputnik_registry-stub"
 
 [package.metadata.component.target.dependencies."sputnik:ids-stub"]
 path = "wit/deps/sputnik_ids-stub"
@@ -43,6 +43,7 @@ default-features = false
 
 [lib]
 path = "src/lib.rs"
+name = "adminapi"
 edition = "2021"
 crate-type = ["cdylib"]
 required-features = []
