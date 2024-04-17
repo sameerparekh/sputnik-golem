@@ -5,9 +5,8 @@ use mockall::automock;
 use serde::{Deserialize, Serialize};
 
 use crate::bindings::exports::sputnik::admin_api::api::Guest;
-
-// use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair, SpotPair};
-// use crate::bindings::sputnik::registry_stub::stub_registry;
+use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair, SpotPair};
+use crate::bindings::sputnik::registry_stub::stub_registry;
 
 mod bindings;
 

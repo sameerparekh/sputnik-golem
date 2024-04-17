@@ -1,0 +1,22 @@
+package sputnik:registry-stub;
+
+interface stub-registry {
+  use golem:rpc/types@0.1.0.{uri};
+  use sputnik:registry/api.{error};
+  use sputnik:registry/api.{asset};
+  use sputnik:registry/api.{hydrated-spot-pair};
+  use sputnik:registry/api.{spot-pair};
+
+  resource api {
+    constructor(location: uri);
+    get-assets: func() -> list<asset>;
+    get-spot-pairs: func() -> list<hydrated-spot-pair>;
+    add-asset: func(asset: asset) -> result<asset, error>;
+    add-spot-pair: func(pair: spot-pair) -> result<hydrated-spot-pair, error>;
+  }
+
+}
+
+world wasm-rpc-stub-registry {
+  export stub-registry;
+}

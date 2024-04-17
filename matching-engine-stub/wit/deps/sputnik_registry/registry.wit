@@ -1,0 +1,42 @@
+package sputnik: registry;
+
+interface api {
+
+  variant error {
+    duplicate-id(u64),
+    no-such-asset(u64),
+  }
+
+  get-assets: func() -> list<asset>;
+
+  get-spot-pairs: func() -> list<hydrated-spot-pair>;
+
+  add-asset: func(asset: asset) -> result<asset, error>;
+
+  add-spot-pair: func(pair: spot-pair) -> result<hydrated-spot-pair, error>;
+
+  record asset {
+    id: u64,
+    name: string,
+    decimals: u8,
+  }
+
+  record hydrated-spot-pair {
+    id: u64,
+    name: string,
+    numerator: asset,
+    denominator: asset,
+  }
+
+  record spot-pair {
+    id: u64,
+    name: string,
+    numerator-id: u64,
+    denominator-id: u64,
+  }
+
+}
+
+world registry {
+  export api;
+}
