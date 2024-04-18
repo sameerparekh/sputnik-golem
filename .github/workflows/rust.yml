@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install protoc
-        run: sudo apt-get install protobuf-compiler
+        run: brew install protobuf-c
       - name: Build
         run: scripts/build.sh
       - name: Run tests
