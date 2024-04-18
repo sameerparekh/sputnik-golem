@@ -1,13 +1,14 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::env;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::accountant::api::Error::{
-    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
-};
 use crate::bindings::exports::sputnik::accountant::api::{
     AssetBalance, Error, Fill, Guest, Order, OrderStatus,
+};
+use crate::bindings::exports::sputnik::accountant::api::Error::{
+    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
@@ -61,10 +62,10 @@ pub struct ExternalServiceApiProd;
 
 impl ExternalServiceApi for ExternalServiceApiProd {
     fn get_registry(&self) -> stub_registry::Api {
-        let template_id =
-            std::env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
+        let template_id = env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
+        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{}", "registry"),
+            value: format!("worker://{template_id}/{environment}"),
         };
 
         stub_registry::Api::new(&uri)
@@ -91,8 +92,9 @@ impl ExternalServiceApi for ExternalServiceApiProd {
     fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api {
         let template_id = std::env::var("MATCHING_ENGINE_TEMPLATE_ID")
             .expect("MATCHING_ENGINE_TEMPLATE_ID not set");
+        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{spot_pair_id}"),
+            value: format!("worker://{template_id}/{environment}-{spot_pair_id}"),
         };
 
         stub_matching_engine::Api::new(&uri)
@@ -354,13 +356,13 @@ mod tests {
 
     use assert_unordered::assert_eq_unordered;
 
+    use crate::{Component, Guest, MockExternalServiceApi, with_state};
     use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
     use crate::bindings::sputnik::matching_engine::api::Fill;
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair};
-    use crate::{with_state, Component, Guest, MockExternalServiceApi};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {

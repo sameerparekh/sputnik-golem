@@ -9,14 +9,14 @@ package = "sputnik:adminapi"
 [package.metadata.component.target]
 path = "wit"
 
-[package.metadata.component.target.dependencies."sputnik:ids-stub"]
-path = "wit/deps/sputnik_ids-stub"
+[package.metadata.component.target.dependencies."sputnik:registry"]
+path = "wit/deps/sputnik_registry"
 
 [package.metadata.component.target.dependencies."sputnik:registry-stub"]
 path = "wit/deps/sputnik_registry-stub"
 
-[package.metadata.component.target.dependencies."sputnik:registry"]
-path = "wit/deps/sputnik_registry"
+[package.metadata.component.target.dependencies."sputnik:ids-stub"]
+path = "wit/deps/sputnik_ids-stub"
 
 [package.metadata.component.target.dependencies."sputnik:ids"]
 path = "wit/deps/sputnik_ids"

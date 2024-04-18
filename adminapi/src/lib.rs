@@ -34,11 +34,11 @@ struct CreateWorkerBody {
 }
 
 impl CreateWorkerBody {
-    fn new(name: String) -> CreateWorkerBody {
+    fn new(name: String, env: Vec<Vec<String>>) -> CreateWorkerBody {
         CreateWorkerBody {
             name,
             args: Vec::new(),
-            env: Vec::new(),
+            env,
         }
     }
 }
@@ -62,8 +62,9 @@ pub struct ExternalServiceApiProd;
 impl ExternalServiceApi for ExternalServiceApiProd {
     fn get_registry(&self) -> stub_registry::Api {
         let template_id = env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
+        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{}", "registry"),
+            value: format!("worker://{template_id}/{environment}"),
         };
 
         stub_registry::Api::new(&uri)
@@ -71,8 +72,9 @@ impl ExternalServiceApi for ExternalServiceApiProd {
 
     fn get_ids(&self) -> stub_ids::Api {
         let template_id = env::var("IDS_TEMPLATE_ID").expect("IDS_TEMPLATE_ID not set");
+        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{}", "ids"),
+            value: format!("worker://{template_id}/{environment}"),
         };
 
         stub_ids::Api::new(&uri)
@@ -94,14 +96,22 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         let template_id =
             env::var("MATCHING_ENGINE_TEMPLATE_ID").expect("MATCHING_ENGINE_TEMPLATE_ID not set");
         let golem_api = env::var("GOLEM_API").expect("GOLEM_API not set");
+        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT not set");
         let url = format!("{golem_api}/v2/templates/{template_id}/workers");
-        let body = CreateWorkerBody::new(format!("{}", spot_pair_id));
+
+        let body = CreateWorkerBody::new(
+            format!("{environment}-{spot_pair_id}"),
+            vec![vec!["ENVIRONMENT".to_string(), environment.clone()]],
+        );
         let token = env::var("GOLEM_TOKEN_SECRET").expect("GOLEM_TOKEN_SECRET not set");
+
+        println!("Creating matching engine {environment}-{spot_pair_id} at {url} ");
+
         let _ = client
             .post(url)
             .json(&body)
             .header("Authorization", format!("Bearer {}", token))
-            .send().map(|result| println!("{result}"));
+            .send();
     }
 }
 
