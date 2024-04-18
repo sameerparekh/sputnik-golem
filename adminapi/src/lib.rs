@@ -145,7 +145,7 @@ impl Guest for Component {
         })
     }
 
-    fn create_trader(name: String) -> Result<Trader, Error> {
+    fn create_trader(_name: String) -> Result<Trader, Error> {
         todo!()
     }
 }
