@@ -35,5 +35,11 @@ else
 fi
 
 TEMPLATE_NAME_W_UNDERSCORE=$(echo "$TEMPLATE_NAME" | tr '-' '_')
+TEMPLATE_COMPOSED_FILENAME=target/wasm32-wasi/debug/"${TEMPLATE_NAME_W_UNDERSCORE}"_composed.wasm
+if [ -f "$TEMPLATE_COMPOSED_FILENAME" ]; then
+  TEMPLATE_FILENAME="$TEMPLATE_COMPOSED_FILENAME"
+else
+  TEMPLATE_FILENAME=target/wasm32-wasi/debug/"${TEMPLATE_NAME_W_UNDERSCORE}".wasm
+fi
 
-"$CMD" template update --template-name "${TEMPLATE_NAME}" target/wasm32-wasi/debug/"${TEMPLATE_NAME_W_UNDERSCORE}".wasm
+"$CMD" template update --template-name "${TEMPLATE_NAME}" "${TEMPLATE_FILENAME}"
