@@ -54,7 +54,10 @@ trait ExternalServiceApi {
 
     fn create_spot_pair(&self, spot_pair: &SpotPair) -> Result<HydratedSpotPair, RegistryError>;
 
+    fn create_trader(&self, trader: &Trader) -> Result<Trader, RegistryError>;
     fn create_matching_engine(&self, spot_pair_id: u64);
+
+    fn create_accountant(&self, trader_id: u64);
 }
 
 pub struct ExternalServiceApiProd;
@@ -91,6 +94,11 @@ impl ExternalServiceApi for ExternalServiceApiProd {
     fn create_spot_pair(&self, spot_pair: &SpotPair) -> Result<HydratedSpotPair, RegistryError> {
         self.get_registry().add_spot_pair(spot_pair)
     }
+
+    fn create_trader(&self, trader: &Trader) -> Result<Trader, RegistryError> {
+        self.get_registry().add_trader(trader)
+    }
+
     fn create_matching_engine(&self, spot_pair_id: u64) {
         let client = Client::new();
         let template_id =
@@ -106,6 +114,29 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         let token = env::var("GOLEM_TOKEN_SECRET").expect("GOLEM_TOKEN_SECRET not set");
 
         println!("Creating matching engine {environment}-{spot_pair_id} at {url} ");
+
+        let _ = client
+            .post(url)
+            .json(&body)
+            .header("Authorization", format!("Bearer {}", token))
+            .send();
+    }
+
+    fn create_accountant(&self, trader_id: u64) {
+        let client = Client::new();
+        let template_id =
+            env::var("ACCOUNTANT_TEMPLATE_ID").expect("ACCOUNTANT_TEMPLATE_ID not set");
+        let golem_api = env::var("GOLEM_API").expect("GOLEM_API not set");
+        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT not set");
+        let url = format!("{golem_api}/v2/templates/{template_id}/workers");
+
+        let body = CreateWorkerBody::new(
+            format!("{environment}-{trader_id}"),
+            vec![vec!["ENVIRONMENT".to_string(), environment.clone()]],
+        );
+        let token = env::var("GOLEM_TOKEN_SECRET").expect("GOLEM_TOKEN_SECRET not set");
+
+        println!("Creating accountant {environment}-{trader_id} at {url} ");
 
         let _ = client
             .post(url)
@@ -153,8 +184,18 @@ impl Guest for Component {
         })
     }
 
-    fn create_trader(_name: String) -> Result<Trader, Error> {
-        todo!()
+    fn create_trader(name: String) -> Result<Trader, Error> {
+        with_state(|state| {
+            let trader_id = state.external_service_api.get_new_id();
+            state.external_service_api.create_accountant(trader_id);
+            match state.external_service_api.create_trader(&Trader {
+                id: trader_id,
+                name,
+            }) {
+                Ok(result) => Ok(result),
+                Err(err) => Err(Internal(format!("{}", err))),
+            }
+        })
     }
 }
 

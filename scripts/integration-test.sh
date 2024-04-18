@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-ENVIRONMENT=$(openssl rand -base64 12)
+ENVIRONMENT=$(openssl rand -hex 12)
 
 scripts/build.sh
 scripts/update-templates.sh
@@ -28,6 +28,9 @@ golem-cli worker invoke-and-await \
   --worker-name="$ENVIRONMENT" \
   --function=sputnik:registry/api/get-spot-pairs \
   --parameters='[]'
-  
 
-
+golem-cli worker invoke-and-await \
+  --template-name=adminapi \
+  --worker-name="$ENVIRONMENT" \
+  --function=sputnik:adminapi/api/create-trader \
+  --parameters='["new-trader"]'

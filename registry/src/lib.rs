@@ -1,7 +1,9 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use crate::bindings::exports::sputnik::registry::api::{Asset, Error, Guest, HydratedSpotPair, SpotPair, Trader};
+use crate::bindings::exports::sputnik::registry::api::{
+    Asset, Error, Guest, HydratedSpotPair, SpotPair, Trader,
+};
 
 mod bindings;
 
@@ -49,7 +51,6 @@ impl SpotPair {
 }
 
 impl Guest for Component {
-
     fn get_assets() -> Vec<Asset> {
         with_state(|state| state.assets.values().cloned().collect())
     }
@@ -99,7 +100,14 @@ impl Guest for Component {
     }
 
     fn add_trader(trader: Trader) -> Result<Trader, Error> {
-        todo!()
+        with_state(|state| {
+            if state.traders.contains_key(&trader.id) {
+                Err(Error::DuplicateId(trader.id))
+            } else {
+                state.traders.insert(trader.id, trader.clone());
+                Ok(trader)
+            }
+        })
     }
 }
 
