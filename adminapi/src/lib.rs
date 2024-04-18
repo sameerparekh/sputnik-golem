@@ -93,17 +93,15 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         let client = Client::new();
         let template_id =
             env::var("MATCHING_ENGINE_TEMPLATE_ID").expect("MATCHING_ENGINE_TEMPLATE_ID not set");
-        let url = format!(
-            "https://release.api.golem.cloud/v1/templates/{}/workers",
-            template_id
-        );
+        let golem_api = env::var("GOLEM_API").expect("GOLEM_API not set");
+        let url = format!("{golem_api}/v2/templates/{template_id}/workers");
         let body = CreateWorkerBody::new(format!("{}", spot_pair_id));
         let token = env::var("GOLEM_TOKEN_SECRET").expect("GOLEM_TOKEN_SECRET not set");
         let _ = client
             .post(url)
             .json(&body)
             .header("Authorization", format!("Bearer {}", token))
-            .send();
+            .send().map(|result| println!("{result}"));
     }
 }
 
