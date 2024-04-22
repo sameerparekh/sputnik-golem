@@ -12,6 +12,7 @@ interface stub-matching-engine {
 
   resource api {
     constructor(location: uri);
+    init: func() -> result<_, error>;
     place-order: func(order: order) -> result<order-status, error>;
     cancel-order: func(id: u64) -> result<order-status, error>;
     get-order-book: func() -> order-book;

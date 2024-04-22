@@ -37,7 +37,7 @@ interface api {
     id: u64,
   }
 
-  initialize: func(id: u64) -> result<u64, error>;
+  initialize: func(id: u64, matching-engine-template-id: string, registry-template-id: string, environment: string) -> result<u64, error>;
 
   get-balances: func() -> list<asset-balance>;
 

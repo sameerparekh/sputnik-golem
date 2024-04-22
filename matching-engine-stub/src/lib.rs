@@ -16,6 +16,56 @@ for Api {
             rpc: WasmRpc::new(&location),
         }
     }
+    fn init(&self) -> Result<(), crate::bindings::sputnik::matching_engine::api::Error> {
+        let result = self
+            .rpc
+            .invoke_and_await("sputnik:matching-engine/api/init", &[])
+            .expect(
+                &format!(
+                    "Failed to invoke remote {}", "sputnik:matching-engine/api/init"
+                ),
+            );
+        ({
+            let result = result
+                .tuple_element(0)
+                .expect("tuple not found")
+                .result()
+                .expect("result not found");
+            match result {
+                Ok(ok_value) => Ok(()),
+                Err(err_value) => {
+                    Err({
+                        let (case_idx, inner) = err_value
+                            .expect("result err value not found")
+                            .variant()
+                            .expect("variant not found");
+                        match case_idx {
+                            0u32 => {
+                                crate::bindings::sputnik::matching_engine::api::Error::DuplicateId(
+                                    inner
+                                        .expect("variant case not found")
+                                        .u64()
+                                        .expect("u64 not found"),
+                                )
+                            }
+                            1u32 => {
+                                crate::bindings::sputnik::matching_engine::api::Error::MissingOrder(
+                                    inner
+                                        .expect("variant case not found")
+                                        .u64()
+                                        .expect("u64 not found"),
+                                )
+                            }
+                            2u32 => {
+                                crate::bindings::sputnik::matching_engine::api::Error::AlreadyIntialized
+                            }
+                            _ => unreachable!("invalid variant case index"),
+                        }
+                    })
+                }
+            }
+        })
+    }
     fn place_order(
         &self,
         order: crate::bindings::sputnik::matching_engine::api::Order,
@@ -163,6 +213,9 @@ for Api {
                                         .expect("u64 not found"),
                                 )
                             }
+                            2u32 => {
+                                crate::bindings::sputnik::matching_engine::api::Error::AlreadyIntialized
+                            }
                             _ => unreachable!("invalid variant case index"),
                         }
                     })
@@ -291,6 +344,9 @@ for Api {
                                         .u64()
                                         .expect("u64 not found"),
                                 )
+                            }
+                            2u32 => {
+                                crate::bindings::sputnik::matching_engine::api::Error::AlreadyIntialized
                             }
                             _ => unreachable!("invalid variant case index"),
                         }

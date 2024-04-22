@@ -26,8 +26,16 @@ struct OrderAndStatus {
     order: Order,
     status: stub_matching_engine::OrderStatus,
 }
+
+#[derive(Clone)]
+struct Configuration {
+    id: u64,
+    matching_engine_template_id: String,
+    registry_template_id: String,
+    environment: String,
+}
 struct State {
-    id: Option<u64>,
+    configuration: Option<Configuration>,
     balances: HashMap<u64, u64>,
     external_service_api: Box<dyn ExternalServiceApi>,
     orders: HashMap<u64, OrderAndStatus>,
@@ -36,9 +44,9 @@ struct State {
 thread_local! {
     static STATE: RefCell<State> = RefCell::new(State {
         balances: HashMap::new(),
-        id: None,
         external_service_api: Box::new(ExternalServiceApiProd),
         orders: HashMap::new(),
+        configuration: None,
     });
 }
 fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
@@ -47,12 +55,17 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 
 #[automock]
 trait ExternalServiceApi {
-    fn get_registry(&self) -> stub_registry::Api;
-    fn get_assets(&self) -> HashMap<u64, Asset>;
-    fn get_spot_pairs(&self) -> HashMap<u64, HydratedSpotPair>;
-    fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api;
+    fn get_registry(&self, configuration: Configuration) -> stub_registry::Api;
+    fn get_assets(&self, configuration: Configuration) -> HashMap<u64, Asset>;
+    fn get_spot_pairs(&self, configuration: Configuration) -> HashMap<u64, HydratedSpotPair>;
+    fn get_matching_engine(
+        &self,
+        configuration: Configuration,
+        spot_pair_id: u64,
+    ) -> stub_matching_engine::Api;
     fn place_order(
         &self,
+        configuration: Configuration,
         spot_pair: u64,
         order: stub_matching_engine::Order,
     ) -> Result<stub_matching_engine::OrderStatus, stub_matching_engine::Error>;
@@ -61,9 +74,9 @@ trait ExternalServiceApi {
 pub struct ExternalServiceApiProd;
 
 impl ExternalServiceApi for ExternalServiceApiProd {
-    fn get_registry(&self) -> stub_registry::Api {
-        let template_id = env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
-        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
+    fn get_registry(&self, configuration: Configuration) -> stub_registry::Api {
+        let template_id = configuration.registry_template_id;
+        let environment = configuration.environment;
         let uri = Uri {
             value: format!("worker://{template_id}/{environment}"),
         };
@@ -71,30 +84,33 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         stub_registry::Api::new(&uri)
     }
 
-    fn get_assets(&self) -> HashMap<u64, Asset> {
+    fn get_assets(&self, configuration: Configuration) -> HashMap<u64, Asset> {
         HashMap::from_iter(
-            self.get_registry()
+            self.get_registry(configuration)
                 .get_assets()
                 .iter()
                 .map(|asset| (asset.id, asset.clone())),
         )
     }
 
-    fn get_spot_pairs(&self) -> HashMap<u64, HydratedSpotPair> {
+    fn get_spot_pairs(&self, configuration: Configuration) -> HashMap<u64, HydratedSpotPair> {
         HashMap::from_iter(
-            self.get_registry()
+            self.get_registry(configuration)
                 .get_spot_pairs()
                 .iter()
                 .map(|spot_pair| (spot_pair.id, spot_pair.clone())),
         )
     }
 
-    fn get_matching_engine(&self, spot_pair_id: u64) -> stub_matching_engine::Api {
-        let template_id = std::env::var("MATCHING_ENGINE_TEMPLATE_ID")
-            .expect("MATCHING_ENGINE_TEMPLATE_ID not set");
-        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
+    fn get_matching_engine(
+        &self,
+        configuration: Configuration,
+        spot_pair_id: u64,
+    ) -> stub_matching_engine::Api {
+        let environment = configuration.environment;
+        let matching_engine_template_id = configuration.matching_engine_template_id;
         let uri = Uri {
-            value: format!("worker://{template_id}/{environment}-{spot_pair_id}"),
+            value: format!("worker://{matching_engine_template_id}/{environment}-{spot_pair_id}"),
         };
 
         stub_matching_engine::Api::new(&uri)
@@ -102,17 +118,20 @@ impl ExternalServiceApi for ExternalServiceApiProd {
 
     fn place_order(
         &self,
+        configuration: Configuration,
         spot_pair: u64,
         order: stub_matching_engine::Order,
     ) -> Result<stub_matching_engine::OrderStatus, stub_matching_engine::Error> {
-        self.get_matching_engine(spot_pair).place_order(order)
+        self.get_matching_engine(configuration, spot_pair)
+            .place_order(order)
     }
 }
 
 const ZERO: u64 = 0u64;
 
 fn available_balance(state: &mut State, asset_id: u64) -> u64 {
-    let spot_pairs = state.external_service_api.get_spot_pairs();
+    let configuration = state.configuration.clone().expect("Must be initialized");
+    let spot_pairs = state.external_service_api.get_spot_pairs(configuration);
     match state.balances.get(&asset_id) {
         Some(balance) => {
             *balance
@@ -181,7 +200,8 @@ fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::
             order,
             status: _status,
         }) => {
-            let spot_pairs = state.external_service_api.get_spot_pairs();
+            let configuration = state.configuration.clone().expect("Must be configured");
+            let spot_pairs = state.external_service_api.get_spot_pairs(configuration);
             let spot_pair = match spot_pairs.get(&order.spot_pair) {
                 Some(spot_pair) => spot_pair,
                 None => panic!("No spot pair found {}", order.spot_pair),
@@ -205,11 +225,21 @@ fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::
 }
 
 impl Guest for Component {
-    fn initialize(id: u64) -> Result<u64, Error> {
-        with_state(|state| match state.id {
-            Some(existing_id) => Err(AlreadyInitialized(existing_id)),
+    fn initialize(
+        id: u64,
+        matching_engine_template_id: String,
+        registry_template_id: String,
+        environment: String,
+    ) -> Result<u64, Error> {
+        with_state(|state| match state.configuration {
+            Some(Configuration { id, .. }) => Err(AlreadyInitialized(id.clone())),
             None => {
-                state.id = Some(id);
+                state.configuration = Some(Configuration {
+                    id,
+                    matching_engine_template_id,
+                    registry_template_id,
+                    environment,
+                });
                 Ok(id)
             }
         })
@@ -217,7 +247,8 @@ impl Guest for Component {
 
     fn get_balances() -> Vec<AssetBalance> {
         with_state(|state| {
-            let assets = state.external_service_api.get_assets();
+            let configuration = state.configuration.clone().expect("Must be initialized");
+            let assets = state.external_service_api.get_assets(configuration);
             state
                 .balances
                 .iter()
@@ -238,7 +269,8 @@ impl Guest for Component {
 
     fn place_order(order: Order) -> Result<OrderStatus, Error> {
         with_state(|state| {
-            let spot_pairs = state.external_service_api.get_spot_pairs();
+            let configuration = state.configuration.clone().expect("Must be initialized");
+            let spot_pairs = state.external_service_api.get_spot_pairs(configuration);
             match spot_pairs.get(&order.spot_pair) {
                 Some(spot_pair) => {
                     let (required_asset, required_balance) = match order.side {
@@ -249,6 +281,10 @@ impl Guest for Component {
                         Sell => (spot_pair.numerator.clone(), order.size),
                     };
                     let available_balance = available_balance(state, required_asset.id);
+                    let configuration = state
+                        .configuration
+                        .clone()
+                        .expect("accountant should be initialized");
                     if available_balance < required_balance {
                         Err(InsufficientFunds(available_balance))
                     } else {
@@ -258,14 +294,13 @@ impl Guest for Component {
                             side: order.side,
                             price: order.price,
                             size: order.size,
-                            trader: state
-                                .id
-                                .expect("accountant should be initialized with trader id"),
+                            trader: configuration.id,
                         };
-                        match state
-                            .external_service_api
-                            .place_order(order.spot_pair, matching_engine_order)
-                        {
+                        match state.external_service_api.place_order(
+                            configuration,
+                            order.spot_pair,
+                            matching_engine_order,
+                        ) {
                             Err(matching_engine_error) => {
                                 Err(MatchingEngineError(matching_engine_error))
                             }
@@ -293,7 +328,9 @@ impl Guest for Component {
 
     fn deposit(asset_id: u64, amount: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
-            let assets = state.external_service_api.get_assets();
+            let configuration = state.configuration.clone().expect("Must be initialized");
+
+            let assets = state.external_service_api.get_assets(configuration);
             let balance = increase_balance(state, asset_id, amount);
             match assets.get(&asset_id) {
                 Some(asset) => Ok(AssetBalance {
@@ -308,7 +345,8 @@ impl Guest for Component {
 
     fn withdraw(asset_id: u64, amount: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
-            let assets = state.external_service_api.get_assets();
+            let configuration = state.configuration.clone().expect("Must be initialized");
+            let assets = state.external_service_api.get_assets(configuration);
             let available = available_balance(state, asset_id);
             if available <= amount {
                 Err(InsufficientFunds(available))
@@ -385,7 +423,8 @@ mod tests {
     }
 
     fn init() {
-        <Component as Guest>::initialize(1).expect("successful initialization");
+        <Component as Guest>::initialize(1, "".to_string(), "".to_string(), "".to_string())
+            .expect("successful initialization");
     }
 
     fn setup_mock_registry(fills: f32) {
@@ -431,7 +470,7 @@ mod tests {
             )]));
         mock_registry_api
             .expect_place_order()
-            .returning(move |_, order| {
+            .returning(move |_, _, order| {
                 if fills == 0f32 {
                     Ok(OrderStatus {
                         id: order.id,

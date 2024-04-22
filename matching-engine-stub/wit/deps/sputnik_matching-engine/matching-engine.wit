@@ -4,7 +4,10 @@ interface api {
   variant error {
     duplicate-id(u64),
     missing-order(u64),
+    already-intialized,
   }
+
+  init: func() -> result<_, error>;
 
   place-order: func(order: order) -> result<order-status, error>;
 

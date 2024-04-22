@@ -4,10 +4,10 @@ use std::collections::HashMap;
 
 use priority_queue::PriorityQueue;
 
-use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 use sputnik::matching_engine::api::Error::MissingOrder;
 use sputnik::matching_engine::api::Side::{Buy, Sell};
 use sputnik::matching_engine::api::Status::{Canceled, Filled, Open, PartialFilled};
+use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 
 use crate::bindings::exports::sputnik;
 
@@ -23,12 +23,15 @@ enum Price {
     BidPrice(u64),
 }
 
+struct Configuration;
+
 struct State {
     bids: PriorityQueue<OrderId, Price>,
     asks: PriorityQueue<OrderId, Price>,
     orders: HashMap<OrderId, Order>,
     order_statuses: HashMap<OrderId, OrderStatus>,
     fills: Vec<Fill>,
+    configuration: Option<Configuration>,
 }
 
 thread_local! {
@@ -38,6 +41,7 @@ thread_local! {
         orders: HashMap::new(),
         order_statuses: HashMap::new(),
         fills: vec![],
+        configuration: None,
     });
 }
 
@@ -46,6 +50,10 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 }
 
 impl Guest for Component {
+    fn init() -> Result<(), Error> {
+        todo!()
+    }
+
     fn place_order(order: Order) -> Result<OrderStatus, Error> {
         with_state(|state| {
             if state.orders.contains_key(&order.id) {
@@ -186,14 +194,14 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Component, Guest};
-    use crate::bindings::exports::sputnik::matching_engine::api::{
-        Fill, Order, OrderBook, OrderStatus,
-    };
     use crate::bindings::exports::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::exports::sputnik::matching_engine::api::Status::{
         Canceled, Filled, Open, PartialFilled,
     };
+    use crate::bindings::exports::sputnik::matching_engine::api::{
+        Fill, Order, OrderBook, OrderStatus,
+    };
+    use crate::{Component, Guest};
 
     impl PartialEq for Order {
         fn eq(&self, other: &Self) -> bool {
