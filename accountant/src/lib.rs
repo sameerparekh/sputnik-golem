@@ -522,6 +522,7 @@ mod tests {
     }
     #[test]
     fn test_deposit() {
+        init();
         setup_mock_registry(0f32);
 
         let asset_balance = perform_btc_deposit();
@@ -541,6 +542,7 @@ mod tests {
 
     #[test]
     fn test_withdrawal() {
+        init();
         setup_mock_registry(0f32);
         perform_btc_deposit();
         let asset_balance = perform_withdrawal();
@@ -560,6 +562,7 @@ mod tests {
 
     #[test]
     fn test_get_balances() {
+        init();
         setup_mock_registry(0f32);
 
         perform_btc_deposit();

@@ -4,10 +4,10 @@ use std::collections::HashMap;
 
 use priority_queue::PriorityQueue;
 
+use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 use sputnik::matching_engine::api::Error::MissingOrder;
 use sputnik::matching_engine::api::Side::{Buy, Sell};
 use sputnik::matching_engine::api::Status::{Canceled, Filled, Open, PartialFilled};
-use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 
 use crate::bindings::exports::sputnik;
 
@@ -51,7 +51,13 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 
 impl Guest for Component {
     fn init() -> Result<(), Error> {
-        todo!()
+        with_state(|state| match state.configuration {
+            None => {
+                state.configuration = Some(Configuration);
+                Ok(())
+            }
+            Some(_) => Err(Error::AlreadyIntialized),
+        })
     }
 
     fn place_order(order: Order) -> Result<OrderStatus, Error> {
@@ -194,14 +200,14 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
+    use crate::{Component, Guest};
+    use crate::bindings::exports::sputnik::matching_engine::api::{
+        Fill, Order, OrderBook, OrderStatus,
+    };
     use crate::bindings::exports::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::exports::sputnik::matching_engine::api::Status::{
         Canceled, Filled, Open, PartialFilled,
     };
-    use crate::bindings::exports::sputnik::matching_engine::api::{
-        Fill, Order, OrderBook, OrderStatus,
-    };
-    use crate::{Component, Guest};
 
     impl PartialEq for Order {
         fn eq(&self, other: &Self) -> bool {

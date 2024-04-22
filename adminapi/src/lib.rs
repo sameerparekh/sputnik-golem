@@ -5,8 +5,8 @@ use mockall::automock;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
+use crate::bindings::exports::sputnik::adminapi::api::Error::{Internal, UnableToMakeEngine};
 use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
-use crate::bindings::exports::sputnik::adminapi::api::Error::Internal;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::ids_stub::stub_ids;
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
@@ -56,7 +56,7 @@ trait ExternalServiceApi {
     fn create_spot_pair(&self, spot_pair: &SpotPair) -> Result<HydratedSpotPair, RegistryError>;
 
     fn create_trader(&self, trader: &Trader) -> Result<Trader, RegistryError>;
-    fn create_matching_engine(&self, spot_pair_id: u64);
+    fn create_matching_engine(&self, spot_pair_id: u64) -> Result<(), Error>;
 
     fn create_accountant(&self, trader_id: u64);
 }
@@ -100,7 +100,7 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         self.get_registry().add_trader(trader)
     }
 
-    fn create_matching_engine(&self, spot_pair_id: u64) {
+    fn create_matching_engine(&self, spot_pair_id: u64) -> Result<(), Error> {
         let template_id =
             env::var("MATCHING_ENGINE_TEMPLATE_ID").expect("MATCHING_ENGINE_TEMPLATE_ID not set");
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
@@ -108,8 +108,11 @@ impl ExternalServiceApi for ExternalServiceApiProd {
             value: format!("worker://{template_id}/{environment}-{spot_pair_id}"),
         };
 
-        // let engine = stub_matching_engine::Api::new(&uri);
-        // engine.init();
+        let engine = stub_matching_engine::Api::new(&uri);
+        match engine.init() {
+            Ok(_) => Ok(()),
+            Err(err) => Err(UnableToMakeEngine(format!("{}", err))),
+        }
     }
 
     fn create_accountant(&self, trader_id: u64) {
@@ -161,7 +164,7 @@ impl Guest for Component {
     ) -> Result<HydratedSpotPair, Error> {
         with_state(|state| {
             let pair_id = state.external_service_api.get_new_id();
-            state.external_service_api.create_matching_engine(pair_id);
+            state.external_service_api.create_matching_engine(pair_id)?;
             match state.external_service_api.create_spot_pair(&SpotPair {
                 id: pair_id,
                 name,
