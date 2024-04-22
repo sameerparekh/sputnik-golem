@@ -1,0 +1,28 @@
+package sputnik:accountant-stub;
+
+interface stub-accountant {
+  use golem:rpc/types@0.1.0.{uri};
+  use sputnik:accountant/api.{matching-engine-error};
+  use sputnik:accountant/api.{asset};
+  use sputnik:accountant/api.{side};
+  use sputnik:accountant/api.{fill};
+  use sputnik:accountant/api.{error};
+  use sputnik:accountant/api.{asset-balance};
+  use sputnik:accountant/api.{order};
+  use sputnik:accountant/api.{order-status};
+
+  resource api {
+    constructor(location: uri);
+    initialize: func(id: u64, matching-engine-template-id: string, registry-template-id: string, environment: string) -> result<u64, error>;
+    get-balances: func() -> list<asset-balance>;
+    place-order: func(order: order) -> result<order-status, error>;
+    deposit: func(asset: u64, amount: u64) -> result<asset-balance, error>;
+    withdraw: func(asset: u64, amount: u64) -> result<asset-balance, error>;
+    process-maker-fill: func(fill: fill);
+  }
+
+}
+
+world wasm-rpc-stub-accountant {
+  export stub-accountant;
+}

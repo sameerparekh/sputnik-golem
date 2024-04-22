@@ -1,13 +1,20 @@
 [package]
-name = "accountant"
+name = "accountant-stub"
 edition = "2021"
-version = "0.1.0"
+version = "0.0.1"
 
 [package.metadata.component]
 package = "sputnik:accountant"
 
 [package.metadata.component.target]
+world = "wasm-rpc-stub-accountant"
 path = "wit"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:registry"]
+path = "wit/deps/sputnik_registry"
 
 [package.metadata.component.target.dependencies."sputnik:registry-stub"]
 path = "wit/deps/sputnik_registry-stub"
@@ -15,27 +22,28 @@ path = "wit/deps/sputnik_registry-stub"
 [package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
 path = "wit/deps/sputnik_matching-engine-stub"
 
-[package.metadata.component.target.dependencies."sputnik:registry"]
-path = "wit/deps/sputnik_registry"
-
 [package.metadata.component.target.dependencies."sputnik:matching-engine"]
 path = "wit/deps/sputnik_matching-engine"
 
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
+[package.metadata.component.target.dependencies."sputnik:accountant"]
+path = "wit/deps/sputnik_accountant"
 
-[dependencies]
-assert_unordered = "0.3.5"
-mockall = "0.12.1"
+[dependencies.golem-wasm-rpc]
+version = "0.0.14"
+features = ["stub"]
+default-features = false
 
 [dependencies.wit-bindgen]
-version = "0.16.0"
+version = "0.17.0"
 features = ["realloc"]
 default-features = false
 
 [lib]
 path = "src/lib.rs"
-name = "accountant"
-edition = "2021"
 crate-type = ["cdylib"]
 required-features = []
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

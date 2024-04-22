@@ -5,9 +5,10 @@ use mockall::automock;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-use crate::bindings::exports::sputnik::adminapi::api::Error::{Internal, UnableToMakeEngine};
 use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
+use crate::bindings::exports::sputnik::adminapi::api::Error::{Internal, UnableToMakeAccountant, UnableToMakeEngine};
 use crate::bindings::golem::rpc::types::Uri;
+use crate::bindings::sputnik::accountant_stub::stub_accountant;
 use crate::bindings::sputnik::ids_stub::stub_ids;
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
 use crate::bindings::sputnik::registry::api::{
@@ -57,8 +58,7 @@ trait ExternalServiceApi {
 
     fn create_trader(&self, trader: &Trader) -> Result<Trader, RegistryError>;
     fn create_matching_engine(&self, spot_pair_id: u64) -> Result<(), Error>;
-
-    fn create_accountant(&self, trader_id: u64);
+    fn create_accountant(&self, trader_id: u64) -> Result<(), Error>;
 }
 
 pub struct ExternalServiceApiProd;
@@ -115,27 +115,24 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         }
     }
 
-    fn create_accountant(&self, trader_id: u64) {
-        let client = Client::new();
+    fn create_accountant(&self, trader_id: u64) -> Result<(), Error> {
+        let matching_engine_template_id =
+            env::var("MATCHING_ENGINE_TEMPLATE_ID").expect("MATCHING_ENGINE_TEMPLATE_ID not set");
+        let registry_template_id =
+            env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
+
         let template_id =
             env::var("ACCOUNTANT_TEMPLATE_ID").expect("ACCOUNTANT_TEMPLATE_ID not set");
-        let golem_api = env::var("GOLEM_API").expect("GOLEM_API not set");
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT not set");
-        let url = format!("{golem_api}/v2/templates/{template_id}/workers");
 
-        let body = CreateWorkerBody::new(
-            format!("{environment}-{trader_id}"),
-            vec![vec!["ENVIRONMENT".to_string(), environment.clone()]],
-        );
-        let token = env::var("GOLEM_TOKEN_SECRET").expect("GOLEM_TOKEN_SECRET not set");
-
-        println!("Creating accountant {environment}-{trader_id} at {url} ");
-
-        let _ = client
-            .post(url)
-            .json(&body)
-            .header("Authorization", format!("Bearer {}", token))
-            .send();
+        let uri = Uri {
+            value: format!("worker://{template_id}/{environment}-{trader_id}"),
+        };
+        let accountant = stub_accountant::Api::new(&uri);
+        match accountant.initialize(trader_id, matching_engine_template_id.as_str(), registry_template_id.as_str(), environment.as_str()) {
+            Ok(_) => Ok(()),
+            Err(err) => Err(UnableToMakeAccountant(format!("{}", err))),
+        }
     }
 }
 

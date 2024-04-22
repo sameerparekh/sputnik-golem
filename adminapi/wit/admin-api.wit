@@ -8,6 +8,7 @@ interface api {
 
   variant error {
     unable-to-make-engine(string),
+    unable-to-make-accountant(string),
     internal(string),
   }
 
@@ -20,5 +21,6 @@ world adminapi {
   import sputnik: ids-stub/stub-ids;
   import sputnik: registry-stub/stub-registry;
   import sputnik: matching-engine-stub/stub-matching-engine;
+  import sputnik: accountant-stub/stub-accountant;
   export api;
 }

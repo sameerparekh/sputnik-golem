@@ -1,3 +1,3 @@
 [workspace]
-members = ["adminapi", "matching-engine", "registry", "accountant", "registry-stub", "matching-engine-stub", "ids", "ids-stub"]
+members = ["adminapi", "matching-engine", "registry", "accountant", "registry-stub", "matching-engine-stub", "ids", "ids-stub", "accountant-stub"]
 resolver = "2"
