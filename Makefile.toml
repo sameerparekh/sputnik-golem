@@ -20,7 +20,7 @@ cwd = "."
 dependencies = ["generate-ids-stub"]
 
 [tasks.add-stub-dependency-matching-engine-adminapi]
-args = ["add-stub-dependency", "--stub-wit-root", "matching-engine-stub/wit", "--dest-wit-root", "adminapi/wit", "--update-cargo-toml"]
+args = ["add-stub-dependency", "--stub-wit-root", "matching-engine-stub/wit", "--dest-wit-root", "adminapi/wit", "--overwrite", "--update-cargo-toml"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 dependencies = ["generate-matching-engine-stub"]
