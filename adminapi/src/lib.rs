@@ -6,7 +6,9 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
 use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
-use crate::bindings::exports::sputnik::adminapi::api::Error::{Internal, UnableToMakeAccountant, UnableToMakeEngine};
+use crate::bindings::exports::sputnik::adminapi::api::Error::{
+    Internal, UnableToMakeAccountant, UnableToMakeEngine,
+};
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
 use crate::bindings::sputnik::ids_stub::stub_ids;
@@ -129,7 +131,12 @@ impl ExternalServiceApi for ExternalServiceApiProd {
             value: format!("worker://{template_id}/{environment}-{trader_id}"),
         };
         let accountant = stub_accountant::Api::new(&uri);
-        match accountant.initialize(trader_id, matching_engine_template_id.as_str(), registry_template_id.as_str(), environment.as_str()) {
+        match accountant.initialize(
+            trader_id,
+            matching_engine_template_id.as_str(),
+            registry_template_id.as_str(),
+            environment.as_str(),
+        ) {
             Ok(_) => Ok(()),
             Err(err) => Err(UnableToMakeAccountant(format!("{}", err))),
         }
