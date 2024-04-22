@@ -19,5 +19,6 @@ interface api {
 world adminapi {
   import sputnik: ids-stub/stub-ids;
   import sputnik: registry-stub/stub-registry;
+  import sputnik: matching-engine-stub/stub-matching-engine;
   export api;
 }

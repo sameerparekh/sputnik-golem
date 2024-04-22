@@ -9,7 +9,7 @@ use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
 use crate::bindings::exports::sputnik::adminapi::api::Error::Internal;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::ids_stub::stub_ids;
-// use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
+use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
 use crate::bindings::sputnik::registry::api::{
     Asset, Error as RegistryError, HydratedSpotPair, SpotPair,
 };
