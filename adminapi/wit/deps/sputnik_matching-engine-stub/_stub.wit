@@ -1,0 +1,26 @@
+package sputnik:matching-engine-stub;
+
+interface stub-matching-engine {
+  use golem:rpc/types@0.1.0.{uri};
+  use sputnik:matching-engine/api.{error};
+  use sputnik:matching-engine/api.{side};
+  use sputnik:matching-engine/api.{order};
+  use sputnik:matching-engine/api.{order-book};
+  use sputnik:matching-engine/api.{status};
+  use sputnik:matching-engine/api.{fill};
+  use sputnik:matching-engine/api.{order-status};
+
+  resource api {
+    constructor(location: uri);
+    init: func() -> result<_, error>;
+    place-order: func(order: order) -> result<order-status, error>;
+    cancel-order: func(id: u64) -> result<order-status, error>;
+    get-order-book: func() -> order-book;
+    get-order-status: func(id: u64) -> option<order-status>;
+  }
+
+}
+
+world wasm-rpc-stub-matching-engine {
+  export stub-matching-engine;
+}
