@@ -5,7 +5,7 @@ usage() {
   echo "  template-name: Template to update"
 }
 
-USE_CLOUD=false
+USE_CLOUD="${USE_CLOUD:-false}"
 
 while getopts ":c" opt; do
   case $opt in

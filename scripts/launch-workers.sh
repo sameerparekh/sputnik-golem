@@ -5,8 +5,8 @@ usage() {
   echo "  -e env       : Set environment (default: test)"
 }
 
-USE_CLOUD=false
-ENVIRONMENT=test
+USE_CLOUD="${USE_CLOUD:-false}"
+ENVIRONMENT="test"
 
 while getopts "ce:" opt; do
   case $opt in
