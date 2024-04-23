@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::hash_map::Entry::Vacant;
 use std::collections::HashMap;
 
 use crate::bindings::exports::sputnik::registry::api::{
@@ -74,38 +75,36 @@ impl Guest for Component {
 
     fn add_asset(asset: Asset) -> Result<Asset, Error> {
         with_state(|state| {
-            if state.assets.contains_key(&asset.id) {
-                Err(Error::DuplicateId(asset.id))
-            } else {
-                state.assets.insert(asset.id, asset.clone());
+            if let Vacant(entry) = state.assets.entry(asset.id) {
+                entry.insert(asset.clone());
                 Ok(asset)
+            } else {
+                Err(Error::DuplicateId(asset.id))
             }
         })
     }
 
     fn add_spot_pair(pair: SpotPair) -> Result<HydratedSpotPair, Error> {
-        let result = with_state(|state| {
-            if state.spot_pairs.contains_key(&pair.id) {
-                Err(Error::DuplicateId(pair.id))
-            } else {
-                let hydrated_pair = pair.hydrate(state);
+        with_state(|state| {
+            let hydrated_pair = pair.hydrate(state);
+            if let Vacant(entry) = state.spot_pairs.entry(pair.id) {
                 if hydrated_pair.is_ok() {
-                    state.spot_pairs.insert(pair.id, pair.clone());
+                    entry.insert(pair.clone());
                 }
                 hydrated_pair
+            } else {
+                Err(Error::DuplicateId(pair.id))
             }
-        });
-        // create_matching_engine(pair.id.clone());
-        result
+        })
     }
 
     fn add_trader(trader: Trader) -> Result<Trader, Error> {
         with_state(|state| {
-            if state.traders.contains_key(&trader.id) {
-                Err(Error::DuplicateId(trader.id))
-            } else {
-                state.traders.insert(trader.id, trader.clone());
+            if let Vacant(entry) = state.traders.entry(trader.id) {
+                entry.insert(trader.clone());
                 Ok(trader)
+            } else {
+                Err(Error::DuplicateId(trader.id))
             }
         })
     }
