@@ -17,7 +17,7 @@ path = "wit/deps/sputnik_registry"
 path = "wit/deps/wasm-rpc"
 
 [dependencies.golem-wasm-rpc]
-version = "0.0.14"
+version = "0.0.22"
 features = ["stub"]
 default-features = false
 
