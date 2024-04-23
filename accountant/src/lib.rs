@@ -4,11 +4,11 @@ use std::env;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::accountant::api::{
-    AssetBalance, Error, Fill, Guest, Order, OrderAndStatus, OrderStatus,
-};
 use crate::bindings::exports::sputnik::accountant::api::Error::{
     AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
+};
+use crate::bindings::exports::sputnik::accountant::api::{
+    AssetBalance, Error, Fill, Guest, Order, OrderAndStatus, OrderStatus,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
@@ -392,13 +392,13 @@ mod tests {
 
     use assert_unordered::assert_eq_unordered;
 
-    use crate::{Component, Guest, MockExternalServiceApi, with_state};
     use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
     use crate::bindings::sputnik::matching_engine::api::Fill;
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair};
+    use crate::{with_state, Component, Guest, MockExternalServiceApi};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {
