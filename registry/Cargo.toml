@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 assert_unordered = "0.3.5"
-wit-bindgen = { version = "0.16.0", default-features = false, features = ["realloc"] }
+wit-bindgen = { version = "0.17.0", default-features = false, features = ["realloc"] }
 
 [lib]
 crate-type = ["cdylib"]

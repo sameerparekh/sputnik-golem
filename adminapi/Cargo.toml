@@ -39,17 +39,12 @@ path = "wit/deps/sputnik_matching-engine"
 [dependencies]
 mockall = "0.12.1"
 
-[dependencies.reqwest]
-git = "https://github.com/zivergetech/reqwest"
-branch = "update-feb-2024"
-features = ["json"]
-
 [dependencies.serde]
 version = "1.0.197"
 features = ["derive"]
 
 [dependencies.wit-bindgen]
-version = "0.16.0"
+version = "0.17.0"
 features = ["realloc"]
 default-features = false
 

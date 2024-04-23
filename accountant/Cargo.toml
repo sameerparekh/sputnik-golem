@@ -29,7 +29,7 @@ assert_unordered = "0.3.5"
 mockall = "0.12.1"
 
 [dependencies.wit-bindgen]
-version = "0.16.0"
+version = "0.17.0"
 features = ["realloc"]
 default-features = false
 

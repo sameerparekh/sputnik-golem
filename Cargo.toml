@@ -1,3 +1,4 @@
 [workspace]
 members = ["adminapi", "matching-engine", "registry", "accountant", "registry-stub", "matching-engine-stub", "ids", "ids-stub", "accountant-stub", "traderapi"]
 resolver = "2"
+license = "Proprietary"
