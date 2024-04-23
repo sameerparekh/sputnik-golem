@@ -4,11 +4,11 @@ use std::env;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::accountant::api::Error::{
-    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
-};
 use crate::bindings::exports::sputnik::accountant::api::{
     AssetBalance, Error, Fill, Guest, Order, OrderAndStatus, OrderStatus,
+};
+use crate::bindings::exports::sputnik::accountant::api::Error::{
+    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
@@ -132,30 +132,29 @@ fn available_balance(state: &mut State, asset_id: u64) -> u64 {
                 - state
                     .orders
                     .iter()
-                    .filter_map(|(_, order_and_status)| match order_and_status {
-                        OrderAndStatus { order, status } => {
-                            let spot_pair = spot_pairs
-                                .get(&order.spot_pair)
-                                .expect("spot pair map should have pair");
-                            let remaining_size = status.original_size
-                                - status.fills.iter().map(|fill| fill.size).sum::<u64>();
-                            match order.side {
-                                Buy => {
-                                    if spot_pair.denominator.id == asset_id {
-                                        Some(
-                                            remaining_size * order.price
-                                                / decimal_power(spot_pair.numerator.decimals),
-                                        )
-                                    } else {
-                                        None
-                                    }
+                    .filter_map(|(_, order_and_status)| {
+                        let OrderAndStatus { order, status } = order_and_status;
+                        let spot_pair = spot_pairs
+                            .get(&order.spot_pair)
+                            .expect("spot pair map should have pair");
+                        let remaining_size = status.original_size
+                            - status.fills.iter().map(|fill| fill.size).sum::<u64>();
+                        match order.side {
+                            Buy => {
+                                if spot_pair.denominator.id == asset_id {
+                                    Some(
+                                        remaining_size * order.price
+                                            / decimal_power(spot_pair.numerator.decimals),
+                                    )
+                                } else {
+                                    None
                                 }
-                                Sell => {
-                                    if spot_pair.numerator.id == asset_id {
-                                        Some(remaining_size)
-                                    } else {
-                                        None
-                                    }
+                            }
+                            Sell => {
+                                if spot_pair.numerator.id == asset_id {
+                                    Some(remaining_size)
+                                } else {
+                                    None
                                 }
                             }
                         }
@@ -175,13 +174,13 @@ fn decimal_power(decimals: u8) -> u64 {
 fn decrease_balance(state: &mut State, asset_id: u64, qty: u64) -> u64 {
     let balance = state.balances.entry(asset_id).or_insert_with(|| ZERO);
     *balance -= qty;
-    balance.clone()
+    *balance
 }
 
 fn increase_balance(state: &mut State, asset_id: u64, qty: u64) -> u64 {
     let balance = state.balances.entry(asset_id).or_insert_with(|| ZERO);
     *balance += qty;
-    balance.clone()
+    *balance
 }
 
 fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::Fill) {
@@ -226,7 +225,7 @@ impl Guest for Component {
         environment: String,
     ) -> Result<u64, Error> {
         with_state(|state| match state.configuration {
-            Some(Configuration { id, .. }) => Err(AlreadyInitialized(id.clone())),
+            Some(Configuration { id, .. }) => Err(AlreadyInitialized(id)),
             None => {
                 state.configuration = Some(Configuration {
                     id,
@@ -246,16 +245,15 @@ impl Guest for Component {
             state
                 .balances
                 .iter()
-                .filter_map(|(asset_id, balance)| match assets.get(asset_id) {
-                    Some(asset) => Some((asset.clone(), *balance)),
-                    None => None,
+                .filter_map(|(asset_id, balance)| {
+                    assets.get(asset_id).map(|asset| (asset.clone(), *balance))
                 })
                 .collect::<Vec<(Asset, u64)>>()
                 .iter()
                 .map(|(asset, balance)| AssetBalance {
                     asset: asset.clone(),
                     balance: *balance,
-                    available_balance: available_balance(state, asset.id.clone()),
+                    available_balance: available_balance(state, asset.id),
                 })
                 .collect()
         })
@@ -392,13 +390,13 @@ mod tests {
 
     use assert_unordered::assert_eq_unordered;
 
+    use crate::{Component, Guest, MockExternalServiceApi, with_state};
     use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
     use crate::bindings::sputnik::matching_engine::api::Fill;
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair};
-    use crate::{with_state, Component, Guest, MockExternalServiceApi};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {
