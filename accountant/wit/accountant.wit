@@ -53,7 +53,7 @@ interface api {
 
   withdraw: func(asset: u64, amount: u64) -> result<asset-balance, error>;
 
-  process-maker-fill: func(fill: fill) -> ();
+  process-maker-fill: func(fill: fill);
 
   get-orders: func() -> list<order-and-status>;
 }
