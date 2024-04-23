@@ -24,3 +24,8 @@ jobs:
         run: scripts/build.sh
       - name: Run tests
         run: cargo test --verbose
+      - name: Start up docker
+        run: docker-compose up -d
+      - name: Integration tests
+        run: scripts/integration-tests.sh
+
