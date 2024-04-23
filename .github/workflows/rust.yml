@@ -19,7 +19,7 @@ jobs:
       - name: Install protoc
         run: brew install protobuf-c
       - name: Cargo Helpers
-        run: cargo install cargo-make cargo-component
+        run: cargo install cargo-make cargo-component golem-cli
       - name: Build
         run: scripts/build.sh
       - name: Run tests
