@@ -40,6 +40,8 @@ else
   CMD=golem-cli
 fi
 
+export USE_CLOUD
+
 if [ "$NO_BUILD" = 'false' ]; then
   scripts/build.sh
   scripts/update-templates.sh
