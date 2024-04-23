@@ -4,13 +4,11 @@ use std::env;
 use chrono::Utc;
 use mockall::automock;
 
-
-
-use crate::bindings::exports::sputnik::traderapi::api::Error;
-use crate::bindings::exports::sputnik::traderapi::api::Error::InternalError;
 use crate::bindings::exports::sputnik::traderapi::api::{
     AssetBalance, Guest, Order, OrderAndStatus,
 };
+use crate::bindings::exports::sputnik::traderapi::api::Error;
+use crate::bindings::exports::sputnik::traderapi::api::Error::InternalError;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant::api::{
     Error as AccountantError, Order as AccountantOrder,
@@ -18,8 +16,6 @@ use crate::bindings::sputnik::accountant::api::{
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
 use crate::bindings::sputnik::accountant_stub::stub_accountant::OrderStatus;
 use crate::bindings::sputnik::ids_stub::stub_ids;
-
-
 
 mod bindings;
 
@@ -56,21 +52,21 @@ pub struct ExternalServiceApiProd;
 
 impl ExternalServiceApi for ExternalServiceApiProd {
     fn get_ids(&self) -> stub_ids::Api {
-        let template_id = env::var("IDS_TEMPLATE_ID").expect("IDS_TEMPLATE_ID not set");
+        let component_id = env::var("IDS_COMPONENT_ID").expect("IDS_COMPONENT_ID not set");
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{environment}"),
+            value: format!("worker://{component_id}/{environment}"),
         };
 
         stub_ids::Api::new(&uri)
     }
 
     fn get_accountant(&self, trader_id: u64) -> stub_accountant::Api {
-        let template_id =
-            env::var("ACCOUNTANT_TEMPLATE_ID").expect("ACCOUNTANT_TEMPLATE_ID not set");
+        let component_id =
+            env::var("ACCOUNTANT_COMPONENT_ID").expect("ACCOUNTANT_COMPONENT_ID not set");
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{environment}-{trader_id}"),
+            value: format!("worker://{component_id}/{environment}-{trader_id}"),
         };
 
         stub_accountant::Api::new(&uri)

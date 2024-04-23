@@ -2,13 +2,12 @@ use std::cell::RefCell;
 use std::env;
 
 use mockall::automock;
-
 use serde::{Deserialize, Serialize};
 
+use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
 use crate::bindings::exports::sputnik::adminapi::api::Error::{
     Internal, UnableToMakeAccountant, UnableToMakeEngine,
 };
-use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
 use crate::bindings::sputnik::ids_stub::stub_ids;
@@ -67,20 +66,21 @@ pub struct ExternalServiceApiProd;
 
 impl ExternalServiceApi for ExternalServiceApiProd {
     fn get_registry(&self) -> stub_registry::Api {
-        let template_id = env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
+        let component_id =
+            env::var("REGISTRY_COMPONENT_ID").expect("REGISTRY_COMPONENT_ID not set");
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{environment}"),
+            value: format!("worker://{component_id}/{environment}"),
         };
 
         stub_registry::Api::new(&uri)
     }
 
     fn get_ids(&self) -> stub_ids::Api {
-        let template_id = env::var("IDS_TEMPLATE_ID").expect("IDS_TEMPLATE_ID not set");
+        let component_id = env::var("IDS_COMPONENT_ID").expect("IDS_COMPONENT_ID not set");
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{environment}"),
+            value: format!("worker://{component_id}/{environment}"),
         };
 
         stub_ids::Api::new(&uri)
@@ -103,11 +103,11 @@ impl ExternalServiceApi for ExternalServiceApiProd {
     }
 
     fn create_matching_engine(&self, spot_pair_id: u64) -> Result<(), Error> {
-        let template_id =
-            env::var("MATCHING_ENGINE_TEMPLATE_ID").expect("MATCHING_ENGINE_TEMPLATE_ID not set");
+        let component_id =
+            env::var("MATCHING_ENGINE_COMPONENT_ID").expect("MATCHING_ENGINE_COMPONENT_ID not set");
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
-            value: format!("worker://{template_id}/{environment}-{spot_pair_id}"),
+            value: format!("worker://{component_id}/{environment}-{spot_pair_id}"),
         };
 
         let engine = stub_matching_engine::Api::new(&uri);
@@ -118,23 +118,23 @@ impl ExternalServiceApi for ExternalServiceApiProd {
     }
 
     fn create_accountant(&self, trader_id: u64) -> Result<(), Error> {
-        let matching_engine_template_id =
-            env::var("MATCHING_ENGINE_TEMPLATE_ID").expect("MATCHING_ENGINE_TEMPLATE_ID not set");
-        let registry_template_id =
-            env::var("REGISTRY_TEMPLATE_ID").expect("REGISTRY_TEMPLATE_ID not set");
+        let matching_engine_component_id =
+            env::var("MATCHING_ENGINE_COMPONENT_ID").expect("MATCHING_ENGINE_COMPONENT_ID not set");
+        let registry_component_id =
+            env::var("REGISTRY_COMPONENT_ID").expect("REGISTRY_COMPONENT_ID not set");
 
-        let template_id =
-            env::var("ACCOUNTANT_TEMPLATE_ID").expect("ACCOUNTANT_TEMPLATE_ID not set");
+        let component_id =
+            env::var("ACCOUNTANT_COMPONENT_ID").expect("ACCOUNTANT_COMPONENT_ID not set");
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT not set");
 
         let uri = Uri {
-            value: format!("worker://{template_id}/{environment}-{trader_id}"),
+            value: format!("worker://{component_id}/{environment}-{trader_id}"),
         };
         let accountant = stub_accountant::Api::new(&uri);
         match accountant.initialize(
             trader_id,
-            matching_engine_template_id.as_str(),
-            registry_template_id.as_str(),
+            matching_engine_component_id.as_str(),
+            registry_component_id.as_str(),
             environment.as_str(),
         ) {
             Ok(_) => Ok(()),

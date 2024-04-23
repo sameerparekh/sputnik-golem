@@ -15,7 +15,7 @@ interface stub-accountant {
 
   resource api {
     constructor(location: uri);
-    initialize: func(id: u64, matching-engine-template-id: string, registry-template-id: string, environment: string) -> result<u64, error>;
+    initialize: func(id: u64, matching-engine-component-id: string, registry-component-id: string, environment: string) -> result<u64, error>;
     get-balances: func() -> list<asset-balance>;
     place-order: func(order: order) -> result<order-status, error>;
     deposit: func(asset: u64, amount: u64) -> result<asset-balance, error>;

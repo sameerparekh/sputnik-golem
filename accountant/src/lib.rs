@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-
 use mockall::automock;
 
 use crate::bindings::exports::sputnik::accountant::api::{
@@ -24,8 +23,8 @@ struct Component;
 #[derive(Clone)]
 struct Configuration {
     id: u64,
-    matching_engine_template_id: String,
-    registry_template_id: String,
+    matching_engine_component_id: String,
+    registry_component_id: String,
     environment: String,
 }
 struct State {
@@ -69,10 +68,10 @@ pub struct ExternalServiceApiProd;
 
 impl ExternalServiceApi for ExternalServiceApiProd {
     fn get_registry(&self, configuration: Configuration) -> stub_registry::Api {
-        let template_id = configuration.registry_template_id;
+        let component_id = configuration.registry_component_id;
         let environment = configuration.environment;
         let uri = Uri {
-            value: format!("worker://{template_id}/{environment}"),
+            value: format!("worker://{component_id}/{environment}"),
         };
 
         stub_registry::Api::new(&uri)
@@ -102,9 +101,9 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         spot_pair_id: u64,
     ) -> stub_matching_engine::Api {
         let environment = configuration.environment;
-        let matching_engine_template_id = configuration.matching_engine_template_id;
+        let matching_engine_component_id = configuration.matching_engine_component_id;
         let uri = Uri {
-            value: format!("worker://{matching_engine_template_id}/{environment}-{spot_pair_id}"),
+            value: format!("worker://{matching_engine_component_id}/{environment}-{spot_pair_id}"),
         };
 
         stub_matching_engine::Api::new(&uri)
@@ -220,8 +219,8 @@ fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::
 impl Guest for Component {
     fn initialize(
         id: u64,
-        matching_engine_template_id: String,
-        registry_template_id: String,
+        matching_engine_component_id: String,
+        registry_component_id: String,
         environment: String,
     ) -> Result<u64, Error> {
         with_state(|state| match state.configuration {
@@ -229,8 +228,8 @@ impl Guest for Component {
             None => {
                 state.configuration = Some(Configuration {
                     id,
-                    matching_engine_template_id,
-                    registry_template_id,
+                    matching_engine_component_id,
+                    registry_component_id,
                     environment,
                 });
                 Ok(id)

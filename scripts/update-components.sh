@@ -27,9 +27,9 @@ fi
 
 export USE_CLOUD
 
-scripts/update-template.sh ids
-scripts/update-template.sh registry
-scripts/update-template.sh adminapi
-scripts/update-template.sh traderapi
-scripts/update-template.sh accountant
-scripts/update-template.sh matching-engine
+scripts/update-component.sh ids
+scripts/update-component.sh registry
+scripts/update-component.sh adminapi
+scripts/update-component.sh traderapi
+scripts/update-component.sh accountant
+scripts/update-component.sh matching-engine

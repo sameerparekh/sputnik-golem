@@ -36,24 +36,24 @@ else
   CMD=golem-cli
 fi
 
-"$CMD" worker add --template-name ids --worker-name "${ENVIRONMENT}"
-"$CMD" worker add --template-name registry --worker-name "${ENVIRONMENT}"
+"$CMD" worker add --component-name ids --worker-name "${ENVIRONMENT}"
+"$CMD" worker add --component-name registry --worker-name "${ENVIRONMENT}"
 
-IDS_TEMPLATE_ID=$("$CMD" template list -t ids | yq '.[0].templateId')
-REGISTRY_TEMPLATE_ID=$("$CMD" template list -t registry | yq '.[0].templateId')
-MATCHING_ENGINE_TEMPLATE_ID=$("$CMD" template list -t matching-engine | yq '.[0].templateId')
-ACCOUNTANT_TEMPLATE_ID=$("$CMD" template list -t accountant | yq '.[0].templateId')
+IDS_COMPONENT_ID=$("$CMD" --format yaml component list -c ids | yq '.[0].componentId')
+REGISTRY_COMPONENT_ID=$("$CMD" --format yaml component list -c registry | yq '.[0].componentId')
+MATCHING_ENGINE_COMPONENT_ID=$("$CMD" --format yaml component list -c matching-engine | yq '.[0].componentId')
+ACCOUNTANT_COMPONENT_ID=$("$CMD" --format yaml component list -c accountant | yq '.[0].componentId')
 
-"$CMD" worker add --template-name adminapi --worker-name "$ENVIRONMENT" \
-  --env REGISTRY_TEMPLATE_ID="$REGISTRY_TEMPLATE_ID" \
-  --env IDS_TEMPLATE_ID="$IDS_TEMPLATE_ID" \
-  --env MATCHING_ENGINE_TEMPLATE_ID="$MATCHING_ENGINE_TEMPLATE_ID" \
-  --env ACCOUNTANT_TEMPLATE_ID="$ACCOUNTANT_TEMPLATE_ID" \
+"$CMD" worker add --component-name adminapi --worker-name "$ENVIRONMENT" \
+  --env REGISTRY_COMPONENT_ID="$REGISTRY_COMPONENT_ID" \
+  --env IDS_COMPONENT_ID="$IDS_COMPONENT_ID" \
+  --env MATCHING_ENGINE_COMPONENT_ID="$MATCHING_ENGINE_COMPONENT_ID" \
+  --env ACCOUNTANT_COMPONENT_ID="$ACCOUNTANT_COMPONENT_ID" \
   --env ENVIRONMENT="$ENVIRONMENT"
 
-"$CMD" worker add --template-name traderapi --worker-name "$ENVIRONMENT" \
-  --env REGISTRY_TEMPLATE_ID="$REGISTRY_TEMPLATE_ID" \
-  --env IDS_TEMPLATE_ID="$IDS_TEMPLATE_ID" \
-  --env MATCHING_ENGINE_TEMPLATE_ID="$MATCHING_ENGINE_TEMPLATE_ID" \
-  --env ACCOUNTANT_TEMPLATE_ID="$ACCOUNTANT_TEMPLATE_ID" \
+"$CMD" worker add --component-name traderapi --worker-name "$ENVIRONMENT" \
+  --env REGISTRY_COMPONENT_ID="$REGISTRY_COMPONENT_ID" \
+  --env IDS_COMPONENT_ID="$IDS_COMPONENT_ID" \
+  --env MATCHING_ENGINE_COMPONENT_ID="$MATCHING_ENGINE_COMPONENT_ID" \
+  --env ACCOUNTANT_COMPONENT_ID="$ACCOUNTANT_COMPONENT_ID" \
   --env ENVIRONMENT="$ENVIRONMENT"

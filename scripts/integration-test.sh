@@ -44,97 +44,97 @@ export USE_CLOUD
 
 if [ "$NO_BUILD" = 'false' ]; then
   scripts/build.sh
-  scripts/update-templates.sh
+  scripts/update-components.sh
 fi
 scripts/launch-workers.sh -e "$ENVIRONMENT"
 
-USD_ID=$("$CMD" worker invoke-and-await \
-    --template-name=adminapi \
+USD_ID=$("$CMD" --format yaml worker invoke-and-await \
+    --component-name=adminapi \
     --worker-name="$ENVIRONMENT" \
     --function=sputnik:adminapi/api/create-asset \
     --parameters='["USD", 2]' | yq .[0].ok.id)
 
-BTC_ID=$("$CMD" worker invoke-and-await \
-        --template-name=adminapi \
+BTC_ID=$("$CMD" --format yaml worker invoke-and-await \
+        --component-name=adminapi \
         --worker-name="$ENVIRONMENT" \
         --function=sputnik:adminapi/api/create-asset \
         --parameters='["BTC", 8]' | yq .[0].ok.id)
 
-BTCUSD_ID=$("$CMD" worker invoke-and-await \
-                --template-name=adminapi \
+BTCUSD_ID=$("$CMD" --format yaml worker invoke-and-await \
+                --component-name=adminapi \
                 --worker-name="$ENVIRONMENT" \
                 --function=sputnik:adminapi/api/create-spot-pair \
                 --parameters="[\"BTCUSD\", $BTC_ID, $USD_ID]" | yq .[0].ok.id)
 
-PAIR_ID=$("$CMD" worker invoke-and-await \
-  --template-name=registry \
+PAIR_ID=$("$CMD" --format yaml worker invoke-and-await \
+  --component-name=registry \
   --worker-name="$ENVIRONMENT" \
   --function=sputnik:registry/api/get-spot-pairs \
   --parameters='[]' | yq .[0].[0].id)
 
-TRADER_A_ID=$("$CMD" worker invoke-and-await \
-  --template-name=adminapi \
+TRADER_A_ID=$("$CMD" --format yaml worker invoke-and-await \
+  --component-name=adminapi \
   --worker-name="$ENVIRONMENT" \
   --function=sputnik:adminapi/api/create-trader \
   --parameters='["trader a"]' | yq .[0].ok.id)
 
-TRADER_B_ID=$("$CMD" worker invoke-and-await \
-  --template-name=adminapi \
+TRADER_B_ID=$("$CMD" --format yaml worker invoke-and-await \
+  --component-name=adminapi \
   --worker-name="$ENVIRONMENT" \
   --function=sputnik:adminapi/api/create-trader \
   --parameters='["trader b"]' | yq .[0].ok.id)
 
 "$CMD" worker invoke-and-await \
-  --template-name accountant \
+  --component-name accountant \
   --worker-name "${ENVIRONMENT}-${TRADER_A_ID}" \
   --function=sputnik:accountant/api/deposit \
   --parameters="[$BTC_ID, 100000000]"
 
 "$CMD" worker invoke-and-await \
-  --template-name accountant \
+  --component-name accountant \
   --worker-name "${ENVIRONMENT}-${TRADER_A_ID}" \
   --function=sputnik:accountant/api/deposit \
   --parameters="[$USD_ID, 6000000]"
 
 "$CMD" worker invoke-and-await \
-  --template-name accountant \
+  --component-name accountant \
   --worker-name "${ENVIRONMENT}-${TRADER_B_ID}" \
   --function=sputnik:accountant/api/deposit \
   --parameters="[$BTC_ID, 100000000]"
 
 "$CMD" worker invoke-and-await \
-  --template-name accountant \
+  --component-name accountant \
   --worker-name "${ENVIRONMENT}-${TRADER_B_ID}" \
   --function=sputnik:accountant/api/deposit \
   --parameters="[$USD_ID, 6000000]"
 
 "$CMD" worker invoke-and-await \
-  --template-name traderapi \
+  --component-name traderapi \
   --worker-name "${ENVIRONMENT}" \
   --function=sputnik:traderapi/api/place-order \
   --parameters="[$TRADER_A_ID, {\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 6000000, \"size\": 10000000}]"
 
 "$CMD" worker invoke-and-await \
-  --template-name traderapi \
+  --component-name traderapi \
   --worker-name "${ENVIRONMENT}" \
   --function=sputnik:traderapi/api/place-order \
   --parameters="[$TRADER_B_ID, {\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7000000, \"size\": 10000000}]"
 
 
 "$CMD" worker invoke-and-await \
-  --template-name traderapi \
+  --component-name traderapi \
   --worker-name "${ENVIRONMENT}" \
   --function=sputnik:traderapi/api/get-orders \
   --parameters="[$TRADER_A_ID]"
 
 "$CMD" worker invoke-and-await \
-  --template-name traderapi \
+  --component-name traderapi \
   --worker-name "${ENVIRONMENT}" \
   --function=sputnik:traderapi/api/get-orders \
   --parameters="[$TRADER_B_ID]"
 
 "$CMD" worker invoke-and-await \
-  --template-name matching-engine \
+  --component-name matching-engine \
   --worker-name "${ENVIRONMENT}-${BTCUSD_ID}" \
   --function=sputnik:matching-engine/api/get-order-book \
   --parameters='[]'
