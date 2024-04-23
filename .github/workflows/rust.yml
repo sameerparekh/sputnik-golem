@@ -20,7 +20,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable-aarch64-apple-darwin
+          toolchain: stable-x86_64-apple-darwin
           override: true
           components: rustfmt, clippy
       - name: Set up cargo cache
