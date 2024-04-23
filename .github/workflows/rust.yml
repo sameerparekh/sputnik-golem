@@ -18,6 +18,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install protoc
         run: brew install protobuf-c
+      - name: Cargo Make Install
+        run: cargo install cargo-make
       - name: Build
         run: scripts/build.sh
       - name: Run tests
