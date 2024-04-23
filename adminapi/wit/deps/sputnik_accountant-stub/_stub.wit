@@ -3,6 +3,7 @@ package sputnik:accountant-stub;
 interface stub-accountant {
   use golem:rpc/types@0.1.0.{uri};
   use sputnik:accountant/api.{matching-engine-error};
+  use sputnik:accountant/api.{engine-status};
   use sputnik:accountant/api.{asset};
   use sputnik:accountant/api.{side};
   use sputnik:accountant/api.{fill};
@@ -10,6 +11,7 @@ interface stub-accountant {
   use sputnik:accountant/api.{asset-balance};
   use sputnik:accountant/api.{order};
   use sputnik:accountant/api.{order-status};
+  use sputnik:accountant/api.{order-and-status};
 
   resource api {
     constructor(location: uri);
@@ -19,6 +21,7 @@ interface stub-accountant {
     deposit: func(asset: u64, amount: u64) -> result<asset-balance, error>;
     withdraw: func(asset: u64, amount: u64) -> result<asset-balance, error>;
     process-maker-fill: func(fill: fill);
+    get-orders: func() -> list<order-and-status>;
   }
 
 }

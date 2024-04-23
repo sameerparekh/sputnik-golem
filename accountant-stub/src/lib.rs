@@ -678,4 +678,146 @@ for Api {
             );
         ()
     }
+    fn get_orders(
+        &self,
+    ) -> Vec<crate::bindings::sputnik::accountant::api::OrderAndStatus> {
+        let result = self
+            .rpc
+            .invoke_and_await("sputnik:accountant/api/get-orders", &[])
+            .expect(
+                &format!(
+                    "Failed to invoke remote {}", "sputnik:accountant/api/get-orders"
+                ),
+            );
+        (result
+            .tuple_element(0)
+            .expect("tuple not found")
+            .list_elements(|item| {
+                let record = item;
+                crate::bindings::sputnik::accountant::api::OrderAndStatus {
+                    order: {
+                        let record = record
+                            .field(0usize)
+                            .expect("record field not found");
+                        crate::bindings::sputnik::accountant::api::Order {
+                            id: record
+                                .field(0usize)
+                                .expect("record field not found")
+                                .u64()
+                                .expect("u64 not found"),
+                            spot_pair: record
+                                .field(1usize)
+                                .expect("record field not found")
+                                .u64()
+                                .expect("u64 not found"),
+                            timestamp: record
+                                .field(2usize)
+                                .expect("record field not found")
+                                .u64()
+                                .expect("u64 not found"),
+                            side: {
+                                let case_idx = record
+                                    .field(3usize)
+                                    .expect("record field not found")
+                                    .enum_value()
+                                    .expect("enum not found");
+                                match case_idx {
+                                    0u32 => {
+                                        crate::bindings::sputnik::matching_engine::api::Side::Buy
+                                    }
+                                    1u32 => {
+                                        crate::bindings::sputnik::matching_engine::api::Side::Sell
+                                    }
+                                    _ => unreachable!("invalid enum case index"),
+                                }
+                            },
+                            price: record
+                                .field(4usize)
+                                .expect("record field not found")
+                                .u64()
+                                .expect("u64 not found"),
+                            size: record
+                                .field(5usize)
+                                .expect("record field not found")
+                                .u64()
+                                .expect("u64 not found"),
+                        }
+                    },
+                    status: {
+                        let record = record
+                            .field(1usize)
+                            .expect("record field not found");
+                        crate::bindings::sputnik::matching_engine::api::OrderStatus {
+                            id: record
+                                .field(0usize)
+                                .expect("record field not found")
+                                .u64()
+                                .expect("u64 not found"),
+                            fills: record
+                                .field(1usize)
+                                .expect("record field not found")
+                                .list_elements(|item| {
+                                    let record = item;
+                                    crate::bindings::sputnik::matching_engine::api::Fill {
+                                        price: record
+                                            .field(0usize)
+                                            .expect("record field not found")
+                                            .u64()
+                                            .expect("u64 not found"),
+                                        size: record
+                                            .field(1usize)
+                                            .expect("record field not found")
+                                            .u64()
+                                            .expect("u64 not found"),
+                                        taker_order_id: record
+                                            .field(2usize)
+                                            .expect("record field not found")
+                                            .u64()
+                                            .expect("u64 not found"),
+                                        maker_order_id: record
+                                            .field(3usize)
+                                            .expect("record field not found")
+                                            .u64()
+                                            .expect("u64 not found"),
+                                        timestamp: record
+                                            .field(4usize)
+                                            .expect("record field not found")
+                                            .u64()
+                                            .expect("u64 not found"),
+                                    }
+                                })
+                                .expect("list not found"),
+                            status: {
+                                let case_idx = record
+                                    .field(2usize)
+                                    .expect("record field not found")
+                                    .enum_value()
+                                    .expect("enum not found");
+                                match case_idx {
+                                    0u32 => {
+                                        crate::bindings::sputnik::matching_engine::api::Status::Open
+                                    }
+                                    1u32 => {
+                                        crate::bindings::sputnik::matching_engine::api::Status::Filled
+                                    }
+                                    2u32 => {
+                                        crate::bindings::sputnik::matching_engine::api::Status::PartialFilled
+                                    }
+                                    3u32 => {
+                                        crate::bindings::sputnik::matching_engine::api::Status::Canceled
+                                    }
+                                    _ => unreachable!("invalid enum case index"),
+                                }
+                            },
+                            original_size: record
+                                .field(3usize)
+                                .expect("record field not found")
+                                .u64()
+                                .expect("u64 not found"),
+                        }
+                    },
+                }
+            })
+            .expect("list not found"))
+    }
 }

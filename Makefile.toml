@@ -19,6 +19,18 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 dependencies = ["generate-ids-stub"]
 
+[tasks.add-stub-dependency-ids-traderapi]
+args = ["add-stub-dependency", "--stub-wit-root", "ids-stub/wit", "--dest-wit-root", "traderapi/wit", "--overwrite", "--update-cargo-toml"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+dependencies = ["generate-ids-stub"]
+
+[tasks.add-stub-dependency-accountant-traderapi]
+args = ["add-stub-dependency", "--stub-wit-root", "accountant-stub/wit", "--dest-wit-root", "traderapi/wit", "--overwrite", "--update-cargo-toml"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+dependencies = ["generate-accountant-stub"]
+
 [tasks.add-stub-dependency-matching-engine-adminapi]
 args = ["add-stub-dependency", "--stub-wit-root", "matching-engine-stub/wit", "--dest-wit-root", "adminapi/wit", "--overwrite", "--update-cargo-toml"]
 command = "wasm-rpc-stubgen"
@@ -69,8 +81,18 @@ args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/adminapi.wasm", "-
 command = "wasm-rpc-stubgen"
 cwd = "."
 
+[tasks.compose-traderapi]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/traderapi.wasm", "--stub-wasm", "target/wasm32-wasi/debug/accountant_stub.wasm", "--stub-wasm", "target/wasm32-wasi/debug/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/traderapi_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
 [tasks.compose-release-adminapi]
 args = ["compose", "--source-wasm", "target/wasm32-wasi/release/adminapi.wasm", "--stub-wasm", "target/wasm32-wasi/release/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/ids_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/matching_engine_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/accountant_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/adminapi_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
+[tasks.compose-release-traderapi]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/release/traderapi.wasm", "--stub-wasm", "target/wasm32-wasi/release/accountant_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/traderapi_composed.wasm"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 
@@ -98,13 +120,13 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 
 [tasks.post-build]
-dependencies = ["compose-accountant", "compose-adminapi"]
+dependencies = ["compose-accountant", "compose-adminapi", "compose-traderapi"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-accountant", "compose-release-adminapi"]
+dependencies = ["compose-release-accountant", "compose-release-adminapi", "compose-release-traderapi"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-registry-adminapi", "add-stub-dependency-ids-adminapi", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant", "add-stub-dependency-matching-engine-adminapi", "add-stub-dependency-accountant-adminapi"]
+dependencies = ["add-stub-dependency-registry-adminapi", "add-stub-dependency-ids-adminapi", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant", "add-stub-dependency-matching-engine-adminapi", "add-stub-dependency-accountant-adminapi", "add-stub-dependency-accountant-traderapi", "add-stub-dependency-ids-traderapi"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]

@@ -3034,447 +3034,6 @@ pub mod golem {
               }
               
             }
-            pub mod matching_engine_stub {
-              
-              #[allow(clippy::all)]
-              pub mod stub_matching_engine {
-                #[used]
-                #[doc(hidden)]
-                #[cfg(target_arch = "wasm32")]
-                static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
-                pub type Uri = super::super::super::golem::rpc::types::Uri;
-                pub type Error = super::super::super::sputnik::matching_engine::api::Error;
-                pub type Order = super::super::super::sputnik::matching_engine::api::Order;
-                pub type OrderBook = super::super::super::sputnik::matching_engine::api::OrderBook;
-                pub type OrderStatus = super::super::super::sputnik::matching_engine::api::OrderStatus;
-                
-                #[derive(Debug)]
-                #[repr(transparent)]
-                pub struct Api{
-                  handle: wit_bindgen::rt::Resource<Api>,
-                }
-                
-                impl Api{
-                  #[doc(hidden)]
-                  pub unsafe fn from_handle(handle: u32) -> Self {
-                    Self {
-                      handle: wit_bindgen::rt::Resource::from_handle(handle),
-                    }
-                  }
-                  
-                  #[doc(hidden)]
-                  pub fn into_handle(self) -> u32 {
-                    wit_bindgen::rt::Resource::into_handle(self.handle)
-                  }
-                  
-                  #[doc(hidden)]
-                  pub fn handle(&self) -> u32 {
-                    wit_bindgen::rt::Resource::handle(&self.handle)
-                  }
-                }
-                
-                
-                unsafe impl wit_bindgen::rt::WasmResource for Api{
-                  #[inline]
-                  unsafe fn drop(_handle: u32) {
-                    #[cfg(not(target_arch = "wasm32"))]
-                    unreachable!();
-                    
-                    #[cfg(target_arch = "wasm32")]
-                    {
-                      #[link(wasm_import_module = "sputnik:matching-engine-stub/stub-matching-engine")]
-                      extern "C" {
-                        #[link_name = "[resource-drop]api"]
-                        fn drop(_: u32);
-                      }
-                      
-                      drop(_handle);
-                    }
-                  }
-                }
-                
-                impl Api {
-                  #[allow(unused_unsafe, clippy::all)]
-                  pub fn new(location: &Uri,) -> Self{
-                    
-                    #[allow(unused_imports)]
-                    use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                    unsafe {
-                      let super::super::super::golem::rpc::types::Uri{ value:value0, } = location;
-                      let vec1 = value0;
-                      let ptr1 = vec1.as_ptr() as i32;
-                      let len1 = vec1.len() as i32;
-                      
-                      #[cfg(target_arch = "wasm32")]
-                      #[link(wasm_import_module = "sputnik:matching-engine-stub/stub-matching-engine")]
-                      extern "C" {
-                        #[link_name = "[constructor]api"]
-                        fn wit_import(_: i32, _: i32, ) -> i32;
-                      }
-                      
-                      #[cfg(not(target_arch = "wasm32"))]
-                      fn wit_import(_: i32, _: i32, ) -> i32{ unreachable!() }
-                      let ret = wit_import(ptr1, len1);
-                      Api::from_handle(ret as u32)
-                    }
-                  }
-                }
-                impl Api {
-                  #[allow(unused_unsafe, clippy::all)]
-                  pub fn init(&self,) -> Result<(),Error>{
-                    
-                    #[allow(unused_imports)]
-                    use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                    unsafe {
-                      
-                      #[repr(align(8))]
-                      struct RetArea([u8; 24]);
-                      let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                      let ptr0 = ret_area.as_mut_ptr() as i32;
-                      #[cfg(target_arch = "wasm32")]
-                      #[link(wasm_import_module = "sputnik:matching-engine-stub/stub-matching-engine")]
-                      extern "C" {
-                        #[link_name = "[method]api.init"]
-                        fn wit_import(_: i32, _: i32, );
-                      }
-                      
-                      #[cfg(not(target_arch = "wasm32"))]
-                      fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                      wit_import((self).handle() as i32, ptr0);
-                      let l1 = i32::from(*((ptr0 + 0) as *const u8));
-                      match l1 {
-                        0 => {
-                          let e = ();
-                          Ok(e)
-                        }
-                        1 => {
-                          let e = {
-                            let l2 = i32::from(*((ptr0 + 8) as *const u8));
-                            use super::super::super::sputnik::matching_engine::api::Error as V5;
-                            let v5 = match l2 {
-                              0 => {
-                                let e5 = {
-                                  let l3 = *((ptr0 + 16) as *const i64);
-                                  
-                                  l3 as u64
-                                };
-                                V5::DuplicateId(e5)
-                              }
-                              1 => {
-                                let e5 = {
-                                  let l4 = *((ptr0 + 16) as *const i64);
-                                  
-                                  l4 as u64
-                                };
-                                V5::MissingOrder(e5)
-                              }
-                              n => {
-                                debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                V5::AlreadyIntialized
-                              }
-                            };
-                            
-                            v5
-                          };
-                          Err(e)
-                        }
-                        _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                      }
-                    }
-                  }
-                }
-                impl Api {
-                  #[allow(unused_unsafe, clippy::all)]
-                  pub fn place_order(&self,order: Order,) -> Result<OrderStatus,Error>{
-                    
-                    #[allow(unused_imports)]
-                    use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                    unsafe {
-                      
-                      #[repr(align(8))]
-                      struct RetArea([u8; 40]);
-                      let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                      let super::super::super::sputnik::matching_engine::api::Order{ id:id0, timestamp:timestamp0, side:side0, price:price0, size:size0, trader:trader0, } = order;
-                      let ptr1 = ret_area.as_mut_ptr() as i32;
-                      #[cfg(target_arch = "wasm32")]
-                      #[link(wasm_import_module = "sputnik:matching-engine-stub/stub-matching-engine")]
-                      extern "C" {
-                        #[link_name = "[method]api.place-order"]
-                        fn wit_import(_: i32, _: i64, _: i64, _: i32, _: i64, _: i64, _: i64, _: i32, );
-                      }
-                      
-                      #[cfg(not(target_arch = "wasm32"))]
-                      fn wit_import(_: i32, _: i64, _: i64, _: i32, _: i64, _: i64, _: i64, _: i32, ){ unreachable!() }
-                      wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(id0), wit_bindgen::rt::as_i64(timestamp0), side0.clone() as i32, wit_bindgen::rt::as_i64(price0), wit_bindgen::rt::as_i64(size0), wit_bindgen::rt::as_i64(trader0), ptr1);
-                      let l2 = i32::from(*((ptr1 + 0) as *const u8));
-                      match l2 {
-                        0 => {
-                          let e = {
-                            let l3 = *((ptr1 + 8) as *const i64);
-                            let l4 = *((ptr1 + 16) as *const i32);
-                            let l5 = *((ptr1 + 20) as *const i32);
-                            let len6 = l5 as usize;
-                            let l7 = i32::from(*((ptr1 + 24) as *const u8));
-                            let l8 = *((ptr1 + 32) as *const i64);
-                            
-                            super::super::super::sputnik::matching_engine::api::OrderStatus{
-                              id: l3 as u64,
-                              fills: Vec::from_raw_parts(l4 as *mut _, len6, len6),
-                              status: super::super::super::sputnik::matching_engine::api::Status::_lift(l7 as u8),
-                              original_size: l8 as u64,
-                            }
-                          };
-                          Ok(e)
-                        }
-                        1 => {
-                          let e = {
-                            let l9 = i32::from(*((ptr1 + 8) as *const u8));
-                            use super::super::super::sputnik::matching_engine::api::Error as V12;
-                            let v12 = match l9 {
-                              0 => {
-                                let e12 = {
-                                  let l10 = *((ptr1 + 16) as *const i64);
-                                  
-                                  l10 as u64
-                                };
-                                V12::DuplicateId(e12)
-                              }
-                              1 => {
-                                let e12 = {
-                                  let l11 = *((ptr1 + 16) as *const i64);
-                                  
-                                  l11 as u64
-                                };
-                                V12::MissingOrder(e12)
-                              }
-                              n => {
-                                debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                V12::AlreadyIntialized
-                              }
-                            };
-                            
-                            v12
-                          };
-                          Err(e)
-                        }
-                        _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                      }
-                    }
-                  }
-                }
-                impl Api {
-                  #[allow(unused_unsafe, clippy::all)]
-                  pub fn cancel_order(&self,id: u64,) -> Result<OrderStatus,Error>{
-                    
-                    #[allow(unused_imports)]
-                    use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                    unsafe {
-                      
-                      #[repr(align(8))]
-                      struct RetArea([u8; 40]);
-                      let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                      let ptr0 = ret_area.as_mut_ptr() as i32;
-                      #[cfg(target_arch = "wasm32")]
-                      #[link(wasm_import_module = "sputnik:matching-engine-stub/stub-matching-engine")]
-                      extern "C" {
-                        #[link_name = "[method]api.cancel-order"]
-                        fn wit_import(_: i32, _: i64, _: i32, );
-                      }
-                      
-                      #[cfg(not(target_arch = "wasm32"))]
-                      fn wit_import(_: i32, _: i64, _: i32, ){ unreachable!() }
-                      wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(id), ptr0);
-                      let l1 = i32::from(*((ptr0 + 0) as *const u8));
-                      match l1 {
-                        0 => {
-                          let e = {
-                            let l2 = *((ptr0 + 8) as *const i64);
-                            let l3 = *((ptr0 + 16) as *const i32);
-                            let l4 = *((ptr0 + 20) as *const i32);
-                            let len5 = l4 as usize;
-                            let l6 = i32::from(*((ptr0 + 24) as *const u8));
-                            let l7 = *((ptr0 + 32) as *const i64);
-                            
-                            super::super::super::sputnik::matching_engine::api::OrderStatus{
-                              id: l2 as u64,
-                              fills: Vec::from_raw_parts(l3 as *mut _, len5, len5),
-                              status: super::super::super::sputnik::matching_engine::api::Status::_lift(l6 as u8),
-                              original_size: l7 as u64,
-                            }
-                          };
-                          Ok(e)
-                        }
-                        1 => {
-                          let e = {
-                            let l8 = i32::from(*((ptr0 + 8) as *const u8));
-                            use super::super::super::sputnik::matching_engine::api::Error as V11;
-                            let v11 = match l8 {
-                              0 => {
-                                let e11 = {
-                                  let l9 = *((ptr0 + 16) as *const i64);
-                                  
-                                  l9 as u64
-                                };
-                                V11::DuplicateId(e11)
-                              }
-                              1 => {
-                                let e11 = {
-                                  let l10 = *((ptr0 + 16) as *const i64);
-                                  
-                                  l10 as u64
-                                };
-                                V11::MissingOrder(e11)
-                              }
-                              n => {
-                                debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                V11::AlreadyIntialized
-                              }
-                            };
-                            
-                            v11
-                          };
-                          Err(e)
-                        }
-                        _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                      }
-                    }
-                  }
-                }
-                impl Api {
-                  #[allow(unused_unsafe, clippy::all)]
-                  pub fn get_order_book(&self,) -> OrderBook{
-                    
-                    #[allow(unused_imports)]
-                    use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                    unsafe {
-                      
-                      #[repr(align(4))]
-                      struct RetArea([u8; 16]);
-                      let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                      let ptr0 = ret_area.as_mut_ptr() as i32;
-                      #[cfg(target_arch = "wasm32")]
-                      #[link(wasm_import_module = "sputnik:matching-engine-stub/stub-matching-engine")]
-                      extern "C" {
-                        #[link_name = "[method]api.get-order-book"]
-                        fn wit_import(_: i32, _: i32, );
-                      }
-                      
-                      #[cfg(not(target_arch = "wasm32"))]
-                      fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                      wit_import((self).handle() as i32, ptr0);
-                      let l1 = *((ptr0 + 0) as *const i32);
-                      let l2 = *((ptr0 + 4) as *const i32);
-                      let base9 = l1;
-                      let len9 = l2;
-                      let mut result9 = Vec::with_capacity(len9 as usize);
-                      for i in 0..len9 {
-                        let base = base9 + i * 48;
-                        let e9 = {
-                          let l3 = *((base + 0) as *const i64);
-                          let l4 = *((base + 8) as *const i64);
-                          let l5 = i32::from(*((base + 16) as *const u8));
-                          let l6 = *((base + 24) as *const i64);
-                          let l7 = *((base + 32) as *const i64);
-                          let l8 = *((base + 40) as *const i64);
-                          
-                          super::super::super::sputnik::matching_engine::api::Order{
-                            id: l3 as u64,
-                            timestamp: l4 as u64,
-                            side: super::super::super::sputnik::matching_engine::api::Side::_lift(l5 as u8),
-                            price: l6 as u64,
-                            size: l7 as u64,
-                            trader: l8 as u64,
-                          }
-                        };
-                        result9.push(e9);
-                      }
-                      wit_bindgen::rt::dealloc(base9, (len9 as usize) * 48, 8);
-                      let l10 = *((ptr0 + 8) as *const i32);
-                      let l11 = *((ptr0 + 12) as *const i32);
-                      let base18 = l10;
-                      let len18 = l11;
-                      let mut result18 = Vec::with_capacity(len18 as usize);
-                      for i in 0..len18 {
-                        let base = base18 + i * 48;
-                        let e18 = {
-                          let l12 = *((base + 0) as *const i64);
-                          let l13 = *((base + 8) as *const i64);
-                          let l14 = i32::from(*((base + 16) as *const u8));
-                          let l15 = *((base + 24) as *const i64);
-                          let l16 = *((base + 32) as *const i64);
-                          let l17 = *((base + 40) as *const i64);
-                          
-                          super::super::super::sputnik::matching_engine::api::Order{
-                            id: l12 as u64,
-                            timestamp: l13 as u64,
-                            side: super::super::super::sputnik::matching_engine::api::Side::_lift(l14 as u8),
-                            price: l15 as u64,
-                            size: l16 as u64,
-                            trader: l17 as u64,
-                          }
-                        };
-                        result18.push(e18);
-                      }
-                      wit_bindgen::rt::dealloc(base18, (len18 as usize) * 48, 8);
-                      super::super::super::sputnik::matching_engine::api::OrderBook{
-                        bids: result9,
-                        asks: result18,
-                      }
-                    }
-                  }
-                }
-                impl Api {
-                  #[allow(unused_unsafe, clippy::all)]
-                  pub fn get_order_status(&self,id: u64,) -> Option<OrderStatus>{
-                    
-                    #[allow(unused_imports)]
-                    use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                    unsafe {
-                      
-                      #[repr(align(8))]
-                      struct RetArea([u8; 40]);
-                      let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                      let ptr0 = ret_area.as_mut_ptr() as i32;
-                      #[cfg(target_arch = "wasm32")]
-                      #[link(wasm_import_module = "sputnik:matching-engine-stub/stub-matching-engine")]
-                      extern "C" {
-                        #[link_name = "[method]api.get-order-status"]
-                        fn wit_import(_: i32, _: i64, _: i32, );
-                      }
-                      
-                      #[cfg(not(target_arch = "wasm32"))]
-                      fn wit_import(_: i32, _: i64, _: i32, ){ unreachable!() }
-                      wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(id), ptr0);
-                      let l1 = i32::from(*((ptr0 + 0) as *const u8));
-                      match l1 {
-                        0 => None,
-                        1 => {
-                          let e = {
-                            let l2 = *((ptr0 + 8) as *const i64);
-                            let l3 = *((ptr0 + 16) as *const i32);
-                            let l4 = *((ptr0 + 20) as *const i32);
-                            let len5 = l4 as usize;
-                            let l6 = i32::from(*((ptr0 + 24) as *const u8));
-                            let l7 = *((ptr0 + 32) as *const i64);
-                            
-                            super::super::super::sputnik::matching_engine::api::OrderStatus{
-                              id: l2 as u64,
-                              fills: Vec::from_raw_parts(l3 as *mut _, len5, len5),
-                              status: super::super::super::sputnik::matching_engine::api::Status::_lift(l6 as u8),
-                              original_size: l7 as u64,
-                            }
-                          };
-                          Some(e)
-                        }
-                        _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                      }
-                    }
-                  }
-                }
-                
-              }
-              
-            }
             pub mod registry {
               
               #[allow(clippy::all)]
@@ -4474,7 +4033,7 @@ pub mod golem {
           }
           pub mod exports {
             pub mod sputnik {
-              pub mod adminapi {
+              pub mod traderapi {
                 
                 #[allow(clippy::all)]
                 pub mod api {
@@ -4482,26 +4041,32 @@ pub mod golem {
                   #[doc(hidden)]
                   #[cfg(target_arch = "wasm32")]
                   static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_section;
-                  pub type Asset = super::super::super::super::sputnik::registry::api::Asset;
-                  pub type HydratedSpotPair = super::super::super::super::sputnik::registry::api::HydratedSpotPair;
-                  pub type Trader = super::super::super::super::sputnik::registry::api::Trader;
-                  #[derive(Clone)]
+                  pub type AssetBalance = super::super::super::super::sputnik::accountant::api::AssetBalance;
+                  pub type Side = super::super::super::super::sputnik::accountant::api::Side;
+                  pub type OrderAndStatus = super::super::super::super::sputnik::accountant::api::OrderAndStatus;
+                  pub type AccountantError = super::super::super::super::sputnik::accountant::api::Error;
+                  #[repr(C)]
+                  #[derive(Clone, Copy)]
+                  pub struct Order {
+                    pub spot_pair: u64,
+                    pub side: Side,
+                    pub price: u64,
+                    pub size: u64,
+                  }
+                  impl ::core::fmt::Debug for Order {
+                    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                      f.debug_struct("Order").field("spot-pair", &self.spot_pair).field("side", &self.side).field("price", &self.price).field("size", &self.size).finish()
+                    }
+                  }
+                  #[derive(Clone, Copy)]
                   pub enum Error{
-                    UnableToMakeEngine(wit_bindgen::rt::string::String),
-                    UnableToMakeAccountant(wit_bindgen::rt::string::String),
-                    Internal(wit_bindgen::rt::string::String),
+                    InternalError(AccountantError),
                   }
                   impl ::core::fmt::Debug for Error {
                     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                       match self {
-                        Error::UnableToMakeEngine(e) => {
-                          f.debug_tuple("Error::UnableToMakeEngine").field(e).finish()
-                        }
-                        Error::UnableToMakeAccountant(e) => {
-                          f.debug_tuple("Error::UnableToMakeAccountant").field(e).finish()
-                        }
-                        Error::Internal(e) => {
-                          f.debug_tuple("Error::Internal").field(e).finish()
+                        Error::InternalError(e) => {
+                          f.debug_tuple("Error::InternalError").field(e).finish()
                         }
                       }
                     }
@@ -4516,9 +4081,9 @@ pub mod golem {
                   const _: () = {
                     
                     #[doc(hidden)]
-                    #[export_name = "sputnik:adminapi/api#create-asset"]
+                    #[export_name = "sputnik:traderapi/api#get-balances"]
                     #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_create_asset(arg0: i32,arg1: i32,arg2: i32,) -> i32 {
+                    unsafe extern "C" fn __export_get_balances(arg0: i64,) -> i32 {
                       #[allow(unused_imports)]
                       use wit_bindgen::rt::{alloc, vec::Vec, string::String};
                       
@@ -4536,100 +4101,71 @@ pub mod golem {
                       #[cfg(target_arch="wasm32")]
                       wit_bindgen::rt::run_ctors_once();
                       
-                      let len0 = arg1 as usize;
-                      let bytes0 = Vec::from_raw_parts(arg0 as *mut _, len0, len0);
-                      let result1 = <_GuestImpl as Guest>::create_asset(wit_bindgen::rt::string_lift(bytes0), arg2 as u8);
-                      let ptr2 = _RET_AREA.0.as_mut_ptr() as i32;
-                      match result1 {
-                        Ok(e) => { {
-                          *((ptr2 + 0) as *mut u8) = (0i32) as u8;
-                          let super::super::super::super::sputnik::registry::api::Asset{ id:id3, name:name3, decimals:decimals3, } = e;
-                          *((ptr2 + 8) as *mut i64) = wit_bindgen::rt::as_i64(id3);
+                      let result0 = <_GuestImpl as Guest>::get_balances(arg0 as u64);
+                      let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
+                      let vec5 = result0;
+                      let len5 = vec5.len() as i32;
+                      let layout5 = alloc::Layout::from_size_align_unchecked(vec5.len() * 40, 8);
+                      let result5 = if layout5.size() != 0
+                      {
+                        let ptr = alloc::alloc(layout5);
+                        if ptr.is_null()
+                        {
+                          alloc::handle_alloc_error(layout5);
+                        }
+                        ptr
+                      }else {{
+                        ::core::ptr::null_mut()
+                      }};
+                      for (i, e) in vec5.into_iter().enumerate() {
+                        let base = result5 as i32 + (i as i32) * 40;
+                        {
+                          let super::super::super::super::sputnik::accountant::api::AssetBalance{ asset:asset2, balance:balance2, available_balance:available_balance2, } = e;
+                          let super::super::super::super::sputnik::registry::api::Asset{ id:id3, name:name3, decimals:decimals3, } = asset2;
+                          *((base + 0) as *mut i64) = wit_bindgen::rt::as_i64(id3);
                           let vec4 = (name3.into_bytes()).into_boxed_slice();
                           let ptr4 = vec4.as_ptr() as i32;
                           let len4 = vec4.len() as i32;
                           ::core::mem::forget(vec4);
-                          *((ptr2 + 20) as *mut i32) = len4;
-                          *((ptr2 + 16) as *mut i32) = ptr4;
-                          *((ptr2 + 24) as *mut u8) = (wit_bindgen::rt::as_i32(decimals3)) as u8;
-                        } },
-                        Err(e) => { {
-                          *((ptr2 + 0) as *mut u8) = (1i32) as u8;
-                          match e {
-                            Error::UnableToMakeEngine(e) => {
-                              *((ptr2 + 8) as *mut u8) = (0i32) as u8;
-                              let vec5 = (e.into_bytes()).into_boxed_slice();
-                              let ptr5 = vec5.as_ptr() as i32;
-                              let len5 = vec5.len() as i32;
-                              ::core::mem::forget(vec5);
-                              *((ptr2 + 16) as *mut i32) = len5;
-                              *((ptr2 + 12) as *mut i32) = ptr5;
-                            },
-                            Error::UnableToMakeAccountant(e) => {
-                              *((ptr2 + 8) as *mut u8) = (1i32) as u8;
-                              let vec6 = (e.into_bytes()).into_boxed_slice();
-                              let ptr6 = vec6.as_ptr() as i32;
-                              let len6 = vec6.len() as i32;
-                              ::core::mem::forget(vec6);
-                              *((ptr2 + 16) as *mut i32) = len6;
-                              *((ptr2 + 12) as *mut i32) = ptr6;
-                            },
-                            Error::Internal(e) => {
-                              *((ptr2 + 8) as *mut u8) = (2i32) as u8;
-                              let vec7 = (e.into_bytes()).into_boxed_slice();
-                              let ptr7 = vec7.as_ptr() as i32;
-                              let len7 = vec7.len() as i32;
-                              ::core::mem::forget(vec7);
-                              *((ptr2 + 16) as *mut i32) = len7;
-                              *((ptr2 + 12) as *mut i32) = ptr7;
-                            },
-                          }
-                        } },
-                      };ptr2
+                          *((base + 12) as *mut i32) = len4;
+                          *((base + 8) as *mut i32) = ptr4;
+                          *((base + 16) as *mut u8) = (wit_bindgen::rt::as_i32(decimals3)) as u8;
+                          *((base + 24) as *mut i64) = wit_bindgen::rt::as_i64(balance2);
+                          *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(available_balance2);
+                        }
+                      }
+                      *((ptr1 + 4) as *mut i32) = len5;
+                      *((ptr1 + 0) as *mut i32) = result5 as i32;
+                      ptr1
                     }
                     
                     const _: () = {
                       #[doc(hidden)]
-                      #[export_name = "cabi_post_sputnik:adminapi/api#create-asset"]
+                      #[export_name = "cabi_post_sputnik:traderapi/api#get-balances"]
                       #[allow(non_snake_case)]
-                      unsafe extern "C" fn __post_return_create_asset(arg0: i32,) {
-                        let l0 = i32::from(*((arg0 + 0) as *const u8));
-                        match l0 {
-                          0 => {
-                            let l1 = *((arg0 + 16) as *const i32);
-                            let l2 = *((arg0 + 20) as *const i32);
-                            wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
-                          },
-                          _ => {
-                            let l3 = i32::from(*((arg0 + 8) as *const u8));
-                            match l3 {
-                              0 => {
-                                let l4 = *((arg0 + 12) as *const i32);
-                                let l5 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l4, (l5) as usize, 1);
-                              },
-                              1 => {
-                                let l6 = *((arg0 + 12) as *const i32);
-                                let l7 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l6, (l7) as usize, 1);
-                              },
-                              _ => {
-                                let l8 = *((arg0 + 12) as *const i32);
-                                let l9 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l8, (l9) as usize, 1);
-                              },
-                            }
-                          },
+                      unsafe extern "C" fn __post_return_get_balances(arg0: i32,) {
+                        let l2 = *((arg0 + 0) as *const i32);
+                        let l3 = *((arg0 + 4) as *const i32);
+                        let base4 = l2;
+                        let len4 = l3;
+                        for i in 0..len4 {
+                          let base = base4 + i *40;
+                          {
+                            let l0 = *((base + 8) as *const i32);
+                            let l1 = *((base + 12) as *const i32);
+                            wit_bindgen::rt::dealloc(l0, (l1) as usize, 1);
+                          }
                         }
+                        wit_bindgen::rt::dealloc(base4, (len4 as usize) * 40, 8);
                       }
                     };
                   };
                   const _: () = {
                     
                     #[doc(hidden)]
-                    #[export_name = "sputnik:adminapi/api#create-spot-pair"]
+                    #[export_name = "sputnik:traderapi/api#get-orders"]
                     #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_create_spot_pair(arg0: i32,arg1: i32,arg2: i64,arg3: i64,) -> i32 {
+                    unsafe extern "C" fn __export_get_orders(arg0: i64,) -> i32 {
                       #[allow(unused_imports)]
                       use wit_bindgen::rt::{alloc, vec::Vec, string::String};
                       
@@ -4647,123 +4183,79 @@ pub mod golem {
                       #[cfg(target_arch="wasm32")]
                       wit_bindgen::rt::run_ctors_once();
                       
-                      let len0 = arg1 as usize;
-                      let bytes0 = Vec::from_raw_parts(arg0 as *mut _, len0, len0);
-                      let result1 = <_GuestImpl as Guest>::create_spot_pair(wit_bindgen::rt::string_lift(bytes0), arg2 as u64, arg3 as u64);
-                      let ptr2 = _RET_AREA.0.as_mut_ptr() as i32;
-                      match result1 {
-                        Ok(e) => { {
-                          *((ptr2 + 0) as *mut u8) = (0i32) as u8;
-                          let super::super::super::super::sputnik::registry::api::HydratedSpotPair{ id:id3, name:name3, numerator:numerator3, denominator:denominator3, } = e;
-                          *((ptr2 + 8) as *mut i64) = wit_bindgen::rt::as_i64(id3);
-                          let vec4 = (name3.into_bytes()).into_boxed_slice();
-                          let ptr4 = vec4.as_ptr() as i32;
-                          let len4 = vec4.len() as i32;
-                          ::core::mem::forget(vec4);
-                          *((ptr2 + 20) as *mut i32) = len4;
-                          *((ptr2 + 16) as *mut i32) = ptr4;
-                          let super::super::super::super::sputnik::registry::api::Asset{ id:id5, name:name5, decimals:decimals5, } = numerator3;
-                          *((ptr2 + 24) as *mut i64) = wit_bindgen::rt::as_i64(id5);
-                          let vec6 = (name5.into_bytes()).into_boxed_slice();
-                          let ptr6 = vec6.as_ptr() as i32;
-                          let len6 = vec6.len() as i32;
-                          ::core::mem::forget(vec6);
-                          *((ptr2 + 36) as *mut i32) = len6;
-                          *((ptr2 + 32) as *mut i32) = ptr6;
-                          *((ptr2 + 40) as *mut u8) = (wit_bindgen::rt::as_i32(decimals5)) as u8;
-                          let super::super::super::super::sputnik::registry::api::Asset{ id:id7, name:name7, decimals:decimals7, } = denominator3;
-                          *((ptr2 + 48) as *mut i64) = wit_bindgen::rt::as_i64(id7);
-                          let vec8 = (name7.into_bytes()).into_boxed_slice();
-                          let ptr8 = vec8.as_ptr() as i32;
-                          let len8 = vec8.len() as i32;
-                          ::core::mem::forget(vec8);
-                          *((ptr2 + 60) as *mut i32) = len8;
-                          *((ptr2 + 56) as *mut i32) = ptr8;
-                          *((ptr2 + 64) as *mut u8) = (wit_bindgen::rt::as_i32(decimals7)) as u8;
-                        } },
-                        Err(e) => { {
-                          *((ptr2 + 0) as *mut u8) = (1i32) as u8;
-                          match e {
-                            Error::UnableToMakeEngine(e) => {
-                              *((ptr2 + 8) as *mut u8) = (0i32) as u8;
-                              let vec9 = (e.into_bytes()).into_boxed_slice();
-                              let ptr9 = vec9.as_ptr() as i32;
-                              let len9 = vec9.len() as i32;
-                              ::core::mem::forget(vec9);
-                              *((ptr2 + 16) as *mut i32) = len9;
-                              *((ptr2 + 12) as *mut i32) = ptr9;
-                            },
-                            Error::UnableToMakeAccountant(e) => {
-                              *((ptr2 + 8) as *mut u8) = (1i32) as u8;
-                              let vec10 = (e.into_bytes()).into_boxed_slice();
-                              let ptr10 = vec10.as_ptr() as i32;
-                              let len10 = vec10.len() as i32;
-                              ::core::mem::forget(vec10);
-                              *((ptr2 + 16) as *mut i32) = len10;
-                              *((ptr2 + 12) as *mut i32) = ptr10;
-                            },
-                            Error::Internal(e) => {
-                              *((ptr2 + 8) as *mut u8) = (2i32) as u8;
-                              let vec11 = (e.into_bytes()).into_boxed_slice();
-                              let ptr11 = vec11.as_ptr() as i32;
-                              let len11 = vec11.len() as i32;
-                              ::core::mem::forget(vec11);
-                              *((ptr2 + 16) as *mut i32) = len11;
-                              *((ptr2 + 12) as *mut i32) = ptr11;
-                            },
-                          }
-                        } },
-                      };ptr2
+                      let result0 = <_GuestImpl as Guest>::get_orders(arg0 as u64);
+                      let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
+                      let vec6 = result0;
+                      let len6 = vec6.len() as i32;
+                      let layout6 = alloc::Layout::from_size_align_unchecked(vec6.len() * 80, 8);
+                      let result6 = if layout6.size() != 0
+                      {
+                        let ptr = alloc::alloc(layout6);
+                        if ptr.is_null()
+                        {
+                          alloc::handle_alloc_error(layout6);
+                        }
+                        ptr
+                      }else {{
+                        ::core::ptr::null_mut()
+                      }};
+                      for (i, e) in vec6.into_iter().enumerate() {
+                        let base = result6 as i32 + (i as i32) * 80;
+                        {
+                          let super::super::super::super::sputnik::accountant::api::OrderAndStatus{ order:order2, status:status2, } = e;
+                          let super::super::super::super::sputnik::accountant::api::Order{ id:id3, spot_pair:spot_pair3, timestamp:timestamp3, side:side3, price:price3, size:size3, } = order2;
+                          *((base + 0) as *mut i64) = wit_bindgen::rt::as_i64(id3);
+                          *((base + 8) as *mut i64) = wit_bindgen::rt::as_i64(spot_pair3);
+                          *((base + 16) as *mut i64) = wit_bindgen::rt::as_i64(timestamp3);
+                          *((base + 24) as *mut u8) = (side3.clone() as i32) as u8;
+                          *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(price3);
+                          *((base + 40) as *mut i64) = wit_bindgen::rt::as_i64(size3);
+                          let super::super::super::super::sputnik::matching_engine::api::OrderStatus{ id:id4, fills:fills4, status:status4, original_size:original_size4, } = status2;
+                          *((base + 48) as *mut i64) = wit_bindgen::rt::as_i64(id4);
+                          let vec5 = (fills4).into_boxed_slice();
+                          let ptr5 = vec5.as_ptr() as i32;
+                          let len5 = vec5.len() as i32;
+                          ::core::mem::forget(vec5);
+                          *((base + 60) as *mut i32) = len5;
+                          *((base + 56) as *mut i32) = ptr5;
+                          *((base + 64) as *mut u8) = (status4.clone() as i32) as u8;
+                          *((base + 72) as *mut i64) = wit_bindgen::rt::as_i64(original_size4);
+                        }
+                      }
+                      *((ptr1 + 4) as *mut i32) = len6;
+                      *((ptr1 + 0) as *mut i32) = result6 as i32;
+                      ptr1
                     }
                     
                     const _: () = {
                       #[doc(hidden)]
-                      #[export_name = "cabi_post_sputnik:adminapi/api#create-spot-pair"]
+                      #[export_name = "cabi_post_sputnik:traderapi/api#get-orders"]
                       #[allow(non_snake_case)]
-                      unsafe extern "C" fn __post_return_create_spot_pair(arg0: i32,) {
-                        let l0 = i32::from(*((arg0 + 0) as *const u8));
-                        match l0 {
-                          0 => {
-                            let l1 = *((arg0 + 16) as *const i32);
-                            let l2 = *((arg0 + 20) as *const i32);
-                            wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
-                            let l3 = *((arg0 + 32) as *const i32);
-                            let l4 = *((arg0 + 36) as *const i32);
-                            wit_bindgen::rt::dealloc(l3, (l4) as usize, 1);
-                            let l5 = *((arg0 + 56) as *const i32);
-                            let l6 = *((arg0 + 60) as *const i32);
-                            wit_bindgen::rt::dealloc(l5, (l6) as usize, 1);
-                          },
-                          _ => {
-                            let l7 = i32::from(*((arg0 + 8) as *const u8));
-                            match l7 {
-                              0 => {
-                                let l8 = *((arg0 + 12) as *const i32);
-                                let l9 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l8, (l9) as usize, 1);
-                              },
-                              1 => {
-                                let l10 = *((arg0 + 12) as *const i32);
-                                let l11 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l10, (l11) as usize, 1);
-                              },
-                              _ => {
-                                let l12 = *((arg0 + 12) as *const i32);
-                                let l13 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l12, (l13) as usize, 1);
-                              },
-                            }
-                          },
+                      unsafe extern "C" fn __post_return_get_orders(arg0: i32,) {
+                        let l3 = *((arg0 + 0) as *const i32);
+                        let l4 = *((arg0 + 4) as *const i32);
+                        let base5 = l3;
+                        let len5 = l4;
+                        for i in 0..len5 {
+                          let base = base5 + i *80;
+                          {
+                            let l0 = *((base + 56) as *const i32);
+                            let l1 = *((base + 60) as *const i32);
+                            let base2 = l0;
+                            let len2 = l1;
+                            wit_bindgen::rt::dealloc(base2, (len2 as usize) * 40, 8);
+                          }
                         }
+                        wit_bindgen::rt::dealloc(base5, (len5 as usize) * 80, 8);
                       }
                     };
                   };
                   const _: () = {
                     
                     #[doc(hidden)]
-                    #[export_name = "sputnik:adminapi/api#create-trader"]
+                    #[export_name = "sputnik:traderapi/api#place-order"]
                     #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_create_trader(arg0: i32,arg1: i32,) -> i32 {
+                    unsafe extern "C" fn __export_place_order(arg0: i64,arg1: i64,arg2: i32,arg3: i64,arg4: i64,) -> i32 {
                       #[allow(unused_imports)]
                       use wit_bindgen::rt::{alloc, vec::Vec, string::String};
                       
@@ -4781,106 +4273,89 @@ pub mod golem {
                       #[cfg(target_arch="wasm32")]
                       wit_bindgen::rt::run_ctors_once();
                       
-                      let len0 = arg1 as usize;
-                      let bytes0 = Vec::from_raw_parts(arg0 as *mut _, len0, len0);
-                      let result1 = <_GuestImpl as Guest>::create_trader(wit_bindgen::rt::string_lift(bytes0));
-                      let ptr2 = _RET_AREA.0.as_mut_ptr() as i32;
-                      match result1 {
+                      let result0 = <_GuestImpl as Guest>::place_order(arg0 as u64, Order{
+                        spot_pair: arg1 as u64,
+                        side: super::super::super::super::sputnik::matching_engine::api::Side::_lift(arg2 as u8),
+                        price: arg3 as u64,
+                        size: arg4 as u64,
+                      });
+                      let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
+                      match result0 {
                         Ok(e) => { {
-                          *((ptr2 + 0) as *mut u8) = (0i32) as u8;
-                          let super::super::super::super::sputnik::registry::api::Trader{ id:id3, name:name3, } = e;
-                          *((ptr2 + 8) as *mut i64) = wit_bindgen::rt::as_i64(id3);
-                          let vec4 = (name3.into_bytes()).into_boxed_slice();
-                          let ptr4 = vec4.as_ptr() as i32;
-                          let len4 = vec4.len() as i32;
-                          ::core::mem::forget(vec4);
-                          *((ptr2 + 20) as *mut i32) = len4;
-                          *((ptr2 + 16) as *mut i32) = ptr4;
+                          *((ptr1 + 0) as *mut u8) = (0i32) as u8;
+                          *((ptr1 + 8) as *mut i64) = wit_bindgen::rt::as_i64(e);
                         } },
                         Err(e) => { {
-                          *((ptr2 + 0) as *mut u8) = (1i32) as u8;
+                          *((ptr1 + 0) as *mut u8) = (1i32) as u8;
                           match e {
-                            Error::UnableToMakeEngine(e) => {
-                              *((ptr2 + 8) as *mut u8) = (0i32) as u8;
-                              let vec5 = (e.into_bytes()).into_boxed_slice();
-                              let ptr5 = vec5.as_ptr() as i32;
-                              let len5 = vec5.len() as i32;
-                              ::core::mem::forget(vec5);
-                              *((ptr2 + 16) as *mut i32) = len5;
-                              *((ptr2 + 12) as *mut i32) = ptr5;
-                            },
-                            Error::UnableToMakeAccountant(e) => {
-                              *((ptr2 + 8) as *mut u8) = (1i32) as u8;
-                              let vec6 = (e.into_bytes()).into_boxed_slice();
-                              let ptr6 = vec6.as_ptr() as i32;
-                              let len6 = vec6.len() as i32;
-                              ::core::mem::forget(vec6);
-                              *((ptr2 + 16) as *mut i32) = len6;
-                              *((ptr2 + 12) as *mut i32) = ptr6;
-                            },
-                            Error::Internal(e) => {
-                              *((ptr2 + 8) as *mut u8) = (2i32) as u8;
-                              let vec7 = (e.into_bytes()).into_boxed_slice();
-                              let ptr7 = vec7.as_ptr() as i32;
-                              let len7 = vec7.len() as i32;
-                              ::core::mem::forget(vec7);
-                              *((ptr2 + 16) as *mut i32) = len7;
-                              *((ptr2 + 12) as *mut i32) = ptr7;
+                            Error::InternalError(e) => {
+                              *((ptr1 + 8) as *mut u8) = (0i32) as u8;
+                              use super::super::super::super::sputnik::accountant::api::Error as V3;
+                              match e {
+                                V3::DuplicateId(e) => {
+                                  *((ptr1 + 16) as *mut u8) = (0i32) as u8;
+                                  *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                },
+                                V3::InsufficientFunds(e) => {
+                                  *((ptr1 + 16) as *mut u8) = (1i32) as u8;
+                                  *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                },
+                                V3::AlreadyInitialized(e) => {
+                                  *((ptr1 + 16) as *mut u8) = (2i32) as u8;
+                                  *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                },
+                                V3::NotInitialized=> {
+                                  {
+                                    *((ptr1 + 16) as *mut u8) = (3i32) as u8;
+                                  }
+                                }
+                                V3::InvalidAsset(e) => {
+                                  *((ptr1 + 16) as *mut u8) = (4i32) as u8;
+                                  *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                },
+                                V3::InvalidSpotPair(e) => {
+                                  *((ptr1 + 16) as *mut u8) = (5i32) as u8;
+                                  *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                },
+                                V3::MatchingEngineError(e) => {
+                                  *((ptr1 + 16) as *mut u8) = (6i32) as u8;
+                                  use super::super::super::super::sputnik::matching_engine::api::Error as V2;
+                                  match e {
+                                    V2::DuplicateId(e) => {
+                                      *((ptr1 + 24) as *mut u8) = (0i32) as u8;
+                                      *((ptr1 + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                    },
+                                    V2::MissingOrder(e) => {
+                                      *((ptr1 + 24) as *mut u8) = (1i32) as u8;
+                                      *((ptr1 + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                    },
+                                    V2::AlreadyIntialized=> {
+                                      {
+                                        *((ptr1 + 24) as *mut u8) = (2i32) as u8;
+                                      }
+                                    }
+                                  }
+                                },
+                              }
                             },
                           }
                         } },
-                      };ptr2
+                      };ptr1
                     }
-                    
-                    const _: () = {
-                      #[doc(hidden)]
-                      #[export_name = "cabi_post_sputnik:adminapi/api#create-trader"]
-                      #[allow(non_snake_case)]
-                      unsafe extern "C" fn __post_return_create_trader(arg0: i32,) {
-                        let l0 = i32::from(*((arg0 + 0) as *const u8));
-                        match l0 {
-                          0 => {
-                            let l1 = *((arg0 + 16) as *const i32);
-                            let l2 = *((arg0 + 20) as *const i32);
-                            wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
-                          },
-                          _ => {
-                            let l3 = i32::from(*((arg0 + 8) as *const u8));
-                            match l3 {
-                              0 => {
-                                let l4 = *((arg0 + 12) as *const i32);
-                                let l5 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l4, (l5) as usize, 1);
-                              },
-                              1 => {
-                                let l6 = *((arg0 + 12) as *const i32);
-                                let l7 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l6, (l7) as usize, 1);
-                              },
-                              _ => {
-                                let l8 = *((arg0 + 12) as *const i32);
-                                let l9 = *((arg0 + 16) as *const i32);
-                                wit_bindgen::rt::dealloc(l8, (l9) as usize, 1);
-                              },
-                            }
-                          },
-                        }
-                      }
-                    };
                   };
                   use super::super::super::super::super::Component as _GuestImpl;
                   pub trait Guest {
-                    fn create_asset(name: wit_bindgen::rt::string::String,decimals: u8,) -> Result<Asset,Error>;
-                    fn create_spot_pair(name: wit_bindgen::rt::string::String,numerator: u64,denominator: u64,) -> Result<HydratedSpotPair,Error>;
-                    fn create_trader(name: wit_bindgen::rt::string::String,) -> Result<Trader,Error>;
+                    fn get_balances(trader: u64,) -> wit_bindgen::rt::vec::Vec::<AssetBalance>;
+                    fn get_orders(trader: u64,) -> wit_bindgen::rt::vec::Vec::<OrderAndStatus>;
+                    fn place_order(trader: u64,order: Order,) -> Result<u64,Error>;
                   }
                   
                   #[allow(unused_imports)]
                   use wit_bindgen::rt::{alloc, vec::Vec, string::String};
                   
                   #[repr(align(8))]
-                  struct _RetArea([u8; 72]);
-                  static mut _RET_AREA: _RetArea = _RetArea([0; 72]);
+                  struct _RetArea([u8; 40]);
+                  static mut _RET_AREA: _RetArea = _RetArea([0; 40]);
                   
                 }
                 
@@ -4889,9 +4364,9 @@ pub mod golem {
           }
           
           #[cfg(target_arch = "wasm32")]
-          #[link_section = "component-type:adminapi"]
+          #[link_section = "component-type:traderapi"]
           #[doc(hidden)]
-          pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6250] = [3, 0, 8, 97, 100, 109, 105, 110, 97, 112, 105, 0, 97, 115, 109, 13, 0, 1, 0, 7, 209, 9, 1, 65, 13, 1, 66, 10, 1, 113, 2, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 2, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 3, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 3, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 2, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 8, 3, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 0, 1, 66, 18, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 1, 2, 3, 0, 1, 3, 117, 114, 105, 1, 66, 3, 2, 3, 2, 1, 2, 4, 0, 3, 117, 114, 105, 3, 0, 0, 4, 0, 3, 97, 112, 105, 3, 1, 3, 1, 25, 115, 112, 117, 116, 110, 105, 107, 58, 105, 100, 115, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 105, 100, 115, 5, 3, 2, 3, 0, 0, 5, 97, 115, 115, 101, 116, 2, 3, 0, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 2, 3, 0, 0, 6, 116, 114, 97, 100, 101, 114, 2, 3, 0, 2, 3, 97, 112, 105, 1, 66, 19, 2, 3, 2, 1, 4, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 0, 2, 3, 2, 1, 5, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 2, 2, 3, 2, 1, 6, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 4, 2, 3, 2, 1, 7, 4, 0, 7, 105, 100, 115, 45, 97, 112, 105, 3, 0, 6, 1, 113, 3, 21, 117, 110, 97, 98, 108, 101, 45, 116, 111, 45, 109, 97, 107, 101, 45, 101, 110, 103, 105, 110, 101, 1, 115, 0, 25, 117, 110, 97, 98, 108, 101, 45, 116, 111, 45, 109, 97, 107, 101, 45, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 1, 115, 0, 8, 105, 110, 116, 101, 114, 110, 97, 108, 1, 115, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 8, 1, 106, 1, 1, 1, 9, 1, 64, 2, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 0, 10, 4, 0, 12, 99, 114, 101, 97, 116, 101, 45, 97, 115, 115, 101, 116, 1, 11, 1, 106, 1, 3, 1, 9, 1, 64, 3, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 119, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 119, 0, 12, 4, 0, 16, 99, 114, 101, 97, 116, 101, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 13, 1, 106, 1, 5, 1, 9, 1, 64, 1, 4, 110, 97, 109, 101, 115, 0, 14, 4, 0, 13, 99, 114, 101, 97, 116, 101, 45, 116, 114, 97, 100, 101, 114, 1, 15, 4, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 97, 100, 109, 105, 110, 97, 112, 105, 47, 97, 112, 105, 5, 8, 11, 9, 1, 0, 3, 97, 112, 105, 3, 0, 0, 7, 139, 38, 1, 65, 2, 1, 65, 42, 1, 66, 26, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 1, 105, 17, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 3, 0, 18, 4, 0, 21, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 119, 97, 115, 109, 45, 114, 112, 99, 1, 19, 1, 104, 17, 1, 112, 14, 1, 106, 1, 14, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 22, 4, 0, 33, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 45, 97, 110, 100, 45, 97, 119, 97, 105, 116, 1, 23, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 2, 3, 0, 0, 3, 117, 114, 105, 1, 66, 12, 2, 3, 2, 1, 1, 4, 0, 3, 117, 114, 105, 3, 0, 0, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 2, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 3, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 4, 1, 104, 2, 1, 64, 1, 4, 115, 101, 108, 102, 5, 0, 119, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 110, 101, 119, 45, 105, 100, 1, 6, 1, 112, 119, 1, 64, 2, 4, 115, 101, 108, 102, 5, 3, 113, 116, 121, 125, 0, 7, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 110, 101, 119, 45, 105, 100, 115, 1, 8, 3, 1, 25, 115, 112, 117, 116, 110, 105, 107, 58, 105, 100, 115, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 105, 100, 115, 5, 2, 1, 66, 28, 1, 113, 2, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 2, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 3, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 3, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 2, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 8, 1, 112, 3, 1, 64, 0, 0, 10, 4, 0, 10, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 11, 1, 112, 5, 1, 64, 0, 0, 12, 4, 0, 14, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 13, 1, 112, 9, 1, 64, 0, 0, 14, 4, 0, 11, 103, 101, 116, 45, 116, 114, 97, 100, 101, 114, 115, 1, 15, 1, 106, 1, 3, 1, 1, 1, 64, 1, 5, 97, 115, 115, 101, 116, 3, 0, 16, 4, 0, 9, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 17, 1, 106, 1, 5, 1, 1, 1, 64, 1, 4, 112, 97, 105, 114, 7, 0, 18, 4, 0, 13, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 19, 1, 106, 1, 9, 1, 1, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 9, 0, 20, 4, 0, 10, 97, 100, 100, 45, 116, 114, 97, 100, 101, 114, 1, 21, 3, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 3, 2, 3, 0, 2, 5, 101, 114, 114, 111, 114, 2, 3, 0, 2, 5, 97, 115, 115, 101, 116, 2, 3, 0, 2, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 2, 3, 0, 2, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 2, 3, 0, 2, 6, 116, 114, 97, 100, 101, 114, 1, 66, 35, 2, 3, 2, 1, 1, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 4, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 6, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 2, 3, 2, 1, 7, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 8, 2, 3, 2, 1, 8, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 10, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 12, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 13, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 14, 1, 104, 12, 1, 112, 5, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 16, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 17, 1, 112, 7, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 18, 4, 0, 26, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 19, 1, 112, 11, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 20, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 116, 114, 97, 100, 101, 114, 115, 1, 21, 1, 106, 1, 5, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 5, 97, 115, 115, 101, 116, 5, 0, 22, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 23, 1, 106, 1, 7, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 4, 112, 97, 105, 114, 9, 0, 24, 4, 0, 25, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 25, 1, 106, 1, 11, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 6, 116, 114, 97, 100, 101, 114, 11, 0, 26, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 116, 114, 97, 100, 101, 114, 1, 27, 3, 1, 35, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 114, 101, 103, 105, 115, 116, 114, 121, 5, 9, 1, 66, 29, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 109, 105, 115, 115, 105, 110, 103, 45, 111, 114, 100, 101, 114, 1, 119, 0, 18, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 109, 2, 3, 98, 117, 121, 4, 115, 101, 108, 108, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 1, 114, 6, 2, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 6, 116, 114, 97, 100, 101, 114, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 4, 1, 112, 5, 1, 114, 2, 4, 98, 105, 100, 115, 6, 4, 97, 115, 107, 115, 6, 4, 0, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 3, 0, 7, 1, 109, 4, 4, 111, 112, 101, 110, 6, 102, 105, 108, 108, 101, 100, 14, 112, 97, 114, 116, 105, 97, 108, 45, 102, 105, 108, 108, 101, 100, 8, 99, 97, 110, 99, 101, 108, 101, 100, 4, 0, 6, 115, 116, 97, 116, 117, 115, 3, 0, 9, 1, 114, 5, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 14, 116, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 14, 109, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 0, 4, 102, 105, 108, 108, 3, 0, 11, 1, 112, 12, 1, 114, 4, 2, 105, 100, 119, 5, 102, 105, 108, 108, 115, 13, 6, 115, 116, 97, 116, 117, 115, 10, 13, 111, 114, 105, 103, 105, 110, 97, 108, 45, 115, 105, 122, 101, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 14, 1, 106, 0, 1, 1, 1, 64, 0, 0, 16, 4, 0, 4, 105, 110, 105, 116, 1, 17, 1, 106, 1, 15, 1, 1, 1, 64, 1, 5, 111, 114, 100, 101, 114, 5, 0, 18, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 19, 1, 64, 1, 2, 105, 100, 119, 0, 18, 4, 0, 12, 99, 97, 110, 99, 101, 108, 45, 111, 114, 100, 101, 114, 1, 20, 1, 64, 0, 0, 8, 4, 0, 14, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 1, 21, 1, 107, 15, 1, 64, 1, 2, 105, 100, 119, 0, 22, 4, 0, 16, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 1, 23, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 47, 97, 112, 105, 5, 10, 2, 3, 0, 4, 5, 101, 114, 114, 111, 114, 2, 3, 0, 4, 4, 115, 105, 100, 101, 2, 3, 0, 4, 5, 111, 114, 100, 101, 114, 2, 3, 0, 4, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 2, 3, 0, 4, 6, 115, 116, 97, 116, 117, 115, 2, 3, 0, 4, 4, 102, 105, 108, 108, 2, 3, 0, 4, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 1, 66, 34, 2, 3, 2, 1, 1, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 11, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 12, 4, 0, 4, 115, 105, 100, 101, 3, 0, 4, 2, 3, 2, 1, 13, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 6, 2, 3, 2, 1, 14, 4, 0, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 3, 0, 8, 2, 3, 2, 1, 15, 4, 0, 6, 115, 116, 97, 116, 117, 115, 3, 0, 10, 2, 3, 2, 1, 16, 4, 0, 4, 102, 105, 108, 108, 3, 0, 12, 2, 3, 2, 1, 17, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 14, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 16, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 17, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 18, 1, 104, 16, 1, 106, 0, 1, 3, 1, 64, 1, 4, 115, 101, 108, 102, 19, 0, 20, 4, 0, 16, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 1, 21, 1, 106, 1, 15, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 19, 5, 111, 114, 100, 101, 114, 7, 0, 22, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 23, 1, 64, 2, 4, 115, 101, 108, 102, 19, 2, 105, 100, 119, 0, 22, 4, 0, 24, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 99, 97, 110, 99, 101, 108, 45, 111, 114, 100, 101, 114, 1, 24, 1, 64, 1, 4, 115, 101, 108, 102, 19, 0, 9, 4, 0, 26, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 1, 25, 1, 107, 15, 1, 64, 2, 4, 115, 101, 108, 102, 19, 2, 105, 100, 119, 0, 26, 4, 0, 28, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 1, 27, 3, 1, 49, 115, 112, 117, 116, 110, 105, 107, 58, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 5, 18, 1, 66, 38, 2, 3, 2, 1, 11, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 17, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 2, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 12, 4, 0, 4, 115, 105, 100, 101, 3, 0, 6, 2, 3, 2, 1, 16, 4, 0, 4, 102, 105, 108, 108, 3, 0, 8, 1, 113, 7, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 18, 105, 110, 115, 117, 102, 102, 105, 99, 105, 101, 110, 116, 45, 102, 117, 110, 100, 115, 1, 119, 0, 19, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 1, 119, 0, 15, 110, 111, 116, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 13, 105, 110, 118, 97, 108, 105, 100, 45, 97, 115, 115, 101, 116, 1, 119, 0, 17, 105, 110, 118, 97, 108, 105, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 119, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 1, 1, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 114, 3, 5, 97, 115, 115, 101, 116, 5, 7, 98, 97, 108, 97, 110, 99, 101, 119, 17, 97, 118, 97, 105, 108, 97, 98, 108, 101, 45, 98, 97, 108, 97, 110, 99, 101, 119, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 12, 1, 114, 6, 2, 105, 100, 119, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 7, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 14, 1, 114, 1, 2, 105, 100, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 16, 1, 114, 2, 5, 111, 114, 100, 101, 114, 15, 6, 115, 116, 97, 116, 117, 115, 3, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 1, 106, 1, 119, 1, 11, 1, 64, 4, 2, 105, 100, 119, 27, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 20, 114, 101, 103, 105, 115, 116, 114, 121, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 20, 4, 0, 10, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 21, 1, 112, 13, 1, 64, 0, 0, 22, 4, 0, 12, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 23, 1, 106, 1, 17, 1, 11, 1, 64, 1, 5, 111, 114, 100, 101, 114, 15, 0, 24, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 25, 1, 106, 1, 13, 1, 11, 1, 64, 2, 5, 97, 115, 115, 101, 116, 119, 6, 97, 109, 111, 117, 110, 116, 119, 0, 26, 4, 0, 7, 100, 101, 112, 111, 115, 105, 116, 1, 27, 4, 0, 8, 119, 105, 116, 104, 100, 114, 97, 119, 1, 27, 1, 64, 1, 4, 102, 105, 108, 108, 9, 1, 0, 4, 0, 18, 112, 114, 111, 99, 101, 115, 115, 45, 109, 97, 107, 101, 114, 45, 102, 105, 108, 108, 1, 28, 1, 112, 19, 1, 64, 0, 0, 29, 4, 0, 10, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 30, 3, 1, 22, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 47, 97, 112, 105, 5, 19, 2, 3, 0, 6, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 2, 3, 0, 6, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 6, 5, 97, 115, 115, 101, 116, 2, 3, 0, 6, 4, 115, 105, 100, 101, 2, 3, 0, 6, 4, 102, 105, 108, 108, 2, 3, 0, 6, 5, 101, 114, 114, 111, 114, 2, 3, 0, 6, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 2, 3, 0, 6, 5, 111, 114, 100, 101, 114, 2, 3, 0, 6, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 6, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 1, 66, 45, 2, 3, 2, 1, 1, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 20, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 21, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 4, 2, 3, 2, 1, 22, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 6, 2, 3, 2, 1, 23, 4, 0, 4, 115, 105, 100, 101, 3, 0, 8, 2, 3, 2, 1, 24, 4, 0, 4, 102, 105, 108, 108, 3, 0, 10, 2, 3, 2, 1, 25, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 12, 2, 3, 2, 1, 26, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 14, 2, 3, 2, 1, 27, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 16, 2, 3, 2, 1, 28, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 2, 3, 2, 1, 29, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 20, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 22, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 23, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 24, 1, 104, 22, 1, 106, 1, 119, 1, 13, 1, 64, 5, 4, 115, 101, 108, 102, 25, 2, 105, 100, 119, 27, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 20, 114, 101, 103, 105, 115, 116, 114, 121, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 26, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 27, 1, 112, 15, 1, 64, 1, 4, 115, 101, 108, 102, 25, 0, 28, 4, 0, 24, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 29, 1, 106, 1, 19, 1, 13, 1, 64, 2, 4, 115, 101, 108, 102, 25, 5, 111, 114, 100, 101, 114, 17, 0, 30, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 31, 1, 106, 1, 15, 1, 13, 1, 64, 3, 4, 115, 101, 108, 102, 25, 5, 97, 115, 115, 101, 116, 119, 6, 97, 109, 111, 117, 110, 116, 119, 0, 32, 4, 0, 19, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 100, 101, 112, 111, 115, 105, 116, 1, 33, 4, 0, 20, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 119, 105, 116, 104, 100, 114, 97, 119, 1, 33, 1, 64, 2, 4, 115, 101, 108, 102, 25, 4, 102, 105, 108, 108, 11, 1, 0, 4, 0, 30, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 114, 111, 99, 101, 115, 115, 45, 109, 97, 107, 101, 114, 45, 102, 105, 108, 108, 1, 34, 1, 112, 21, 1, 64, 1, 4, 115, 101, 108, 102, 25, 0, 35, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 36, 3, 1, 39, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 5, 30, 2, 3, 0, 1, 3, 97, 112, 105, 1, 66, 19, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 0, 2, 3, 2, 1, 6, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 2, 2, 3, 2, 1, 8, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 4, 2, 3, 2, 1, 31, 4, 0, 7, 105, 100, 115, 45, 97, 112, 105, 3, 0, 6, 1, 113, 3, 21, 117, 110, 97, 98, 108, 101, 45, 116, 111, 45, 109, 97, 107, 101, 45, 101, 110, 103, 105, 110, 101, 1, 115, 0, 25, 117, 110, 97, 98, 108, 101, 45, 116, 111, 45, 109, 97, 107, 101, 45, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 1, 115, 0, 8, 105, 110, 116, 101, 114, 110, 97, 108, 1, 115, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 8, 1, 106, 1, 1, 1, 9, 1, 64, 2, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 0, 10, 4, 0, 12, 99, 114, 101, 97, 116, 101, 45, 97, 115, 115, 101, 116, 1, 11, 1, 106, 1, 3, 1, 9, 1, 64, 3, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 119, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 119, 0, 12, 4, 0, 16, 99, 114, 101, 97, 116, 101, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 13, 1, 106, 1, 5, 1, 9, 1, 64, 1, 4, 110, 97, 109, 101, 115, 0, 14, 4, 0, 13, 99, 114, 101, 97, 116, 101, 45, 116, 114, 97, 100, 101, 114, 1, 15, 4, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 97, 100, 109, 105, 110, 97, 112, 105, 47, 97, 112, 105, 5, 32, 4, 1, 25, 115, 112, 117, 116, 110, 105, 107, 58, 97, 100, 109, 105, 110, 97, 112, 105, 47, 97, 100, 109, 105, 110, 97, 112, 105, 4, 0, 11, 14, 1, 0, 8, 97, 100, 109, 105, 110, 97, 112, 105, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
+          pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6017] = [3, 0, 9, 116, 114, 97, 100, 101, 114, 97, 112, 105, 0, 97, 115, 109, 13, 0, 1, 0, 7, 255, 11, 1, 65, 17, 1, 66, 16, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 109, 105, 115, 115, 105, 110, 103, 45, 111, 114, 100, 101, 114, 1, 119, 0, 18, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 109, 2, 3, 98, 117, 121, 4, 115, 101, 108, 108, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 1, 114, 6, 2, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 6, 116, 114, 97, 100, 101, 114, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 4, 1, 112, 5, 1, 114, 2, 4, 98, 105, 100, 115, 6, 4, 97, 115, 107, 115, 6, 4, 0, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 3, 0, 7, 1, 109, 4, 4, 111, 112, 101, 110, 6, 102, 105, 108, 108, 101, 100, 14, 112, 97, 114, 116, 105, 97, 108, 45, 102, 105, 108, 108, 101, 100, 8, 99, 97, 110, 99, 101, 108, 101, 100, 4, 0, 6, 115, 116, 97, 116, 117, 115, 3, 0, 9, 1, 114, 5, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 14, 116, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 14, 109, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 0, 4, 102, 105, 108, 108, 3, 0, 11, 1, 112, 12, 1, 114, 4, 2, 105, 100, 119, 5, 102, 105, 108, 108, 115, 13, 6, 115, 116, 97, 116, 117, 115, 10, 13, 111, 114, 105, 103, 105, 110, 97, 108, 45, 115, 105, 122, 101, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 14, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 47, 97, 112, 105, 5, 0, 1, 66, 10, 1, 113, 2, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 2, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 3, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 3, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 2, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 8, 3, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 1, 2, 3, 0, 0, 5, 101, 114, 114, 111, 114, 2, 3, 0, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 1, 5, 97, 115, 115, 101, 116, 2, 3, 0, 0, 4, 115, 105, 100, 101, 2, 3, 0, 0, 4, 102, 105, 108, 108, 1, 66, 20, 2, 3, 2, 1, 2, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 3, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 2, 2, 3, 2, 1, 4, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 5, 4, 0, 4, 115, 105, 100, 101, 3, 0, 6, 2, 3, 2, 1, 6, 4, 0, 4, 102, 105, 108, 108, 3, 0, 8, 1, 113, 7, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 18, 105, 110, 115, 117, 102, 102, 105, 99, 105, 101, 110, 116, 45, 102, 117, 110, 100, 115, 1, 119, 0, 19, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 1, 119, 0, 15, 110, 111, 116, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 13, 105, 110, 118, 97, 108, 105, 100, 45, 97, 115, 115, 101, 116, 1, 119, 0, 17, 105, 110, 118, 97, 108, 105, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 119, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 1, 1, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 114, 3, 5, 97, 115, 115, 101, 116, 5, 7, 98, 97, 108, 97, 110, 99, 101, 119, 17, 97, 118, 97, 105, 108, 97, 98, 108, 101, 45, 98, 97, 108, 97, 110, 99, 101, 119, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 12, 1, 114, 6, 2, 105, 100, 119, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 7, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 14, 1, 114, 1, 2, 105, 100, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 16, 1, 114, 2, 5, 111, 114, 100, 101, 114, 15, 6, 115, 116, 97, 116, 117, 115, 3, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 3, 1, 22, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 47, 97, 112, 105, 5, 7, 2, 3, 0, 2, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 2, 3, 0, 2, 4, 115, 105, 100, 101, 2, 3, 0, 2, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 2, 5, 101, 114, 114, 111, 114, 1, 66, 21, 2, 3, 2, 1, 8, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 0, 2, 3, 2, 1, 9, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 2, 3, 2, 1, 10, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 4, 2, 3, 2, 1, 11, 4, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 3, 0, 6, 1, 114, 4, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 8, 1, 113, 1, 14, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 7, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 112, 1, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 12, 4, 0, 12, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 13, 1, 112, 5, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 14, 4, 0, 10, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 15, 1, 106, 1, 119, 1, 11, 1, 64, 2, 6, 116, 114, 97, 100, 101, 114, 119, 5, 111, 114, 100, 101, 114, 9, 0, 16, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 17, 4, 1, 21, 115, 112, 117, 116, 110, 105, 107, 58, 116, 114, 97, 100, 101, 114, 97, 112, 105, 47, 97, 112, 105, 5, 12, 11, 9, 1, 0, 3, 97, 112, 105, 3, 0, 0, 7, 242, 33, 1, 65, 2, 1, 65, 36, 1, 66, 26, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 1, 105, 17, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 3, 0, 18, 4, 0, 21, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 119, 97, 115, 109, 45, 114, 112, 99, 1, 19, 1, 104, 17, 1, 112, 14, 1, 106, 1, 14, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 22, 4, 0, 33, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 45, 97, 110, 100, 45, 97, 119, 97, 105, 116, 1, 23, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 29, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 109, 105, 115, 115, 105, 110, 103, 45, 111, 114, 100, 101, 114, 1, 119, 0, 18, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 109, 2, 3, 98, 117, 121, 4, 115, 101, 108, 108, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 1, 114, 6, 2, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 6, 116, 114, 97, 100, 101, 114, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 4, 1, 112, 5, 1, 114, 2, 4, 98, 105, 100, 115, 6, 4, 97, 115, 107, 115, 6, 4, 0, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 3, 0, 7, 1, 109, 4, 4, 111, 112, 101, 110, 6, 102, 105, 108, 108, 101, 100, 14, 112, 97, 114, 116, 105, 97, 108, 45, 102, 105, 108, 108, 101, 100, 8, 99, 97, 110, 99, 101, 108, 101, 100, 4, 0, 6, 115, 116, 97, 116, 117, 115, 3, 0, 9, 1, 114, 5, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 14, 116, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 14, 109, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 0, 4, 102, 105, 108, 108, 3, 0, 11, 1, 112, 12, 1, 114, 4, 2, 105, 100, 119, 5, 102, 105, 108, 108, 115, 13, 6, 115, 116, 97, 116, 117, 115, 10, 13, 111, 114, 105, 103, 105, 110, 97, 108, 45, 115, 105, 122, 101, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 14, 1, 106, 0, 1, 1, 1, 64, 0, 0, 16, 4, 0, 4, 105, 110, 105, 116, 1, 17, 1, 106, 1, 15, 1, 1, 1, 64, 1, 5, 111, 114, 100, 101, 114, 5, 0, 18, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 19, 1, 64, 1, 2, 105, 100, 119, 0, 18, 4, 0, 12, 99, 97, 110, 99, 101, 108, 45, 111, 114, 100, 101, 114, 1, 20, 1, 64, 0, 0, 8, 4, 0, 14, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 1, 21, 1, 107, 15, 1, 64, 1, 2, 105, 100, 119, 0, 22, 4, 0, 16, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 1, 23, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 47, 97, 112, 105, 5, 1, 1, 66, 28, 1, 113, 2, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 2, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 3, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 3, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 2, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 8, 1, 112, 3, 1, 64, 0, 0, 10, 4, 0, 10, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 11, 1, 112, 5, 1, 64, 0, 0, 12, 4, 0, 14, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 13, 1, 112, 9, 1, 64, 0, 0, 14, 4, 0, 11, 103, 101, 116, 45, 116, 114, 97, 100, 101, 114, 115, 1, 15, 1, 106, 1, 3, 1, 1, 1, 64, 1, 5, 97, 115, 115, 101, 116, 3, 0, 16, 4, 0, 9, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 17, 1, 106, 1, 5, 1, 1, 1, 64, 1, 4, 112, 97, 105, 114, 7, 0, 18, 4, 0, 13, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 19, 1, 106, 1, 9, 1, 1, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 9, 0, 20, 4, 0, 10, 97, 100, 100, 45, 116, 114, 97, 100, 101, 114, 1, 21, 3, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 2, 2, 3, 0, 1, 5, 101, 114, 114, 111, 114, 2, 3, 0, 1, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 2, 5, 97, 115, 115, 101, 116, 2, 3, 0, 1, 4, 115, 105, 100, 101, 2, 3, 0, 1, 4, 102, 105, 108, 108, 1, 66, 38, 2, 3, 2, 1, 3, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 4, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 2, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 6, 4, 0, 4, 115, 105, 100, 101, 3, 0, 6, 2, 3, 2, 1, 7, 4, 0, 4, 102, 105, 108, 108, 3, 0, 8, 1, 113, 7, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 18, 105, 110, 115, 117, 102, 102, 105, 99, 105, 101, 110, 116, 45, 102, 117, 110, 100, 115, 1, 119, 0, 19, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 1, 119, 0, 15, 110, 111, 116, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 13, 105, 110, 118, 97, 108, 105, 100, 45, 97, 115, 115, 101, 116, 1, 119, 0, 17, 105, 110, 118, 97, 108, 105, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 119, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 1, 1, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 114, 3, 5, 97, 115, 115, 101, 116, 5, 7, 98, 97, 108, 97, 110, 99, 101, 119, 17, 97, 118, 97, 105, 108, 97, 98, 108, 101, 45, 98, 97, 108, 97, 110, 99, 101, 119, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 12, 1, 114, 6, 2, 105, 100, 119, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 7, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 14, 1, 114, 1, 2, 105, 100, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 16, 1, 114, 2, 5, 111, 114, 100, 101, 114, 15, 6, 115, 116, 97, 116, 117, 115, 3, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 1, 106, 1, 119, 1, 11, 1, 64, 4, 2, 105, 100, 119, 27, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 20, 114, 101, 103, 105, 115, 116, 114, 121, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 20, 4, 0, 10, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 21, 1, 112, 13, 1, 64, 0, 0, 22, 4, 0, 12, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 23, 1, 106, 1, 17, 1, 11, 1, 64, 1, 5, 111, 114, 100, 101, 114, 15, 0, 24, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 25, 1, 106, 1, 13, 1, 11, 1, 64, 2, 5, 97, 115, 115, 101, 116, 119, 6, 97, 109, 111, 117, 110, 116, 119, 0, 26, 4, 0, 7, 100, 101, 112, 111, 115, 105, 116, 1, 27, 4, 0, 8, 119, 105, 116, 104, 100, 114, 97, 119, 1, 27, 1, 64, 1, 4, 102, 105, 108, 108, 9, 1, 0, 4, 0, 18, 112, 114, 111, 99, 101, 115, 115, 45, 109, 97, 107, 101, 114, 45, 102, 105, 108, 108, 1, 28, 1, 112, 19, 1, 64, 0, 0, 29, 4, 0, 10, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 30, 3, 1, 22, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 47, 97, 112, 105, 5, 8, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 3, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 2, 3, 0, 3, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 3, 5, 97, 115, 115, 101, 116, 2, 3, 0, 3, 4, 115, 105, 100, 101, 2, 3, 0, 3, 4, 102, 105, 108, 108, 2, 3, 0, 3, 5, 101, 114, 114, 111, 114, 2, 3, 0, 3, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 2, 3, 0, 3, 5, 111, 114, 100, 101, 114, 2, 3, 0, 3, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 3, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 1, 66, 45, 2, 3, 2, 1, 9, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 10, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 11, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 4, 2, 3, 2, 1, 12, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 6, 2, 3, 2, 1, 13, 4, 0, 4, 115, 105, 100, 101, 3, 0, 8, 2, 3, 2, 1, 14, 4, 0, 4, 102, 105, 108, 108, 3, 0, 10, 2, 3, 2, 1, 15, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 12, 2, 3, 2, 1, 16, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 14, 2, 3, 2, 1, 17, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 16, 2, 3, 2, 1, 18, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 2, 3, 2, 1, 19, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 20, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 22, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 23, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 24, 1, 104, 22, 1, 106, 1, 119, 1, 13, 1, 64, 5, 4, 115, 101, 108, 102, 25, 2, 105, 100, 119, 27, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 20, 114, 101, 103, 105, 115, 116, 114, 121, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 26, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 27, 1, 112, 15, 1, 64, 1, 4, 115, 101, 108, 102, 25, 0, 28, 4, 0, 24, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 29, 1, 106, 1, 19, 1, 13, 1, 64, 2, 4, 115, 101, 108, 102, 25, 5, 111, 114, 100, 101, 114, 17, 0, 30, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 31, 1, 106, 1, 15, 1, 13, 1, 64, 3, 4, 115, 101, 108, 102, 25, 5, 97, 115, 115, 101, 116, 119, 6, 97, 109, 111, 117, 110, 116, 119, 0, 32, 4, 0, 19, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 100, 101, 112, 111, 115, 105, 116, 1, 33, 4, 0, 20, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 119, 105, 116, 104, 100, 114, 97, 119, 1, 33, 1, 64, 2, 4, 115, 101, 108, 102, 25, 4, 102, 105, 108, 108, 11, 1, 0, 4, 0, 30, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 114, 111, 99, 101, 115, 115, 45, 109, 97, 107, 101, 114, 45, 102, 105, 108, 108, 1, 34, 1, 112, 21, 1, 64, 1, 4, 115, 101, 108, 102, 25, 0, 35, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 36, 3, 1, 39, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 5, 20, 1, 66, 12, 2, 3, 2, 1, 9, 4, 0, 3, 117, 114, 105, 3, 0, 0, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 2, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 3, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 4, 1, 104, 2, 1, 64, 1, 4, 115, 101, 108, 102, 5, 0, 119, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 110, 101, 119, 45, 105, 100, 1, 6, 1, 112, 119, 1, 64, 2, 4, 115, 101, 108, 102, 5, 3, 113, 116, 121, 125, 0, 7, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 110, 101, 119, 45, 105, 100, 115, 1, 8, 3, 1, 25, 115, 112, 117, 116, 110, 105, 107, 58, 105, 100, 115, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 105, 100, 115, 5, 21, 2, 3, 0, 2, 5, 101, 114, 114, 111, 114, 2, 3, 0, 2, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 2, 3, 0, 2, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 2, 3, 0, 2, 6, 116, 114, 97, 100, 101, 114, 1, 66, 35, 2, 3, 2, 1, 9, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 22, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 23, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 2, 3, 2, 1, 24, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 8, 2, 3, 2, 1, 25, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 10, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 12, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 13, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 14, 1, 104, 12, 1, 112, 5, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 16, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 17, 1, 112, 7, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 18, 4, 0, 26, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 19, 1, 112, 11, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 20, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 116, 114, 97, 100, 101, 114, 115, 1, 21, 1, 106, 1, 5, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 5, 97, 115, 115, 101, 116, 5, 0, 22, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 23, 1, 106, 1, 7, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 4, 112, 97, 105, 114, 9, 0, 24, 4, 0, 25, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 25, 1, 106, 1, 11, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 6, 116, 114, 97, 100, 101, 114, 11, 0, 26, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 116, 114, 97, 100, 101, 114, 1, 27, 3, 1, 35, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 114, 101, 103, 105, 115, 116, 114, 121, 5, 26, 1, 66, 21, 2, 3, 2, 1, 16, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 0, 2, 3, 2, 1, 13, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 2, 3, 2, 1, 19, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 4, 2, 3, 2, 1, 15, 4, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 3, 0, 6, 1, 114, 4, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 8, 1, 113, 1, 14, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 7, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 112, 1, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 12, 4, 0, 12, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 13, 1, 112, 5, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 14, 4, 0, 10, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 15, 1, 106, 1, 119, 1, 11, 1, 64, 2, 6, 116, 114, 97, 100, 101, 114, 119, 5, 111, 114, 100, 101, 114, 9, 0, 16, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 17, 4, 1, 21, 115, 112, 117, 116, 110, 105, 107, 58, 116, 114, 97, 100, 101, 114, 97, 112, 105, 47, 97, 112, 105, 5, 27, 4, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 116, 114, 97, 100, 101, 114, 97, 112, 105, 47, 116, 114, 97, 100, 101, 114, 97, 112, 105, 4, 0, 11, 15, 1, 0, 9, 116, 114, 97, 100, 101, 114, 97, 112, 105, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
           
           #[inline(never)]
           #[doc(hidden)]

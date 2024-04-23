@@ -1,0 +1,31 @@
+package sputnik: traderapi;
+
+interface api {
+  use sputnik: accountant/api.{asset-balance};
+  use sputnik: accountant/api.{side};
+  use sputnik: accountant/api.{order-and-status};
+
+  record order {
+    spot-pair: u64,
+    side: side,
+    price: u64,
+    size: u64,
+  }
+
+  use sputnik: accountant/api.{error as accountant-error};
+
+  variant error {
+    internal-error(accountant-error)
+  }
+
+  get-balances: func(trader: u64) -> list<asset-balance>;
+  get-orders: func(trader: u64) -> list<order-and-status>;
+  place-order: func(trader: u64, order: order) -> result<u64, error>;
+}
+
+world traderapi {
+  export api;
+  import sputnik: accountant-stub/stub-accountant;
+  import sputnik: ids-stub/stub-ids;
+  import sputnik: registry-stub/stub-registry;
+}

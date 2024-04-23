@@ -5,7 +5,7 @@ use std::env;
 use mockall::automock;
 
 use crate::bindings::exports::sputnik::accountant::api::{
-    AssetBalance, Error, Fill, Guest, Order, OrderStatus,
+    AssetBalance, Error, Fill, Guest, Order, OrderAndStatus, OrderStatus,
 };
 use crate::bindings::exports::sputnik::accountant::api::Error::{
     AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
@@ -20,12 +20,6 @@ use crate::bindings::sputnik::registry_stub::stub_registry;
 mod bindings;
 
 struct Component;
-
-#[derive(Clone)]
-struct OrderAndStatus {
-    order: Order,
-    status: stub_matching_engine::OrderStatus,
-}
 
 #[derive(Clone)]
 struct Configuration {
@@ -385,6 +379,10 @@ impl Guest for Component {
                 }) => status.fills.push(fill),
             }
         })
+    }
+
+    fn get_orders() -> Vec<OrderAndStatus> {
+        with_state(|state| state.orders.values().cloned().collect())
     }
 }
 

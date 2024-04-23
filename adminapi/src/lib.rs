@@ -184,7 +184,7 @@ impl Guest for Component {
     fn create_trader(name: String) -> Result<Trader, Error> {
         with_state(|state| {
             let trader_id = state.external_service_api.get_new_id();
-            state.external_service_api.create_accountant(trader_id);
+            state.external_service_api.create_accountant(trader_id)?;
             match state.external_service_api.create_trader(&Trader {
                 id: trader_id,
                 name,

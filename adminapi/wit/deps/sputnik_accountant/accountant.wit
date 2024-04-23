@@ -13,6 +13,7 @@ interface api {
   }
 
   use sputnik: matching-engine/api.{error as matching-engine-error};
+  use sputnik: matching-engine/api.{order-status as engine-status};
 
   use sputnik: registry/api.{asset};
 
@@ -37,6 +38,11 @@ interface api {
     id: u64,
   }
 
+  record order-and-status {
+    order: order,
+    status: engine-status,
+  }
+
   initialize: func(id: u64, matching-engine-template-id: string, registry-template-id: string, environment: string) -> result<u64, error>;
 
   get-balances: func() -> list<asset-balance>;
@@ -48,6 +54,8 @@ interface api {
   withdraw: func(asset: u64, amount: u64) -> result<asset-balance, error>;
 
   process-maker-fill: func(fill: fill) -> ();
+
+  get-orders: func() -> list<order-and-status>;
 }
 
 world accountant {

@@ -32,12 +32,8 @@ fi
 
 if [ "$USE_CLOUD" = 'true' ]; then
   CMD=golem-cloud-cli
-  GOLEM_API=https://release.api.golem.cloud
-  GOLEM_TOKEN_SECRET=$(golem-cloud-cli token add | yq .secret.value)
 else
   CMD=golem-cli
-  GOLEM_API=http://localhost:8082
-  GOLEM_TOKEN_SECRET=""
 fi
 
 "$CMD" worker add --template-name ids --worker-name "${ENVIRONMENT}"
@@ -53,6 +49,11 @@ ACCOUNTANT_TEMPLATE_ID=$("$CMD" template list -t accountant | yq '.[0].templateI
   --env IDS_TEMPLATE_ID="$IDS_TEMPLATE_ID" \
   --env MATCHING_ENGINE_TEMPLATE_ID="$MATCHING_ENGINE_TEMPLATE_ID" \
   --env ACCOUNTANT_TEMPLATE_ID="$ACCOUNTANT_TEMPLATE_ID" \
-  --env GOLEM_API="$GOLEM_API" \
-  --env GOLEM_TOKEN_SECRET="$GOLEM_TOKEN_SECRET" \
+  --env ENVIRONMENT="$ENVIRONMENT"
+
+"$CMD" worker add --template-name traderapi --worker-name "$ENVIRONMENT" \
+  --env REGISTRY_TEMPLATE_ID="$REGISTRY_TEMPLATE_ID" \
+  --env IDS_TEMPLATE_ID="$IDS_TEMPLATE_ID" \
+  --env MATCHING_ENGINE_TEMPLATE_ID="$MATCHING_ENGINE_TEMPLATE_ID" \
+  --env ACCOUNTANT_TEMPLATE_ID="$ACCOUNTANT_TEMPLATE_ID" \
   --env ENVIRONMENT="$ENVIRONMENT"
