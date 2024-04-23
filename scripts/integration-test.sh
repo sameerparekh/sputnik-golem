@@ -107,10 +107,29 @@ TRADER_B_ID=$("$CMD" worker invoke-and-await \
   --parameters="[$USD_ID, 6000000]"
 
 "$CMD" worker invoke-and-await \
-  --template-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_B_ID}" \
-  --function=sputnik:accountant/api/place-order \
-  --parameters="[{\"id\": 1, \"spot-pair\": $BTCUSD_ID, \"timestamp\": 1, \"side\": \"buy\", \"price\": 6000000, \"size\": 10000000}]"
+  --template-name traderapi \
+  --worker-name "${ENVIRONMENT}" \
+  --function=sputnik:traderapi/api/place-order \
+  --parameters="[$TRADER_A_ID, {\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 6000000, \"size\": 10000000}]"
+
+"$CMD" worker invoke-and-await \
+  --template-name traderapi \
+  --worker-name "${ENVIRONMENT}" \
+  --function=sputnik:traderapi/api/place-order \
+  --parameters="[$TRADER_B_ID, {\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7000000, \"size\": 10000000}]"
+
+
+"$CMD" worker invoke-and-await \
+  --template-name traderapi \
+  --worker-name "${ENVIRONMENT}" \
+  --function=sputnik:traderapi/api/get-orders \
+  --parameters="[$TRADER_A_ID]"
+
+"$CMD" worker invoke-and-await \
+  --template-name traderapi \
+  --worker-name "${ENVIRONMENT}" \
+  --function=sputnik:traderapi/api/get-orders \
+  --parameters="[$TRADER_B_ID]"
 
 "$CMD" worker invoke-and-await \
   --template-name matching-engine \
