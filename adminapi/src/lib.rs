@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::env;
 
 use mockall::automock;
-use reqwest::Client;
+
 use serde::{Deserialize, Serialize};
 
 use crate::bindings::exports::sputnik::adminapi::api::Error::{

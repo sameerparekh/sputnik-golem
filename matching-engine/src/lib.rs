@@ -100,20 +100,20 @@ impl Guest for Component {
                 };
                 remaining_size = match matched_order_id {
                     Some(matched_id) => {
-                        let matched_order = state.orders.get(&matched_id).unwrap();
+                        let matched_order = state.orders.get(matched_id).unwrap();
                         let matched_size = min(matched_order.size, remaining_size);
                         let fill = Fill {
                             price: matched_order.price,
                             size: matched_size,
                             taker_order_id: order.id,
-                            maker_order_id: matched_id.clone(),
+                            maker_order_id: *matched_id,
                             timestamp: order.timestamp,
                         };
                         // TODO: Send fill to accountant for maker trader -- matched_order.trader
                         state.fills.push(fill);
                         state
                             .order_statuses
-                            .entry(matched_id.clone())
+                            .entry(*matched_id)
                             .and_modify(|status| {
                                 status.fills.push(fill);
                                 status.status = PartialFilled;
@@ -124,16 +124,16 @@ impl Guest for Component {
                         });
                         state
                             .orders
-                            .entry(matched_id.clone())
+                            .entry(*matched_id)
                             .and_modify(|order| order.size -= matched_size);
                         state
                             .orders
                             .entry(order.id)
                             .and_modify(|order| order.size -= matched_size);
-                        if state.orders.get(&matched_id).unwrap().size == 0 {
+                        if state.orders.get(matched_id).unwrap().size == 0 {
                             state
                                 .order_statuses
-                                .entry(matched_id.clone())
+                                .entry(*matched_id)
                                 .and_modify(|status| status.status = Filled);
                             other_side.pop();
                         }
@@ -179,22 +179,20 @@ impl Guest for Component {
                 .bids
                 .clone()
                 .into_sorted_iter()
-                .map(|(order_id, _)| state.orders.get(&order_id).map(Order::clone))
-                .filter_map(|maybe_order| maybe_order)
+                .filter_map(|(order_id, _)| state.orders.get(&order_id).copied())
                 .collect();
             let asks = state
                 .asks
                 .clone()
                 .into_sorted_iter()
-                .map(|(order_id, _)| state.orders.get(&order_id).map(Order::clone))
-                .filter_map(|maybe_order| maybe_order)
+                .filter_map(|(order_id, _)| state.orders.get(&order_id).copied())
                 .collect();
             OrderBook { bids, asks }
         })
     }
 
     fn get_order_status(id: u64) -> Option<OrderStatus> {
-        with_state(|state| state.order_statuses.get(&id).map(OrderStatus::clone))
+        with_state(|state| state.order_statuses.get(&id).cloned())
     }
 }
 

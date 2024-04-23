@@ -11,7 +11,7 @@ struct State {
 }
 
 thread_local! {
-    static STATE: RefCell<State> = RefCell::new(State { last_id: 0u64 });
+    static STATE: RefCell<State> = const { RefCell::new(State { last_id: 0u64 }) };
 }
 
 fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {

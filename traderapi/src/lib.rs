@@ -3,8 +3,8 @@ use std::env;
 
 use chrono::Utc;
 use mockall::automock;
-use reqwest::Client;
-use serde::{Deserialize, Serialize};
+
+
 
 use crate::bindings::exports::sputnik::traderapi::api::Error;
 use crate::bindings::exports::sputnik::traderapi::api::Error::InternalError;
@@ -18,8 +18,8 @@ use crate::bindings::sputnik::accountant::api::{
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
 use crate::bindings::sputnik::accountant_stub::stub_accountant::OrderStatus;
 use crate::bindings::sputnik::ids_stub::stub_ids;
-use crate::bindings::sputnik::matching_engine::api::Order as EngineOrder;
-use crate::bindings::sputnik::registry::api::Trader;
+
+
 
 mod bindings;
 
