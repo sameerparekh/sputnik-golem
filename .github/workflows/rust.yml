@@ -96,8 +96,10 @@ jobs:
       - name: Install component
         run: cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-component cargo-component golem-wasm-rpc-stubgen golem-cli
       - uses: davidB/rust-cargo-make@v1
-      - name: Start golem docker
-        uses: hoverkraft-tech/compose-action@v2
+      - name: Start up docker
+        run: docker-compose up -d
       - name: Integration tests
         run: scripts/integration-tests.sh
+      - name: Stop
+        run: docker-compose down
 
