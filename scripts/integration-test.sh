@@ -47,7 +47,9 @@ if [ "$NO_BUILD" = 'false' ]; then
 fi
 
 scripts/update-components.sh
+scripts/update-api-definitions.sh -e "$ENVIRONMENT"
 scripts/launch-workers.sh -e "$ENVIRONMENT"
+scripts/deploy-apis.sh -e "$ENVIRONMENT"
 
 USD_ID=$("$CMD" --format yaml worker invoke-and-await \
     --component-name=adminapi \
