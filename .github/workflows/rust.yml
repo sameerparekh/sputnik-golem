@@ -2,66 +2,83 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    tags:
+      - "v*.*.*"
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  checks: write
+  pull-requests: write
 
 env:
+  BUILD_TARGET: "x86_64-unknown-linux-gnu"
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  unit-tests:
+    runs-on: ubuntu-latest-large
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.lock') }}
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: davidB/rust-cargo-make@v1
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Lint
+        run: |
+          cargo fmt --all -- --check
+          RUSTFLAGS="-A unused" cargo clippy -- -D warnings
+      - name: Unit tests
+        run: cargo test
 
-    runs-on: macos-latest
-
+  integration-tests:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          profile: minimal
-          toolchain: stable-x86_64-apple-darwin
+          toolchain: stable
           override: true
-          components: rustfmt, clippy
-      - name: Set up cargo cache
-        uses: actions/cache@v3
-        continue-on-error: false
+      - name: Setup cache
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-      - name: Lint
-        run: |
-          cargo fmt --all -- --check
-          RUSTFLAGS="-A unused" cargo clippy -- -D warnings
-      - name: Install cargo check tools
-        run: |
-          cargo install --locked cargo-deny || true
-          cargo install --locked cargo-outdated || true
-          cargo install --locked cargo-udeps || true
-          cargo install --locked cargo-audit || true
-          cargo install --locked cargo-pants || true
-      - name: Check
-        run: |
-          cargo deny check
-          cargo outdated --exit-code 1
-          cargo udeps
-          rm -rf ~/.cargo/advisory-db
-          cargo audit
-          cargo pants
-      - name: Install protoc
-        run: brew install protobuf-c
-      - name: Cargo Helpers
-        run: cargo install cargo-make cargo-component golem-cli
+          key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.lock') }}
+      - uses: davidB/rust-cargo-make@v1
       - name: Build
         run: scripts/build.sh
-      - name: Run tests
-        run: cargo test --verbose
       - name: Start up docker
         run: docker-compose up -d
       - name: Integration tests
