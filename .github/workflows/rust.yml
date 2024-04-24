@@ -45,14 +45,12 @@ jobs:
           override: true
       - uses: davidB/rust-cargo-make@v1
       - name: Install Protoc
-        uses: arduino/setup-protoc@v1
+        uses: arduino/setup-protoc@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: cargo-bins/cargo-binstall@main
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install component
-        run: yes | cargo binstall cargo-component golem-wasm-rpc-stubgen
+        run: cargo binstall --no-confirm cargo-component golem-wasm-rpc-stubgen
       - name: Lint
         run: |
           cargo fmt --all -- --check
@@ -81,16 +79,15 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.lock') }}
-      - uses: cargo-bins/cargo-binstall@main
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install component
-        run: yes | cargo binstall cargo-component cargo-component golem-wasm-rpc-stubgen golem-cli
-      - uses: davidB/rust-cargo-make@v1
       - name: Install Protoc
-        uses: arduino/setup-protoc@v1
+        uses: arduino/setup-protoc@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: cargo-bins/cargo-binstall@main
+      - name: Install component
+        run: cargo binstall --no-confirm cargo-component cargo-component golem-wasm-rpc-stubgen golem-cli
+      - uses: davidB/rust-cargo-make@v1
+
       - name: Build
         run: scripts/build.sh
       - name: Start up docker
