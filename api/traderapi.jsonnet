@@ -19,6 +19,19 @@ local environment = std.extVar('environment');
       }
     },
     {
+      method: "Get",
+      path: "/balances/{trader}",
+      binding: {
+        component: component_id,
+        workerId: environment,
+        functionName: "sputnik:traderapi/api/get-balances",
+        functionParams: [
+          "${request.path.trader}"
+        ],
+        response: "${{headers: {ContentType: 'json'}, body: worker.response, status: 200}}"
+      }
+    },
+    {
       method: "Post",
       path: "/orders/{trader}",
       binding: {
