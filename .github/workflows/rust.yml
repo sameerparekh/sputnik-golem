@@ -50,7 +50,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: cargo-bins/cargo-binstall@main
       - name: Install component
-        run: cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-component golem-wasm-rpc-stubgen
+        run: cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-component golem-wasm-rpc-stubgen golem-cli
       - name: Lint
         run: RUSTFLAGS="-A unused" cargo clippy -- -D warnings
       - name: Unit tests
