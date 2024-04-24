@@ -1,6 +1,7 @@
 # Sputnik
 
 [![codecov](https://codecov.io/gh/sameerparekh/sputnik-golem/graph/badge.svg?token=AOQ4AGYL7R)](https://codecov.io/gh/sameerparekh/sputnik-golem)
+[![CI](https://github.com/sameerparekh/sputnik-golem/actions/workflows/ci.yml/badge.svg)](https://github.com/sameerparekh/sputnik-golem/actions/workflows/ci.yml)
 
 Sputnik is an exchange platform built with [Golem Cloud](https://golem.cloud/).
 
