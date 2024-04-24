@@ -48,8 +48,10 @@ jobs:
         uses: arduino/setup-protoc@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Quickinstall
+        run: cargo install quickinstall
       - name: Install component
-        run: cargo install cargo-component
+        run: cargo quickinstall cargo-component
       - name: Lint
         run: |
           cargo fmt --all -- --check
@@ -78,8 +80,10 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.lock') }}
+      - name: Quickinstall
+        run: cargo install quickinstall
       - name: Install component
-        run: cargo install cargo-component
+        run: cargo quickinstall cargo-component
       - uses: davidB/rust-cargo-make@v1
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
