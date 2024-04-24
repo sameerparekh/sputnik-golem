@@ -39,10 +39,6 @@ path = "wit/deps/sputnik_registry-stub"
 [dependencies]
 mockall = "0.12.1"
 
-[dependencies.serde]
-version = "1.0.197"
-features = ["derive"]
-
 [dependencies.wit-bindgen]
 version = "0.17.0"
 features = ["realloc"]
