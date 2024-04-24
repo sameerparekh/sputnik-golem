@@ -100,4 +100,6 @@ jobs:
         run: docker-compose up -d
       - name: Integration tests
         run: scripts/integration-tests.sh
+      - name: Stop
+        run: docker-compose down
 
