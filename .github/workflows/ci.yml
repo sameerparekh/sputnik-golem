@@ -99,7 +99,7 @@ jobs:
       - name: Start up docker
         run: docker-compose up -d
       - name: Integration tests
-        run: scripts/integration-tests.sh
+        run: scripts/integration-test.sh
       - name: Stop
         run: docker-compose down
 
