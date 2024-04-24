@@ -22,7 +22,8 @@ for Api {
             .invoke_and_await("sputnik:matching-engine/api/init", &[])
             .expect(
                 &format!(
-                    "Failed to invoke remote {}", "sputnik:matching-engine/api/init"
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:matching-engine/api/init"
                 ),
             );
         ({
@@ -106,7 +107,7 @@ for Api {
             )
             .expect(
                 &format!(
-                    "Failed to invoke remote {}",
+                    "Failed to invoke-and-await remote {}",
                     "sputnik:matching-engine/api/place-order"
                 ),
             );
@@ -238,7 +239,7 @@ for Api {
             )
             .expect(
                 &format!(
-                    "Failed to invoke remote {}",
+                    "Failed to invoke-and-await remote {}",
                     "sputnik:matching-engine/api/cancel-order"
                 ),
             );
@@ -363,7 +364,7 @@ for Api {
             .invoke_and_await("sputnik:matching-engine/api/get-order-book", &[])
             .expect(
                 &format!(
-                    "Failed to invoke remote {}",
+                    "Failed to invoke-and-await remote {}",
                     "sputnik:matching-engine/api/get-order-book"
                 ),
             );
@@ -485,7 +486,7 @@ for Api {
             )
             .expect(
                 &format!(
-                    "Failed to invoke remote {}",
+                    "Failed to invoke-and-await remote {}",
                     "sputnik:matching-engine/api/get-order-status"
                 ),
             );

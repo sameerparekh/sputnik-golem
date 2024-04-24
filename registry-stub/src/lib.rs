@@ -20,7 +20,10 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
             .rpc
             .invoke_and_await("sputnik:registry/api/get-assets", &[])
             .expect(
-                &format!("Failed to invoke remote {}", "sputnik:registry/api/get-assets"),
+                &format!(
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:registry/api/get-assets"
+                ),
             );
         (result
             .tuple_element(0)
@@ -56,7 +59,8 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
             .invoke_and_await("sputnik:registry/api/get-spot-pairs", &[])
             .expect(
                 &format!(
-                    "Failed to invoke remote {}", "sputnik:registry/api/get-spot-pairs"
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:registry/api/get-spot-pairs"
                 ),
             );
         (result
@@ -132,7 +136,8 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
             .invoke_and_await("sputnik:registry/api/get-traders", &[])
             .expect(
                 &format!(
-                    "Failed to invoke remote {}", "sputnik:registry/api/get-traders"
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:registry/api/get-traders"
                 ),
             );
         (result
@@ -180,7 +185,10 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
                 ],
             )
             .expect(
-                &format!("Failed to invoke remote {}", "sputnik:registry/api/add-asset"),
+                &format!(
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:registry/api/add-asset"
+                ),
             );
         ({
             let result = result
@@ -269,7 +277,8 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
             )
             .expect(
                 &format!(
-                    "Failed to invoke remote {}", "sputnik:registry/api/add-spot-pair"
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:registry/api/add-spot-pair"
                 ),
             );
         ({
@@ -395,7 +404,10 @@ impl crate::bindings::exports::sputnik::registry_stub::stub_registry::GuestApi f
                 ],
             )
             .expect(
-                &format!("Failed to invoke remote {}", "sputnik:registry/api/add-trader"),
+                &format!(
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:registry/api/add-trader"
+                ),
             );
         ({
             let result = result

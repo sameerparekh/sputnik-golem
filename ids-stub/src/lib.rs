@@ -20,7 +20,9 @@ impl crate::bindings::exports::sputnik::ids_stub::stub_ids::GuestApi for Api {
             .rpc
             .invoke_and_await("sputnik:ids/api/get-new-id", &[])
             .expect(
-                &format!("Failed to invoke remote {}", "sputnik:ids/api/get-new-id"),
+                &format!(
+                    "Failed to invoke-and-await remote {}", "sputnik:ids/api/get-new-id"
+                ),
             );
         (result.tuple_element(0).expect("tuple not found").u64().expect("u64 not found"))
     }
@@ -32,7 +34,9 @@ impl crate::bindings::exports::sputnik::ids_stub::stub_ids::GuestApi for Api {
                 &[WitValue::builder().u8(qty)],
             )
             .expect(
-                &format!("Failed to invoke remote {}", "sputnik:ids/api/get-new-ids"),
+                &format!(
+                    "Failed to invoke-and-await remote {}", "sputnik:ids/api/get-new-ids"
+                ),
             );
         (result
             .tuple_element(0)

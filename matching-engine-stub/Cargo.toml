@@ -10,11 +10,11 @@ package = "sputnik:matching-engine"
 world = "wasm-rpc-stub-matching-engine"
 path = "wit"
 
-[package.metadata.component.target.dependencies."sputnik:matching-engine"]
-path = "wit/deps/sputnik_matching-engine"
-
 [package.metadata.component.target.dependencies."golem:rpc"]
 path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine"]
+path = "wit/deps/sputnik_matching-engine"
 
 [dependencies.golem-wasm-rpc]
 version = "0.0.22"

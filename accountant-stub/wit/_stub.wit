@@ -20,6 +20,7 @@ interface stub-accountant {
     place-order: func(order: order) -> result<order-status, error>;
     deposit: func(asset: u64, amount: u64) -> result<asset-balance, error>;
     withdraw: func(asset: u64, amount: u64) -> result<asset-balance, error>;
+    blocking-process-maker-fill: func(fill: fill);
     process-maker-fill: func(fill: fill);
     get-orders: func() -> list<order-and-status>;
   }

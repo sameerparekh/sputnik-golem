@@ -36,7 +36,8 @@ for Api {
             )
             .expect(
                 &format!(
-                    "Failed to invoke remote {}", "sputnik:accountant/api/initialize"
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:accountant/api/initialize"
                 ),
             );
         ({
@@ -149,7 +150,8 @@ for Api {
             .invoke_and_await("sputnik:accountant/api/get-balances", &[])
             .expect(
                 &format!(
-                    "Failed to invoke remote {}", "sputnik:accountant/api/get-balances"
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:accountant/api/get-balances"
                 ),
             );
         (result
@@ -235,7 +237,8 @@ for Api {
             )
             .expect(
                 &format!(
-                    "Failed to invoke remote {}", "sputnik:accountant/api/place-order"
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:accountant/api/place-order"
                 ),
             );
         ({
@@ -359,7 +362,10 @@ for Api {
                 &[WitValue::builder().u64(asset), WitValue::builder().u64(amount)],
             )
             .expect(
-                &format!("Failed to invoke remote {}", "sputnik:accountant/api/deposit"),
+                &format!(
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:accountant/api/deposit"
+                ),
             );
         ({
             let result = result
@@ -510,7 +516,10 @@ for Api {
                 &[WitValue::builder().u64(asset), WitValue::builder().u64(amount)],
             )
             .expect(
-                &format!("Failed to invoke remote {}", "sputnik:accountant/api/withdraw"),
+                &format!(
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:accountant/api/withdraw"
+                ),
             );
         ({
             let result = result
@@ -646,13 +655,45 @@ for Api {
             }
         })
     }
-    fn process_maker_fill(
+    fn blocking_process_maker_fill(
         &self,
         fill: crate::bindings::sputnik::accountant::api::Fill,
     ) -> () {
         let result = self
             .rpc
             .invoke_and_await(
+                "sputnik:accountant/api/process-maker-fill",
+                &[
+                    WitValue::builder()
+                        .record()
+                        .item()
+                        .u64(fill.price)
+                        .item()
+                        .u64(fill.size)
+                        .item()
+                        .u64(fill.taker_order_id)
+                        .item()
+                        .u64(fill.maker_order_id)
+                        .item()
+                        .u64(fill.timestamp)
+                        .finish(),
+                ],
+            )
+            .expect(
+                &format!(
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:accountant/api/process-maker-fill"
+                ),
+            );
+        ()
+    }
+    fn process_maker_fill(
+        &self,
+        fill: crate::bindings::sputnik::accountant::api::Fill,
+    ) -> () {
+        let result = self
+            .rpc
+            .invoke(
                 "sputnik:accountant/api/process-maker-fill",
                 &[
                     WitValue::builder()
@@ -686,7 +727,8 @@ for Api {
             .invoke_and_await("sputnik:accountant/api/get-orders", &[])
             .expect(
                 &format!(
-                    "Failed to invoke remote {}", "sputnik:accountant/api/get-orders"
+                    "Failed to invoke-and-await remote {}",
+                    "sputnik:accountant/api/get-orders"
                 ),
             );
         (result
