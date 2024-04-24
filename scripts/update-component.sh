@@ -7,15 +7,11 @@ usage() {
 }
 
 USE_CLOUD="${USE_CLOUD:-false}"
-ADD_OR_UPDATE="update"
 
-while getopts ":ca" opt; do
+while getopts ":c" opt; do
   case $opt in
     c)
       USE_CLOUD=true
-      ;;
-    a)
-      ADD_OR_UPDATE="add"
       ;;
     *)
       usage
@@ -37,6 +33,13 @@ if [ "$USE_CLOUD" = 'true' ]; then
   CMD=golem-cloud-cli
 else
   CMD=golem-cli
+fi
+
+COUNT=$("$CMD" --format yaml component list -c "$COMPONENT_NAME" | yq length)
+if [ "$COUNT" -eq 0 ]; then
+  ADD_OR_UPDATE="add"
+else
+   ADD_OR_UPDATE="update"
 fi
 
 COMPONENT_NAME_W_UNDERSCORE=$(echo "$COMPONENT_NAME" | tr '-' '_')

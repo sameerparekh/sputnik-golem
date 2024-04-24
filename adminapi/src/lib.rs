@@ -2,7 +2,6 @@ use std::cell::RefCell;
 use std::env;
 
 use mockall::automock;
-use serde::{Deserialize, Serialize};
 
 use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
 use crate::bindings::exports::sputnik::adminapi::api::Error::{
@@ -27,23 +26,6 @@ struct State {
 
 thread_local! {
     static STATE: RefCell<State> = RefCell::new(State { external_service_api: Box::new(ExternalServiceApiProd) });
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct CreateWorkerBody {
-    name: String,
-    args: Vec<String>,
-    env: Vec<Vec<String>>,
-}
-
-impl CreateWorkerBody {
-    fn new(name: String, env: Vec<Vec<String>>) -> CreateWorkerBody {
-        CreateWorkerBody {
-            name,
-            args: Vec::new(),
-            env,
-        }
-    }
 }
 
 #[automock]
