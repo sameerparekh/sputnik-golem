@@ -49,8 +49,12 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: cargo-bins/cargo-binstall@main
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install component
         run: cargo binstall cargo-component
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint
         run: |
           cargo fmt --all -- --check
@@ -80,8 +84,12 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.lock') }}
       - uses: cargo-bins/cargo-binstall@main
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install component
         run: cargo binstall cargo-component
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: davidB/rust-cargo-make@v1
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
