@@ -44,8 +44,9 @@ export USE_CLOUD
 
 if [ "$NO_BUILD" = 'false' ]; then
   scripts/build.sh
-  scripts/update-components.sh
 fi
+
+scripts/update-components.sh
 scripts/launch-workers.sh -e "$ENVIRONMENT"
 
 USD_ID=$("$CMD" --format yaml worker invoke-and-await \
