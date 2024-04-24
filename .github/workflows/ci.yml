@@ -53,6 +53,8 @@ jobs:
         run: cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-component golem-wasm-rpc-stubgen golem-cli
       - name: Lint
         run: RUSTFLAGS="-A unused" cargo clippy -- -D warnings
+      - name: Component build
+        run: cargo component build
       - name: Unit tests
         run: cargo test
       - name: Install cargo-llvm-cov
