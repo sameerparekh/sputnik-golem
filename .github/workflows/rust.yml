@@ -52,7 +52,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install component
-        run: yes | cargo binstall cargo-component
+        run: yes | cargo binstall cargo-component wasm-rpc-stubgen
       - name: Lint
         run: |
           cargo fmt --all -- --check
@@ -85,7 +85,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install component
-        run: yes | cargo binstall cargo-component
+        run: yes | cargo binstall cargo-component cargo-component wasm-rpc-stubgen golem-cli
       - uses: davidB/rust-cargo-make@v1
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
