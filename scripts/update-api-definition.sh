@@ -41,10 +41,10 @@ else
 fi
 
 COMPONENT_ID=$("$CMD" --format yaml component list -c "$COMPONENT_NAME" | yq '.[0].componentId')
-TMPFILE=$(mktemp)
+TEMP_FILE=$(mktemp)
 jsonnet -V component_id="$COMPONENT_ID" \
         -V environment="$ENVIRONMENT" \
-        -o "$TMPFILE" \
+        -o "$TEMP_FILE" \
         api/"$COMPONENT_NAME".jsonnet
 
 
@@ -56,5 +56,6 @@ else
    ADD_OR_UPDATE="update"
 fi
 
-"$CMD" api-definition "$ADD_OR_UPDATE" "$TMPFILE"
+"$CMD" api-definition "$ADD_OR_UPDATE" "$TEMP_FILE"
+rm "$TEMP_FILE"
 
