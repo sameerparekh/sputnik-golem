@@ -9,7 +9,7 @@ usage() {
 USE_CLOUD="${USE_CLOUD:-false}"
 ENVIRONMENT="${ENVIRONMENT:-test}"
 
-while getopts ":c:e" opt; do
+while getopts "ce:" opt; do
   case $opt in
     c)
       USE_CLOUD=true
@@ -39,5 +39,9 @@ else
   CMD=golem-cli
 fi
 
-COMPONENT_ID=$("$CMD" --format yaml component list -c "$COMPONENT_NAME" | yq '.[0].componentId')
-"$CMD" api-deployment deploy --id "$COMPONENT_ID" --version "0.0.1" --host localhost --subdomain "$ENVIRONMENT.$COMPONENT_NAME"
+source .env
+
+"$CMD" api-deployment deploy --id "$COMPONENT_NAME" \
+  --version "0.0.1" \
+  --host "localhost:${WORKER_SERVICE_CUSTOM_REQUEST_PORT}" \
+  --subdomain "${ENVIRONMENT}.${COMPONENT_NAME}"

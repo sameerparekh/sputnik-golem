@@ -2,7 +2,7 @@ local component_id = std.extVar('component_id');
 local environment = std.extVar('environment');
 
 {
-  id: component_id,
+  id: "traderapi",
   version: "0.0.1",
   routes: [
     {
