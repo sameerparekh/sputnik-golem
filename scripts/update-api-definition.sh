@@ -10,7 +10,7 @@ usage() {
 USE_CLOUD="${USE_CLOUD:-false}"
 ENVIRONMENT="${ENVIRONMENT:-test}"
 
-while getopts ":c:e" opt; do
+while getopts "ce:" opt; do
   case $opt in
     c)
       USE_CLOUD=true
@@ -41,20 +41,21 @@ else
 fi
 
 COMPONENT_ID=$("$CMD" --format yaml component list -c "$COMPONENT_NAME" | yq '.[0].componentId')
-TMPFILE=$(mktemp)
+TEMP_FILE=$(mktemp)
 jsonnet -V component_id="$COMPONENT_ID" \
         -V environment="$ENVIRONMENT" \
-        -o "$TMPFILE" \
+        -o "$TEMP_FILE" \
         api/"$COMPONENT_NAME".jsonnet
 
 
 
-COUNT=$("$CMD" --format yaml api-definition list --id "$COMPONENT_ID" | yq length)
+COUNT=$("$CMD" --format yaml api-definition list --id "$COMPONENT_NAME" | yq length)
 if [ "$COUNT" -eq 0 ]; then
   ADD_OR_UPDATE="add"
 else
    ADD_OR_UPDATE="update"
 fi
 
-"$CMD" api-definition "$ADD_OR_UPDATE" "$TMPFILE"
+"$CMD" api-definition "$ADD_OR_UPDATE" "$TEMP_FILE"
+rm "$TEMP_FILE"
 

@@ -10,7 +10,7 @@ usage() {
 USE_CLOUD="${USE_CLOUD:-false}"
 ENVIRONMENT="${ENVIRONMENT:-test}"
 
-while getopts ":c:e" opt; do
+while getopts "ce:" opt; do
   case $opt in
     c)
       USE_CLOUD=true

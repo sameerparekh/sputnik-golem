@@ -16,6 +16,8 @@ Sputnik is an exchange platform built with [Golem Cloud](https://golem.cloud/).
     cargo install golem-wasm-rpc-stubgen golem-cli cargo-component cargo-make
     ```
 
+3. Install [dnsmasq](https://passingcuriosity.com/2013/dnsmasq-dev-osx/)
+
 ## Unit Testing
 
 ```shell
