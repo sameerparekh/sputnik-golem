@@ -68,10 +68,11 @@ jobs:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: sameerparekh/sputnik-golem
-      - name: Start up docker
-        run: docker-compose up -d
-      - name: Integration tests
-        run: scripts/integration-test.sh
-      - name: Stop
-        run: docker-compose down
+# Integration tests need to be able to connect to a subdomain.host that points to the local machine
+#      - name: Start up docker
+#        run: docker-compose up -d
+#      - name: Integration tests
+#        run: scripts/integration-test.sh
+#      - name: Stop
+#        run: docker-compose down
 
