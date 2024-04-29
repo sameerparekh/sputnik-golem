@@ -16,7 +16,7 @@ local environment = std.extVar('environment');
           "${request.path.name}",
           "${request.body.decimals}"
         ],
-        response: "${{headers: {ContentType: 'json'}, body: worker.response, status: 201}}"
+        response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 201}}"
       }
     },
     {
@@ -31,7 +31,7 @@ local environment = std.extVar('environment');
           "${request.body.numerator}",
           "${request.body.denominator}"
         ],
-        response: "${{headers: {ContentType: 'json'}, body: worker.response, status: 201}}"
+        response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 201}}"
       }
     },
     {
@@ -44,7 +44,7 @@ local environment = std.extVar('environment');
         functionParams: [
           "${request.path.name}"
         ],
-       response: "${{headers: {ContentType: 'json'}, body: worker.response, status: 201}}"
+       response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 201}}"
       }
     }
   ]

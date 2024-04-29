@@ -43,5 +43,5 @@ source .env
 
 "$CMD" api-deployment deploy --id "$COMPONENT_NAME" \
   --version "0.0.1" \
-  --host "localhost:${WORKER_SERVICE_CUSTOM_REQUEST_PORT}" \
+  --host "sputnik.dev:${WORKER_SERVICE_CUSTOM_REQUEST_PORT}" \
   --subdomain "${ENVIRONMENT}.${COMPONENT_NAME}"

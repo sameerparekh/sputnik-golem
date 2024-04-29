@@ -15,7 +15,7 @@ local environment = std.extVar('environment');
         functionParams: [
           "${request.path.trader}"
         ],
-        response: "${{headers: {ContentType: 'json'}, body: worker.response, status: 200}}"
+        response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 200}}"
       }
     },
     {
@@ -28,7 +28,7 @@ local environment = std.extVar('environment');
         functionParams: [
           "${request.path.trader}"
         ],
-        response: "${{headers: {ContentType: 'json'}, body: worker.response, status: 200}}"
+        response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 200}}"
       }
     },
     {
@@ -42,7 +42,7 @@ local environment = std.extVar('environment');
           "${request.path.trader}",
           "${request.body}"
         ],
-        response: "${{headers: {ContentType: 'json'}, body: worker.response, status: 201}}"
+        response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 201}}"
       }
     }
   ]
