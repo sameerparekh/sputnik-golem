@@ -65,6 +65,9 @@ USD_ID=$(curl --silent -X POST "$ADMIN_API"/asset/USD \
 BTCUSD_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/BTCUSD \
          --data "{ \"numerator\": $BTC_ID, \"denominator\": $USD_ID }" | jq '.ok.id')
 
+curl --silent "$TRADER_API/asset"
+curl --silent "$TRADER_API/spot-pair"
+
 TRADER_A_ID=$(curl --silent -X POST "$ADMIN_API"/trader/tradera \
           | jq '.ok.id')
 

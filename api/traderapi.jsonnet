@@ -1,4 +1,5 @@
 local component_id = std.extVar('component_id');
+local registry_id = std.extVar('registry_id');
 local environment = std.extVar('environment');
 local matching_engine_id = std.extVar('matching_engine_id');
 
@@ -16,6 +17,28 @@ local matching_engine_id = std.extVar('matching_engine_id');
         functionParams: [
           "${request.path.trader}"
         ],
+        response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 200}}"
+      }
+    },
+    {
+      method: "Get",
+      path: "/asset",
+      binding: {
+        component: registry_id,
+        workerId: environment,
+        functionName: "sputnik:registry/api/get-assets",
+        functionParams: [],
+        response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 200}}"
+      }
+    },
+    {
+      method: "Get",
+      path: "/spot-pair",
+      binding: {
+        component: registry_id,
+        workerId: environment,
+        functionName: "sputnik:registry/api/get-spot-pairs",
+        functionParams: [],
         response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 200}}"
       }
     },
