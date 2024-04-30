@@ -68,6 +68,9 @@ USD_ID=$(curl --silent -X POST "$ADMIN_API"/asset/USD \
 BTCUSD_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/BTCUSD \
          --data "{ \"numerator\": $BTC_ID, \"denominator\": $USD_ID }" | jq '.ok.id')
 
+curl --silent "$TRADER_API/asset"
+curl --silent "$TRADER_API/spot-pair"
+
 TRADER_A_ID=$(curl --silent -X POST "$ADMIN_API"/trader/tradera \
           | jq '.ok.id')
 
@@ -112,5 +115,19 @@ curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
 
 curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .
 
+
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 6700000, \"size\": 10000000}"
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7500000, \"size\": 10000000}"
+
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_A_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 7000000, \"size\": 25000000}"
+
+curl --silent -X GET "$TRADER_API"/orders/"$TRADER_A_ID" | jq .
+curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
+curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .    
+
 echo "ADMIN_API: $ADMIN_API"
 echo "TRADER_API: $TRADER_API"
+
