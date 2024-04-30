@@ -107,10 +107,6 @@ curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
 curl --silent -X GET "$TRADER_API"/orders/"$TRADER_A_ID" | jq .
 curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
 
-"$CMD" worker invoke-and-await \
-  --component-name matching-engine \
-  --worker-name "${ENVIRONMENT}-${BTCUSD_ID}" \
-  --function=sputnik:matching-engine/api/get-order-book \
-  --parameters='[]'
+curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .
 
 echo "$ENVIRONMENT"
