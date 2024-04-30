@@ -1,5 +1,6 @@
 local component_id = std.extVar('component_id');
 local environment = std.extVar('environment');
+local matching_engine_id = std.extVar('matching_engine_id');
 
 {
   id: "traderapi",
@@ -43,6 +44,17 @@ local environment = std.extVar('environment');
           "${request.body}"
         ],
         response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 201}}"
+      }
+    },
+    {
+      method: "Get",
+      path: "/orderbook/{spotpair}",
+      binding: {
+        component: matching_engine_id,
+        workerId: environment + "-${request.path.spotpair}",
+        functionName: "sputnik:matching-engine/api/get-order-book",
+        functionParams: [],
+        response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 200}}"
       }
     }
   ]

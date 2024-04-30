@@ -41,8 +41,10 @@ else
 fi
 
 COMPONENT_ID=$("$CMD" --format yaml component list -c "$COMPONENT_NAME" | yq '.[0].componentId')
+MATCHING_ENGINE_ID=$("$CMD" --format yaml component list -c "matching-engine" | yq '.[0].componentId')
 TEMP_FILE=$(mktemp)
 jsonnet -V component_id="$COMPONENT_ID" \
+        -V matching_engine_id="$MATCHING_ENGINE_ID" \
         -V environment="$ENVIRONMENT" \
         -o "$TEMP_FILE" \
         api/"$COMPONENT_NAME".jsonnet
