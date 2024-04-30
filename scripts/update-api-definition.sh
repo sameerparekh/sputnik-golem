@@ -58,8 +58,6 @@ else
    ADD_OR_UPDATE="update"
 fi
 
-cat $TEMP_FILE
-
 "$CMD" api-definition "$ADD_OR_UPDATE" "$TEMP_FILE"
 rm "$TEMP_FILE"
 
