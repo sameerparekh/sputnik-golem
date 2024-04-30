@@ -109,4 +109,16 @@ curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
 
 curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .
 
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 6700000, \"size\": 10000000}"
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7500000, \"size\": 10000000}"
+
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_A_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 7000000, \"size\": 25000000}"
+
+curl --silent -X GET "$TRADER_API"/orders/"$TRADER_A_ID" | jq .
+curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
+curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .    
+
 echo "$ENVIRONMENT"
