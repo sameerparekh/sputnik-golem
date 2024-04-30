@@ -7,8 +7,6 @@ usage() {
 
 ENVIRONMENT="it-$(openssl rand -hex 5)"
 
-echo "$ENVIRONMENT"
-
 USE_CLOUD="${USE_CLOUD:-false}"
 NO_BUILD=false
 
@@ -43,18 +41,23 @@ fi
 export USE_CLOUD
 
 if [ "$NO_BUILD" = 'false' ]; then
-  scripts/build.sh
+  echo -n Building...
+  scripts/build.sh >/dev/null 2>/dev/null
+  echo
 fi
 
 source .env
 
-scripts/update-components.sh
-scripts/update-api-definitions.sh -e "$ENVIRONMENT"
-scripts/launch-workers.sh -e "$ENVIRONMENT"
-scripts/deploy-apis.sh -e "$ENVIRONMENT"
+echo -n Installing...
+scripts/update-components.sh >/dev/null
+scripts/update-api-definitions.sh -e "$ENVIRONMENT" >/dev/null
+scripts/launch-workers.sh -e "$ENVIRONMENT" >/dev/null
+scripts/deploy-apis.sh -e "$ENVIRONMENT" >/dev/null
+echo
 
 ADMIN_API=http://"${ENVIRONMENT}".adminapi.sputnik.dev:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 TRADER_API=http://"${ENVIRONMENT}".traderapi.sputnik.dev:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
+
 
 BTC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/BTC \
   --data '{ "decimals": 8 }' | jq '.ok.id')
@@ -112,6 +115,7 @@ curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
 
 curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .
 
+
 curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
   --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 6700000, \"size\": 10000000}"
 curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
@@ -124,4 +128,6 @@ curl --silent -X GET "$TRADER_API"/orders/"$TRADER_A_ID" | jq .
 curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
 curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .    
 
-echo "$ENVIRONMENT"
+echo "ADMIN_API: $ADMIN_API"
+echo "TRADER_API: $TRADER_API"
+
