@@ -48,7 +48,7 @@ struct State {
 trait ExternalServiceApi {
     fn get_accountant(&self, configuration: Configuration, trader: u64) -> stub_accountant::Api;
 
-    fn process_maker_fill(&self, configuration: Configuration, trader: u64, fill: Fill) -> ();
+    fn process_maker_fill(&self, configuration: Configuration, trader: u64, fill: Fill);
 }
 pub struct ExternalServiceApiProd;
 
@@ -63,7 +63,7 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         stub_accountant::Api::new(&uri)
     }
 
-    fn process_maker_fill(&self, configuration: Configuration, trader: u64, fill: Fill) -> () {
+    fn process_maker_fill(&self, configuration: Configuration, trader: u64, fill: Fill)  {
         self.get_accountant(configuration, trader)
             .process_maker_fill(AccountantFill {
                 price: fill.price,
@@ -154,7 +154,6 @@ impl Guest for Component {
                             maker_order_id: *matched_id,
                             timestamp: order.timestamp,
                         };
-                        // TODO: Send fill to accountant for maker trader -- matched_order.trader
                         state.fills.push(fill);
                         let configuration = state.configuration.clone().expect("Not initialized");
                         state.external_service_api.process_maker_fill(

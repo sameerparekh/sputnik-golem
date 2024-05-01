@@ -159,8 +159,14 @@ curl --silent -X POST "$TRADER_API"/orders/"$TRADER_A_ID" \
 echo "Trader A Orders"
 curl --silent -X GET "$TRADER_API"/orders/"$TRADER_A_ID" | jq .
 
+echo "Trader A Balances"
+curl --silent -X GET "$TRADER_API"/balances/"$TRADER_A_ID" | jq .
+
 echo "Trader B Orders"
 curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
+
+echo "Trader B Balances"
+curl --silent -X GET "$TRADER_API"/balances/"$TRADER_B_ID" | jq .
 
 echo "Order Book"
 curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .    
