@@ -18,12 +18,6 @@ path = "wit/deps/sputnik_accountant"
 [package.metadata.component.target.dependencies."sputnik:accountant-stub"]
 path = "wit/deps/sputnik_accountant-stub"
 
-[package.metadata.component.target.dependencies."sputnik:matching-engine"]
-path = "wit/deps/sputnik_matching-engine"
-
-[package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
-path = "wit/deps/sputnik_matching-engine-stub"
-
 [package.metadata.component.target.dependencies."sputnik:registry"]
 path = "wit/deps/sputnik_registry"
 
@@ -32,6 +26,7 @@ path = "wit/deps/sputnik_registry-stub"
 
 [dependencies]
 priority-queue = "2.0.2"
+mockall = "0.12.1"
 
 [dependencies.wit-bindgen]
 version = "0.17.0"

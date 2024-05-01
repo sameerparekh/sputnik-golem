@@ -58,7 +58,9 @@ dependencies = ["generate-accountant-stub"]
 [tasks.build]
 args = ["build"]
 command = "cargo-component"
-dependencies = ["clean", "regenerate-stubs"]
+# This dependency removed because can't autogen stubs anymore due to circular
+# dependency accountant->matching-engine->accountant
+#dependencies = ["clean", "regenerate-stubs"]
 
 [tasks.build-flow]
 dependencies = ["build", "post-build"]
