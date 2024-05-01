@@ -58,6 +58,7 @@ echo
 ADMIN_API=http://"${ENVIRONMENT}".adminapi.sputnik.dev:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 TRADER_API=http://"${ENVIRONMENT}".traderapi.sputnik.dev:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 
+set -ex
 
 BTC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/BTC \
   --data '{ "decimals": 8 }' | jq '.ok.id')
