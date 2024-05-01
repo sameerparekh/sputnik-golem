@@ -46,44 +46,33 @@ if [ "$NO_BUILD" = 'false' ]; then
   scripts/build.sh
 fi
 
+source .env
+
 scripts/update-components.sh
+scripts/update-api-definitions.sh -e "$ENVIRONMENT"
 scripts/launch-workers.sh -e "$ENVIRONMENT"
+scripts/deploy-apis.sh -e "$ENVIRONMENT"
 
-USD_ID=$("$CMD" --format yaml worker invoke-and-await \
-    --component-name=adminapi \
-    --worker-name="$ENVIRONMENT" \
-    --function=sputnik:adminapi/api/create-asset \
-    --parameters='["USD", 2]' | yq .[0].ok.id)
+ADMIN_API=http://"${ENVIRONMENT}".adminapi.sputnik.dev:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
+TRADER_API=http://"${ENVIRONMENT}".traderapi.sputnik.dev:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 
-BTC_ID=$("$CMD" --format yaml worker invoke-and-await \
-        --component-name=adminapi \
-        --worker-name="$ENVIRONMENT" \
-        --function=sputnik:adminapi/api/create-asset \
-        --parameters='["BTC", 8]' | yq .[0].ok.id)
+BTC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/BTC \
+  --data '{ "decimals": 8 }' | jq '.ok.id')
 
-BTCUSD_ID=$("$CMD" --format yaml worker invoke-and-await \
-                --component-name=adminapi \
-                --worker-name="$ENVIRONMENT" \
-                --function=sputnik:adminapi/api/create-spot-pair \
-                --parameters="[\"BTCUSD\", $BTC_ID, $USD_ID]" | yq .[0].ok.id)
+USD_ID=$(curl --silent -X POST "$ADMIN_API"/asset/USD \
+  --data '{ "decimals": 2 }' | jq '.ok.id')
 
-PAIR_ID=$("$CMD" --format yaml worker invoke-and-await \
-  --component-name=registry \
-  --worker-name="$ENVIRONMENT" \
-  --function=sputnik:registry/api/get-spot-pairs \
-  --parameters='[]' | yq .[0].[0].id)
+BTCUSD_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/BTCUSD \
+         --data "{ \"numerator\": $BTC_ID, \"denominator\": $USD_ID }" | jq '.ok.id')
 
-TRADER_A_ID=$("$CMD" --format yaml worker invoke-and-await \
-  --component-name=adminapi \
-  --worker-name="$ENVIRONMENT" \
-  --function=sputnik:adminapi/api/create-trader \
-  --parameters='["trader a"]' | yq .[0].ok.id)
+curl --silent "$TRADER_API/asset"
+curl --silent "$TRADER_API/spot-pair"
 
-TRADER_B_ID=$("$CMD" --format yaml worker invoke-and-await \
-  --component-name=adminapi \
-  --worker-name="$ENVIRONMENT" \
-  --function=sputnik:adminapi/api/create-trader \
-  --parameters='["trader b"]' | yq .[0].ok.id)
+TRADER_A_ID=$(curl --silent -X POST "$ADMIN_API"/trader/tradera \
+          | jq '.ok.id')
+
+TRADER_B_ID=$(curl --silent -X POST "$ADMIN_API"/trader/traderb \
+          | jq '.ok.id')
 
 "$CMD" worker invoke-and-await \
   --component-name accountant \
@@ -109,35 +98,30 @@ TRADER_B_ID=$("$CMD" --format yaml worker invoke-and-await \
   --function=sputnik:accountant/api/deposit \
   --parameters="[$USD_ID, 6000000]"
 
-"$CMD" worker invoke-and-await \
-  --component-name traderapi \
-  --worker-name "${ENVIRONMENT}" \
-  --function=sputnik:traderapi/api/place-order \
-  --parameters="[$TRADER_A_ID, {\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 6000000, \"size\": 10000000}]"
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_A_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 6000000, \"size\": 10000000}"
 
-"$CMD" worker invoke-and-await \
-  --component-name traderapi \
-  --worker-name "${ENVIRONMENT}" \
-  --function=sputnik:traderapi/api/place-order \
-  --parameters="[$TRADER_B_ID, {\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7000000, \"size\": 10000000}]"
+curl --silent -X GET "$TRADER_API"/balances/"$TRADER_A_ID" | jq .
+curl --silent -X GET "$TRADER_API"/balances/"$TRADER_B_ID" | jq .
 
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7000000, \"size\": 10000000}"
 
-"$CMD" worker invoke-and-await \
-  --component-name traderapi \
-  --worker-name "${ENVIRONMENT}" \
-  --function=sputnik:traderapi/api/get-orders \
-  --parameters="[$TRADER_A_ID]"
+curl --silent -X GET "$TRADER_API"/orders/"$TRADER_A_ID" | jq .
+curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
 
-"$CMD" worker invoke-and-await \
-  --component-name traderapi \
-  --worker-name "${ENVIRONMENT}" \
-  --function=sputnik:traderapi/api/get-orders \
-  --parameters="[$TRADER_B_ID]"
+curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .
 
-"$CMD" worker invoke-and-await \
-  --component-name matching-engine \
-  --worker-name "${ENVIRONMENT}-${BTCUSD_ID}" \
-  --function=sputnik:matching-engine/api/get-order-book \
-  --parameters='[]'
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 6700000, \"size\": 10000000}"
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7500000, \"size\": 10000000}"
+
+curl --silent -X POST "$TRADER_API"/orders/"$TRADER_A_ID" \
+  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 7000000, \"size\": 25000000}"
+
+curl --silent -X GET "$TRADER_API"/orders/"$TRADER_A_ID" | jq .
+curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
+curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .    
 
 echo "$ENVIRONMENT"
