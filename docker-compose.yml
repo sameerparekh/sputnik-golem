@@ -145,6 +145,18 @@ services:
       - "${WORKER_EXECUTOR_HTTP_PORT}:${WORKER_EXECUTOR_HTTP_PORT}"
     depends_on:
       - redis
+  bitcoin:
+    container_name: bitcoind
+    image: lncm/bitcoind:v25.0
+    volumes:
+      - bitcoin:/data/.bitcoin
+    restart: on-failure
+    stop_grace_period: 15m30s
+    ports:
+      - "8333:8333"
+      - "8332:8332"
+      - "28332:28332"
+      - "28333:28333"
 
 volumes:
   redis_data:
@@ -154,4 +166,6 @@ volumes:
   golem_db:
     driver: local
   component_compiled_store:
+    driver: local
+  bitcoin:
     driver: local
