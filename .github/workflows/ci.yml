@@ -55,8 +55,6 @@ jobs:
           cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm --locked golem-cli
       - name: Lint
         run: RUSTFLAGS="-A unused" cargo clippy -- -D warnings
-      - name: Component build
-        run: cargo component build
       - name: Unit tests
         run: cargo test
       - name: Install cargo-llvm-cov

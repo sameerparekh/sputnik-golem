@@ -63,7 +63,7 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         stub_accountant::Api::new(&uri)
     }
 
-    fn process_maker_fill(&self, configuration: Configuration, trader: u64, fill: Fill)  {
+    fn process_maker_fill(&self, configuration: Configuration, trader: u64, fill: Fill) {
         self.get_accountant(configuration, trader)
             .process_maker_fill(AccountantFill {
                 price: fill.price,
