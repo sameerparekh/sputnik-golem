@@ -147,7 +147,8 @@ services:
       - redis
   bitcoin:
     container_name: bitcoind
-    image: lncm/bitcoind:v25.0
+    image: lncm/bitcoind:v26.0
+    command: -zmqpubrawblock=tcp://0.0.0.0:28332 -zmqpubrawtx=tcp://0.0.0.0:28333 -testnet
     volumes:
       - bitcoin:/data/.bitcoin
     restart: on-failure
