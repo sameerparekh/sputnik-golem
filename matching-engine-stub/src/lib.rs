@@ -16,10 +16,20 @@ for Api {
             rpc: WasmRpc::new(&location),
         }
     }
-    fn init(&self) -> Result<(), crate::bindings::sputnik::matching_engine::api::Error> {
+    fn init(
+        &self,
+        accountant_component_id: String,
+        environment: String,
+    ) -> Result<(), crate::bindings::sputnik::matching_engine::api::Error> {
         let result = self
             .rpc
-            .invoke_and_await("sputnik:matching-engine/api/init", &[])
+            .invoke_and_await(
+                "sputnik:matching-engine/api/init",
+                &[
+                    WitValue::builder().string(&accountant_component_id),
+                    WitValue::builder().string(&environment),
+                ],
+            )
             .expect(
                 &format!(
                     "Failed to invoke-and-await remote {}",

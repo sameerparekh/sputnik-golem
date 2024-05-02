@@ -2,14 +2,19 @@ use std::cell::RefCell;
 use std::cmp::{min, Reverse};
 use std::collections::HashMap;
 
+use mockall::automock;
 use priority_queue::PriorityQueue;
 
+use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 use sputnik::matching_engine::api::Error::MissingOrder;
 use sputnik::matching_engine::api::Side::{Buy, Sell};
 use sputnik::matching_engine::api::Status::{Canceled, Filled, Open, PartialFilled};
-use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 
 use crate::bindings::exports::sputnik;
+use crate::bindings::golem::rpc::types::Uri;
+use crate::bindings::sputnik::accountant_stub::stub_accountant;
+use crate::bindings::sputnik::accountant_stub::stub_accountant::Fill as AccountantFill;
+use crate::bindings::sputnik::registry::api::Trader;
 
 mod bindings;
 
@@ -23,7 +28,11 @@ enum Price {
     BidPrice(u64),
 }
 
-struct Configuration;
+#[derive(Clone)]
+struct Configuration {
+    environment: String,
+    accountant_component_id: String,
+}
 
 struct State {
     bids: PriorityQueue<OrderId, Price>,
@@ -32,6 +41,38 @@ struct State {
     order_statuses: HashMap<OrderId, OrderStatus>,
     fills: Vec<Fill>,
     configuration: Option<Configuration>,
+    external_service_api: Box<dyn ExternalServiceApi>,
+}
+
+#[automock]
+trait ExternalServiceApi {
+    fn get_accountant(&self, configuration: Configuration, trader: u64) -> stub_accountant::Api;
+
+    fn process_maker_fill(&self, configuration: Configuration, trader: u64, fill: Fill);
+}
+pub struct ExternalServiceApiProd;
+
+impl ExternalServiceApi for ExternalServiceApiProd {
+    fn get_accountant(&self, configuration: Configuration, trader: u64) -> stub_accountant::Api {
+        let environment = configuration.environment;
+        let accountant_component_id = configuration.accountant_component_id;
+        let uri = Uri {
+            value: format!("worker://{accountant_component_id}/{environment}-{trader}"),
+        };
+
+        stub_accountant::Api::new(&uri)
+    }
+
+    fn process_maker_fill(&self, configuration: Configuration, trader: u64, fill: Fill) {
+        self.get_accountant(configuration, trader)
+            .process_maker_fill(AccountantFill {
+                price: fill.price,
+                size: fill.size,
+                taker_order_id: fill.taker_order_id,
+                maker_order_id: fill.maker_order_id,
+                timestamp: fill.timestamp,
+            })
+    }
 }
 
 thread_local! {
@@ -42,6 +83,7 @@ thread_local! {
         order_statuses: HashMap::new(),
         fills: vec![],
         configuration: None,
+        external_service_api: Box::new(ExternalServiceApiProd)
     });
 }
 
@@ -50,10 +92,13 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 }
 
 impl Guest for Component {
-    fn init() -> Result<(), Error> {
+    fn init(accountant_component_id: String, environment: String) -> Result<(), Error> {
         with_state(|state| match state.configuration {
             None => {
-                state.configuration = Some(Configuration);
+                state.configuration = Some(Configuration {
+                    environment: environment.to_string(),
+                    accountant_component_id: accountant_component_id.to_string(),
+                });
                 Ok(())
             }
             Some(_) => Err(Error::AlreadyIntialized),
@@ -109,8 +154,13 @@ impl Guest for Component {
                             maker_order_id: *matched_id,
                             timestamp: order.timestamp,
                         };
-                        // TODO: Send fill to accountant for maker trader -- matched_order.trader
                         state.fills.push(fill);
+                        let configuration = state.configuration.clone().expect("Not initialized");
+                        state.external_service_api.process_maker_fill(
+                            configuration,
+                            matched_order.trader,
+                            fill,
+                        );
                         state
                             .order_statuses
                             .entry(*matched_id)
@@ -198,15 +248,27 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
+    use crate::{Component, Guest, MockExternalServiceApi, with_state};
+    use crate::bindings::exports::sputnik::matching_engine::api::{
+        Fill, Order, OrderBook, OrderStatus,
+    };
     use crate::bindings::exports::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::exports::sputnik::matching_engine::api::Status::{
         Canceled, Filled, Open, PartialFilled,
     };
-    use crate::bindings::exports::sputnik::matching_engine::api::{
-        Fill, Order, OrderBook, OrderStatus,
-    };
-    use crate::{Component, Guest};
 
+    fn init() {
+        <Component as Guest>::init("".to_string(), "".to_string())
+            .expect("successful initialization");
+    }
+
+    fn setup_mock() {
+        let mut mock_external_api = MockExternalServiceApi::new();
+        mock_external_api
+            .expect_process_maker_fill()
+            .return_const(());
+        with_state(|state| state.external_service_api = Box::new(mock_external_api))
+    }
     impl PartialEq for Order {
         fn eq(&self, other: &Self) -> bool {
             self.timestamp == other.timestamp
@@ -548,6 +610,8 @@ mod tests {
 
     #[test]
     fn place_a_buy_and_matching_sell() {
+        init();
+        setup_mock();
         place_expect_status(
             Order {
                 id: 0,
@@ -604,6 +668,8 @@ mod tests {
     }
     #[test]
     fn place_two_buys_and_matching_sell() {
+        init();
+        setup_mock();
         place_expect_status(
             Order {
                 id: 0,
@@ -711,6 +777,8 @@ mod tests {
     }
     #[test]
     fn place_two_sells_and_matching_buy() {
+        init();
+        setup_mock();
         place_expect_status(
             Order {
                 id: 0,
@@ -819,6 +887,8 @@ mod tests {
 
     #[test]
     fn place_two_buys_and_a_partial_matching_sell() {
+        init();
+        setup_mock();
         place_expect_status(
             Order {
                 id: 0,
@@ -918,6 +988,8 @@ mod tests {
     }
     #[test]
     fn place_two_sells_and_a_partial_matching_buy() {
+        init();
+        setup_mock();
         place_expect_status(
             Order {
                 id: 0,

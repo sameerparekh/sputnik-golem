@@ -87,13 +87,16 @@ impl ExternalServiceApi for ExternalServiceApiProd {
     fn create_matching_engine(&self, spot_pair_id: u64) -> Result<(), Error> {
         let component_id =
             env::var("MATCHING_ENGINE_COMPONENT_ID").expect("MATCHING_ENGINE_COMPONENT_ID not set");
+        let accountant_component_id =
+            env::var("ACCOUNTANT_COMPONENT_ID").expect("ACCOUNTANT_COMPONENT_ID not set");
+
         let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
         let uri = Uri {
             value: format!("worker://{component_id}/{environment}-{spot_pair_id}"),
         };
 
         let engine = stub_matching_engine::Api::new(&uri);
-        match engine.init() {
+        match engine.init(accountant_component_id.as_str(), environment.as_str()) {
             Ok(_) => Ok(()),
             Err(err) => Err(UnableToMakeEngine(format!("{}", err))),
         }

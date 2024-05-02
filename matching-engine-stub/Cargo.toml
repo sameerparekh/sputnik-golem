@@ -13,8 +13,20 @@ path = "wit"
 [package.metadata.component.target.dependencies."golem:rpc"]
 path = "wit/deps/wasm-rpc"
 
+[package.metadata.component.target.dependencies."sputnik:accountant"]
+path = "wit/deps/sputnik_accountant"
+
+[package.metadata.component.target.dependencies."sputnik:accountant-stub"]
+path = "wit/deps/sputnik_accountant-stub"
+
 [package.metadata.component.target.dependencies."sputnik:matching-engine"]
 path = "wit/deps/sputnik_matching-engine"
+
+[package.metadata.component.target.dependencies."sputnik:registry"]
+path = "wit/deps/sputnik_registry"
+
+[package.metadata.component.target.dependencies."sputnik:registry-stub"]
+path = "wit/deps/sputnik_registry-stub"
 
 [dependencies.golem-wasm-rpc]
 version = "0.0.22"
