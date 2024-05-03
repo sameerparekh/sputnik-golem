@@ -14,7 +14,6 @@ use bitcoincore_rpc::bitcoin::bip32::DerivationPath;
 use bitcoincore_rpc::bitcoin::secp256k1::ffi::types::AlignedType;
 use bitcoincore_rpc::bitcoin::secp256k1::Secp256k1;
 use bitcoincore_rpc::bitcoincore_rpc_json::GetTransactionResultDetailCategory::{Receive, Send};
-use ticker::Ticker;
 
 use crate::bindings::exports::sputnik::bitcoinmonitor::api::{Error, Guest};
 use crate::bindings::exports::sputnik::bitcoinmonitor::api::Error::{
