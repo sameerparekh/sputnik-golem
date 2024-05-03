@@ -14,6 +14,7 @@
       <sourceFolder url="file://$MODULE_DIR$/adminapi/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/accountant-stub/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/traderapi/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/bitcoinmonitor/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

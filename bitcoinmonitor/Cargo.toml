@@ -1,0 +1,28 @@
+[package]
+name = "bitcoinmonitor"
+version = "0.1.0"
+edition = "2021"
+
+[package.metadata.component]
+package = "sputnik:bitcoinmonitor"
+
+[dependencies]
+bitcoincore-rpc = "0.18.0"
+bitcoin = { version = "0.32.0", features = ["rand"] }
+mnemonic = "1.1.1"
+bip0039 = "0.12.0"
+log = "0.4.21"
+mockall = "0.12.1"
+secp256k1-sys = "0.10.0"
+
+[dependencies.wit-bindgen]
+version = "0.17.0"
+features = ["realloc"]
+default-features = false
+
+[lib]
+path = "src/lib.rs"
+name = "bitcoinmonitor"
+edition = "2021"
+crate-type = ["cdylib"]
+required-features = []

@@ -147,7 +147,7 @@ services:
       - redis
   bitcoin:
     container_name: bitcoind
-    image: lncm/bitcoind:v26.0
+    image: lncm/bitcoind:latest
     command: -zmqpubrawblock=tcp://0.0.0.0:28332 -zmqpubrawtx=tcp://0.0.0.0:28333 -testnet
     volumes:
       - bitcoin:/data/.bitcoin
@@ -170,3 +170,7 @@ volumes:
     driver: local
   bitcoin:
     driver: local
+    driver_opts:
+      o: "size=100g"
+      device: "tmpfs"
+      type: "tmpfs"
