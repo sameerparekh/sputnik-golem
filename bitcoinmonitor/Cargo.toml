@@ -9,6 +9,7 @@ package = "sputnik:bitcoinmonitor"
 [dependencies]
 bitcoincore-rpc = "0.18.0"
 bitcoin = { version = "0.32.0", features = ["rand"] }
+serde_json = "1.0.116"
 mnemonic = "1.1.1"
 bip0039 = "0.12.0"
 log = "0.4.21"

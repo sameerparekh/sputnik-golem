@@ -259,6 +259,7 @@ dependencies = [
  "mnemonic",
  "mockall",
  "secp256k1-sys 0.10.0",
+ "serde_json",
  "wit-bindgen",
 ]
 
