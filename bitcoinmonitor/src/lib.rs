@@ -1,16 +1,16 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::iter::Map;
-use std::str::FromStr;
-use std::time::Duration;
 
-use bip0039::{Count, English, Mnemonic};
-use bitcoin::bip32::{ChildNumber, Xpriv, Xpub};
+use std::str::FromStr;
+
+
+
+use bitcoin::bip32::{ChildNumber, Xpub};
 use bitcoin::PublicKey;
 use bitcoincore_rpc::{bitcoin, RpcApi};
 use bitcoincore_rpc::bitcoin::{Address, SignedAmount};
 use bitcoincore_rpc::bitcoin::address::{NetworkChecked, NetworkUnchecked};
-use bitcoincore_rpc::bitcoin::bip32::DerivationPath;
+
 use bitcoincore_rpc::bitcoin::secp256k1::ffi::types::AlignedType;
 use bitcoincore_rpc::bitcoin::secp256k1::Secp256k1;
 use bitcoincore_rpc::bitcoincore_rpc_json::GetTransactionResultDetailCategory::{Receive, Send};
@@ -83,7 +83,7 @@ impl Guest for Component {
 
             if latest_scanned_block != block.hash.to_string() {
                 for tx in &block.tx {
-                    let transaction = rpc.get_transaction(&tx, None).unwrap();
+                    let transaction = rpc.get_transaction(tx, None).unwrap();
                     transaction
                         .details
                         .iter()
@@ -93,13 +93,13 @@ impl Guest for Component {
                                 if let Some(trader_id) = state.address_map.get(&address) {
                                     match detail.category {
                                         Send => {
-                                            let mut deposit = deposits
+                                            let deposit = deposits
                                                 .entry(*trader_id)
                                                 .or_insert(SignedAmount::ZERO);
                                             *deposit -= detail.amount
                                         }
                                         Receive => {
-                                            let mut deposit = deposits
+                                            let deposit = deposits
                                                 .entry(*trader_id)
                                                 .or_insert(SignedAmount::ZERO);
                                             *deposit += detail.amount
@@ -113,14 +113,14 @@ impl Guest for Component {
                     latest_scanned_block = block.hash.to_string();
                 }
             }
-            if block.nextblockhash != None && block.confirmations >= 8 {
+            if block.nextblockhash.is_some() && block.confirmations >= 8 {
                 log::info!("{}", serde_json::to_string_pretty(&block).unwrap());
                 next_block = block.nextblockhash.unwrap();
             } else {
                 // Make deposits
                 state.block_height = block.height as u64 + 1; // ??
-                deposits.iter().for_each(|(trader, deposit)| {
-                    let sats = deposit.to_sat();
+                deposits.iter().for_each(|(_trader, deposit)| {
+                    let _sats = deposit.to_sat();
                 });
                 log::info!("No more blocks");
             }
