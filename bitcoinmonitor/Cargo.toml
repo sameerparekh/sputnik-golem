@@ -8,13 +8,14 @@ package = "sputnik:bitcoinmonitor"
 
 [dependencies]
 bitcoincore-rpc = "0.18.0"
-bitcoin = { version = "0.32.0", features = ["rand"] }
+bitcoin = { version = "0.31.2" }
 serde_json = "1.0.116"
 mnemonic = "1.1.1"
 bip0039 = "0.12.0"
 log = "0.4.21"
 mockall = "0.12.1"
-secp256k1-sys = "0.10.0"
+secp256k1-sys = "0.9.2"
+env_logger = "0.11.3"
 
 [dependencies.wit-bindgen]
 version = "0.17.0"

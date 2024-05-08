@@ -1,19 +1,16 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-
 use std::str::FromStr;
-
-
 
 use bitcoin::bip32::{ChildNumber, Xpub};
 use bitcoin::PublicKey;
 use bitcoincore_rpc::{bitcoin, RpcApi};
 use bitcoincore_rpc::bitcoin::{Address, SignedAmount};
 use bitcoincore_rpc::bitcoin::address::{NetworkChecked, NetworkUnchecked};
-
-use bitcoincore_rpc::bitcoin::secp256k1::ffi::types::AlignedType;
 use bitcoincore_rpc::bitcoin::secp256k1::Secp256k1;
 use bitcoincore_rpc::bitcoincore_rpc_json::GetTransactionResultDetailCategory::{Receive, Send};
+use bitcoincore_rpc::json::ImportDescriptors;
+use secp256k1_sys::types::AlignedType;
 
 use crate::bindings::exports::sputnik::bitcoinmonitor::api::{Error, Guest};
 use crate::bindings::exports::sputnik::bitcoinmonitor::api::Error::{
@@ -21,6 +18,7 @@ use crate::bindings::exports::sputnik::bitcoinmonitor::api::Error::{
 };
 
 mod bindings;
+
 struct State {
     address_map: HashMap<Address<NetworkUnchecked>, u64>,
     address_idx: ChildNumber,
@@ -54,6 +52,7 @@ impl From<bitcoin::bip32::Error> for Error {
         BitcoinError(format!("{}", value))
     }
 }
+
 impl Guest for Component {
     fn initialize(xpub: String, btc_asset_id: u64) -> Result<(), Error> {
         with_state(|state| match state.configuration {
@@ -71,69 +70,38 @@ impl Guest for Component {
 
     fn tick() {
         with_state(|state| {
-            let rpc =
-                bitcoincore_rpc::Client::new("http://localhost:8332", bitcoincore_rpc::Auth::None)
-                    .unwrap();
+            let rpc = bitcoincore_rpc::Client::new(
+                "http://127.0.0.1:18332",
+                bitcoincore_rpc::Auth::UserPass("sameer".to_string(), "test".to_string()),
+            )
+                .unwrap();
 
-            let mut next_block = rpc.get_block_hash(state.block_height).unwrap();
-            let mut latest_scanned_block: String = "".to_string();
-
-            let block = rpc.get_block_info(&next_block).unwrap();
-            let mut deposits: HashMap<u64, SignedAmount> = HashMap::new();
-
-            if latest_scanned_block != block.hash.to_string() {
-                for tx in &block.tx {
-                    let transaction = rpc.get_transaction(tx, None).unwrap();
-                    transaction
-                        .details
-                        .iter()
-                        .cloned()
-                        .for_each(|detail| match detail.address {
-                            Some(address) => {
-                                if let Some(trader_id) = state.address_map.get(&address) {
-                                    match detail.category {
-                                        Send => {
-                                            let deposit = deposits
-                                                .entry(*trader_id)
-                                                .or_insert(SignedAmount::ZERO);
-                                            *deposit -= detail.amount
-                                        }
-                                        Receive => {
-                                            let deposit = deposits
-                                                .entry(*trader_id)
-                                                .or_insert(SignedAmount::ZERO);
-                                            *deposit += detail.amount
-                                        }
-                                        _ => (),
-                                    }
-                                }
-                            }
-                            None => (),
-                        });
-                    latest_scanned_block = block.hash.to_string();
+            let transactions = rpc.list_transactions(None, Some(300), None, Some(true)).unwrap();
+            transactions.into_iter().for_each(|tx| {
+                if let Some(address) = tx.detail.address {
+                    if let Some(trader) = state.address_map.get(&address) {
+                        if tx.detail.category == Receive {
+                            let amount = tx.detail.amount - tx.detail.fee.unwrap_or(SignedAmount::ZERO);
+                            // let sats = amount.to_sat();
+                            log::info!("Depositing {} to {}", amount, trader);
+                            // TODO do the deposit to the accountant
+                        }
+                    }
                 }
-            }
-            if block.nextblockhash.is_some() && block.confirmations >= 8 {
-                log::info!("{}", serde_json::to_string_pretty(&block).unwrap());
-                next_block = block.nextblockhash.unwrap();
-            } else {
-                // Make deposits
-                state.block_height = block.height as u64 + 1; // ??
-                deposits.iter().for_each(|(_trader, deposit)| {
-                    let _sats = deposit.to_sat();
-                });
-                log::info!("No more blocks");
-            }
+            });
         })
     }
 
     fn new_address_for_trader(trader: u64) -> String {
         with_state(|state| {
+            let rpc = bitcoincore_rpc::Client::new(
+                "http://127.0.0.1:18332",
+                bitcoincore_rpc::Auth::UserPass("sameer".to_string(), "test".to_string()),
+            );
+
             let configuration = state.configuration.clone().expect("Not initialized");
 
-            let mut buf: Vec<AlignedType> = Vec::new();
-            buf.resize(Secp256k1::preallocate_size(), AlignedType::zeroed());
-            let secp = Secp256k1::preallocated_new(buf.as_mut_slice()).unwrap();
+            let secp = bitcoin::key::Secp256k1::new();
 
             let public_key = configuration
                 .xpub
@@ -146,7 +114,65 @@ impl Guest for Component {
                 .address_map
                 .insert(address.as_unchecked().clone(), trader);
             state.address_idx = state.address_idx.increment().unwrap();
+            let import = ImportDescriptors {
+                descriptor: address.to_string(),
+                timestamp: Default::default(),
+                active: None,
+                range: None,
+                next_index: None,
+                internal: None,
+                label: None,
+            };
+            println!("Got new address: {}", address);
+            rpc.unwrap().import_descriptors(import).expect("Address imported to bitcoind");
             address.to_string()
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+
+    use bip0039::{Count, English, Mnemonic};
+    use bitcoin::bip32::{DerivationPath, Xpriv, Xpub};
+    use bitcoin::secp256k1::Secp256k1;
+    use bitcoincore_rpc::bitcoin::secp256k1::ffi::types::AlignedType;
+
+    use crate::bindings::exports::sputnik::bitcoinmonitor::api::Guest;
+    use crate::Component;
+
+    #[test]
+    fn test_tick() {
+        let mnemonic: Mnemonic<English> = Mnemonic::from_str("guitar violin alert void long couple siren need rude oyster kit lizard").unwrap();
+        println!("mmnemonic: {}", mnemonic);
+        // Gets the phrase
+        let _phrase = mnemonic.phrase();
+        log::info!("Phrase generated: {}", _phrase);
+
+        let seed = mnemonic.to_seed("blah".to_string());
+
+        let network = bitcoin::Network::Testnet;
+
+        let secp = Secp256k1::new();
+
+        // calculate root key from seed
+        let root = Xpriv::new_master(network, &seed).unwrap();
+        log::info!("Root key: {}", root);
+
+        // derive child xpub
+        let path = DerivationPath::from_str("m/84h/0h/0h").unwrap();
+        let child = root.derive_priv(&secp, &path).unwrap();
+        log::info!("Child at {}: {}", path, child);
+
+        let xpub = Xpub::from_priv(&secp, &child);
+        log::info!("Public key at {}: {}", path, xpub);
+
+
+        env_logger::init();
+        <Component as Guest>::initialize(xpub.to_string(), 1).expect("init success");
+        <Component as Guest>::new_address_for_trader(1);
+        <Component as Guest>::new_address_for_trader(2);
+        <Component as Guest>::tick()
     }
 }

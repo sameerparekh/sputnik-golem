@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   router:
     image: golemservices/golem-router:latest
@@ -145,19 +143,6 @@ services:
       - "${WORKER_EXECUTOR_HTTP_PORT}:${WORKER_EXECUTOR_HTTP_PORT}"
     depends_on:
       - redis
-  bitcoin:
-    container_name: bitcoind
-    image: lncm/bitcoind:latest
-    command: -zmqpubrawblock=tcp://0.0.0.0:28332 -zmqpubrawtx=tcp://0.0.0.0:28333 -testnet
-    volumes:
-      - bitcoin:/data/.bitcoin
-    restart: on-failure
-    stop_grace_period: 15m30s
-    ports:
-      - "8333:8333"
-      - "8332:8332"
-      - "28332:28332"
-      - "28333:28333"
 
 volumes:
   redis_data:
