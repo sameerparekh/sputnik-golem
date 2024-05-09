@@ -7,7 +7,7 @@ interface api {
     already-intialized,
   }
 
-  init: func() -> result<_, error>;
+  init: func(accountant-component-id: string, environment: string) -> result<_, error>;
 
   place-order: func(order: order) -> result<order-status, error>;
 
@@ -58,4 +58,6 @@ interface api {
 
 world matching-engine {
   export api;
+  import sputnik: accountant-stub/stub-accountant;
+
 }

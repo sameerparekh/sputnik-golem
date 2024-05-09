@@ -1,18 +1,38 @@
 [package]
 name = "matching-engine"
-version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-priority-queue = "2.0.2"
-wit-bindgen = { version = "0.17.0", default-features = false, features = ["realloc"] }
-
-[lib]
-crate-type = ["cdylib"]
+version = "0.1.0"
 
 [package.metadata.component]
 package = "sputnik:matching-engine"
 
-[package.metadata.component.dependencies]
+[package.metadata.component.target]
+path = "wit"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:accountant"]
+path = "wit/deps/sputnik_accountant"
+
+[package.metadata.component.target.dependencies."sputnik:accountant-stub"]
+path = "wit/deps/sputnik_accountant-stub"
+
+[package.metadata.component.target.dependencies."sputnik:registry"]
+path = "wit/deps/sputnik_registry"
+
+[package.metadata.component.target.dependencies."sputnik:registry-stub"]
+path = "wit/deps/sputnik_registry-stub"
+
+[dependencies]
+priority-queue = "2.0.2"
+mockall = "0.12.1"
+
+[dependencies.wit-bindgen]
+version = "0.17.0"
+features = ["realloc"]
+default-features = false
+
+[lib]
+crate-type = ["cdylib"]
+required-features = []

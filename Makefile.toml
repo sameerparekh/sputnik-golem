@@ -7,6 +7,12 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 dependencies = ["generate-matching-engine-stub"]
 
+[tasks.add-stub-dependency-accountant-matching-engine]
+args = ["add-stub-dependency", "--stub-wit-root", "accountant-stub/wit", "--dest-wit-root", "matching-engine/wit", "--overwrite", "--update-cargo-toml"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+dependencies = ["generate-matching-engine-stub"]
+
 [tasks.add-stub-dependency-registry-accountant]
 args = ["add-stub-dependency", "--stub-wit-root", "registry-stub/wit", "--dest-wit-root", "accountant/wit", "--overwrite", "--update-cargo-toml"]
 command = "wasm-rpc-stubgen"
@@ -52,7 +58,9 @@ dependencies = ["generate-accountant-stub"]
 [tasks.build]
 args = ["build"]
 command = "cargo-component"
-dependencies = ["clean", "regenerate-stubs"]
+# This dependency removed because can't autogen stubs anymore due to circular
+# dependency accountant->matching-engine->accountant
+#dependencies = ["clean", "regenerate-stubs"]
 
 [tasks.build-flow]
 dependencies = ["build", "post-build"]
@@ -86,6 +94,11 @@ args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/traderapi.wasm", "
 command = "wasm-rpc-stubgen"
 cwd = "."
 
+[tasks.compose-matching-engine]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/matching_engine.wasm", "--stub-wasm", "target/wasm32-wasi/debug/accountant_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/matching_engine_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
 [tasks.compose-release-adminapi]
 args = ["compose", "--source-wasm", "target/wasm32-wasi/release/adminapi.wasm", "--stub-wasm", "target/wasm32-wasi/release/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/ids_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/matching_engine_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/accountant_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/adminapi_composed.wasm"]
 command = "wasm-rpc-stubgen"
@@ -93,6 +106,11 @@ cwd = "."
 
 [tasks.compose-release-traderapi]
 args = ["compose", "--source-wasm", "target/wasm32-wasi/release/traderapi.wasm", "--stub-wasm", "target/wasm32-wasi/release/accountant_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/ids_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/traderapi_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
+[tasks.compose-release-matching-engine]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/release/matching_engine.wasm", "--stub-wasm", "target/wasm32-wasi/release/accountant_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/matching_engine_composed.wasm"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 
@@ -120,13 +138,13 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 
 [tasks.post-build]
-dependencies = ["compose-accountant", "compose-adminapi", "compose-traderapi"]
+dependencies = ["compose-accountant", "compose-adminapi", "compose-traderapi", "compose-matching-engine"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-accountant", "compose-release-adminapi", "compose-release-traderapi"]
+dependencies = ["compose-release-accountant", "compose-release-adminapi", "compose-release-traderapi", "compose-release-matching-engine"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-registry-adminapi", "add-stub-dependency-ids-adminapi", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant", "add-stub-dependency-matching-engine-adminapi", "add-stub-dependency-accountant-adminapi", "add-stub-dependency-accountant-traderapi", "add-stub-dependency-ids-traderapi"]
+dependencies = ["add-stub-dependency-registry-adminapi", "add-stub-dependency-ids-adminapi", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant", "add-stub-dependency-matching-engine-adminapi", "add-stub-dependency-accountant-adminapi", "add-stub-dependency-accountant-traderapi", "add-stub-dependency-ids-traderapi", "add-stub-dependency-accountant-matching-engine"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]
