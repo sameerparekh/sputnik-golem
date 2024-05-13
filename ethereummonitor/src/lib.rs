@@ -3,18 +3,19 @@ use std::collections::{HashMap, HashSet};
 use std::env;
 use std::str::FromStr;
 
-use ethers::prelude::*;
-use ethers::prelude::coins_bip39::Mnemonic;
-use ethers::utils::hex::hex::decode;
-use hdwallet::*;
+use bip32::{ChildNumber, PublicKey, XPrv};
+use ethers_core::k256::elliptic_curve::weierstrass::add;
+use ethers_core::utils::hex::decode;
+use ethers_core::utils::hex::hex::encode;
 use secp256k1::{Secp256k1, SecretKey};
+use sha3::{Digest, Keccak256};
 
 use crate::bindings::exports::sputnik::ethereummonitor::api::Guest;
 
 mod bindings;
 
 struct State {
-    address_idx: u64,
+    address_idx: u32,
     address_map: HashMap<String, u64>,
     block_height: Option<u64>,
 }
@@ -24,7 +25,7 @@ struct Configuration {}
 
 thread_local! {
     static STATE: RefCell<State> = RefCell::new(State {
-        address_idx: 1
+        address_idx: 1,
         address_map: HashMap::new(),
         block_height: None,
     });
@@ -56,17 +57,23 @@ impl Guest for Component {
     fn new_address_for_trader(trader: u64) -> String {
         with_state(|state| {
             let private_key_str = env::var("PRIVATE_KEY").unwrap();
-            let chain_code_str = env::var("CHAIN_CODE").unwrap();
+            // let chain_code_str = env::var("CHAIN_CODE").unwrap();
 
-            let xpriv = ExtendedPrivKey {
-                private_key: SecretKey(<[u8; 32]>::try_from(decode(private_key_str).unwrap()).unwrap()),
-                chain_code: decode(chain_code_str).unwrap(),
-            };
+            let xpriv: XPrv = private_key_str.parse().unwrap();
 
-            let derived_key = xpriv.derive_private_key(state.address_idx).unwrap();
-            let address = ethers::utils::secret_key_to_address(derived_key.private_key);
+            let derived_key = xpriv.derive_child(ChildNumber(state.address_idx)).unwrap();
+            let pubkey = derived_key.public_key();
+
+            let mut hasher = Keccak256::new();
+            hasher.update(&pubkey.public_key().to_bytes());
+            let result = hasher.finalize();
+
+            // Take the last 20 bytes as the Ethereum address
+            let mut address = [0u8; 20];
+            address.copy_from_slice(&result[12..32]);
             state.address_idx += 1;
-            state.address_map.insert(address, trader);
+            state.address_map.insert(encode(address), trader);
+            encode(address)
         })
     }
 }

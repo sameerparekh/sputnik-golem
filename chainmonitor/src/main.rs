@@ -3,11 +3,9 @@ use alloy::{
     rpc::client::WsConnect,
 };
 use alloy::eips::BlockNumberOrTag;
+use alloy::hex::encode;
 use alloy::rpc::types::eth::BlockTransactions;
-use ethers::prelude::coins_bip39::Mnemonic;
-use ethers::prelude::Middleware;
-use ethers::signers::coins_bip39::English;
-use ethers::utils::hex::encode;
+use alloy::signers::wallet::coins_bip39::{English, Mnemonic};
 use futures_util::StreamExt;
 use hdwallet::ExtendedPrivKey;
 

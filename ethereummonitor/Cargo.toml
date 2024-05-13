@@ -30,8 +30,11 @@ path = "wit/deps/sputnik_registry"
 [package.metadata.component.target.dependencies."sputnik:registry-stub"]
 path = "wit/deps/sputnik_registry-stub"
 
-[dependencies.ethers]
-version = "2.0.14"
+[dependencies]
+secp256k1 = "0.26.0"
+bip32 = "0.5.1"
+ethers-core = "2.0.14"
+sha3 = "0.11.0-pre.3"
 
 [dependencies.wit-bindgen]
 version = "0.17.0"
