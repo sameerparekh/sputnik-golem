@@ -1,0 +1,10 @@
+package sputnik: ethereummonitor;
+
+interface api {
+  process-deposit: func(address: string, amount: u64, asset-id: u64, block-height: u64);
+  new-address-for-trader: func(trader: u64) -> string;
+}
+
+world ethereummonitor {
+  export api;
+}
