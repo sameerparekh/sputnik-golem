@@ -1,4 +1,3 @@
-use alchemy_api::alchemy::Alchemy;
 use alloy::{
     providers::{Provider, ProviderBuilder},
     rpc::client::WsConnect,
@@ -24,10 +23,6 @@ pub async fn main() {
     let rpc_url = "wss://eth-sepolia.g.alchemy.com/v2/C2AMPkL7J84rizAWoLcCt5rTflAU0tGY";
     let ws = WsConnect::new(rpc_url);
     let provider = ProviderBuilder::new().on_ws(ws).await.unwrap();
-
-    // Ethereum address to monitor for deposits
-    // let address_to_monitor = "0xYourAddressHere".parse().unwrap();
-    let client = Alchemy::new("C2AMPkL7J84rizAWoLcCt5rTflAU0tGY");
 
     let sub = provider.subscribe_blocks().await.unwrap();
 
