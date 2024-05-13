@@ -1,49 +1,60 @@
 [package]
 name = "ethereummonitor"
-version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-wit-bindgen = { version = "0.17.0", default-features = false, features = ["realloc"] }
-hdwallet = "0.4.1"
-ethers = { version = "2.0.14", features = ["ws", "rustls"] }
-secp256k1 = "0.26.0"
-tokio = { version = "1.37.0", features = ["rt", "rt-multi-thread", "macros"] }
-alloy = { git = "https://github.com/alloy-rs/alloy", rev = "e22d9be", features = [
-    "consensus",
-    "kzg",
-    "eips",
-    "contract",
-    "network",
-    "node-bindings",
-    "providers",
-    "provider-http",
-    "provider-ipc",
-    "provider-ws",
-    "rpc-client",
-    "rpc-client-ipc",
-    "rpc-client-ws",
-    "rpc-types-eth",
-    "rpc-types-trace",
-    "signers",
-    "signer-aws",
-    "signer-keystore",
-    "signer-ledger",
-    "signer-mnemonic",
-    "signer-trezor",
-    "signer-wallet",
-    "signer-yubihsm",
-] }
-futures-util = "0.3"
-futures = "0.3.30"
-alchemy-api = "0.1.0"
-
-[lib]
-crate-type = ["cdylib"]
+version = "0.1.0"
 
 [package.metadata.component]
 package = "sputnik:ethereummonitor"
 
-[package.metadata.component.dependencies]
+[package.metadata.component.target]
+path = "wit"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:accountant"]
+path = "wit/deps/sputnik_accountant"
+
+[package.metadata.component.target.dependencies."sputnik:accountant-stub"]
+path = "wit/deps/sputnik_accountant-stub"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine"]
+path = "wit/deps/sputnik_matching-engine"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
+path = "wit/deps/sputnik_matching-engine-stub"
+
+[package.metadata.component.target.dependencies."sputnik:registry"]
+path = "wit/deps/sputnik_registry"
+
+[package.metadata.component.target.dependencies."sputnik:registry-stub"]
+path = "wit/deps/sputnik_registry-stub"
+
+[dependencies]
+alchemy-api = "0.1.0"
+futures = "0.3.30"
+futures-util = "0.3"
+hdwallet = "0.4.1"
+secp256k1 = "0.26.0"
+
+[dependencies.alloy]
+git = "https://github.com/alloy-rs/alloy"
+rev = "e22d9be"
+features = ["consensus", "kzg", "eips", "contract", "network", "node-bindings", "providers", "provider-http", "provider-ipc", "provider-ws", "rpc-client", "rpc-client-ipc", "rpc-client-ws", "rpc-types-eth", "rpc-types-trace", "signers", "signer-aws", "signer-keystore", "signer-ledger", "signer-mnemonic", "signer-trezor", "signer-wallet", "signer-yubihsm"]
+
+[dependencies.ethers]
+version = "2.0.14"
+features = ["ws", "rustls"]
+
+[dependencies.tokio]
+version = "1.37.0"
+features = ["rt", "rt-multi-thread", "macros"]
+
+[dependencies.wit-bindgen]
+version = "0.17.0"
+features = ["realloc"]
+default-features = false
+
+[lib]
+crate-type = ["cdylib"]
+required-features = []

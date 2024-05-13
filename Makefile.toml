@@ -37,6 +37,12 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 dependencies = ["generate-accountant-stub"]
 
+[tasks.add-stub-dependency-accountant-ethereummonitor]
+args = ["add-stub-dependency", "--stub-wit-root", "accountant-stub/wit", "--dest-wit-root", "ethereummonitor/wit", "--overwrite", "--update-cargo-toml"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+dependencies = ["generate-accountant-stub"]
+
 [tasks.add-stub-dependency-matching-engine-adminapi]
 args = ["add-stub-dependency", "--stub-wit-root", "matching-engine-stub/wit", "--dest-wit-root", "adminapi/wit", "--overwrite", "--update-cargo-toml"]
 command = "wasm-rpc-stubgen"
@@ -68,7 +74,9 @@ dependencies = ["build", "post-build"]
 [tasks.build-release]
 args = ["build", "--release"]
 command = "cargo-component"
-dependencies = ["clean", "regenerate-stubs"]
+# This dependency removed because can't autogen stubs anymore due to circular
+# dependency accountant->matching-engine->accountant
+#dependencies = ["clean", "regenerate-stubs"]
 
 [tasks.clean]
 args = ["clean"]
@@ -99,6 +107,11 @@ args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/matching_engine.wa
 command = "wasm-rpc-stubgen"
 cwd = "."
 
+[tasks.compose-ethereummonitor]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/debug/ethereummonitor.wasm", "--stub-wasm", "target/wasm32-wasi/debug/accountant_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/ethereummonitor_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
 [tasks.compose-release-adminapi]
 args = ["compose", "--source-wasm", "target/wasm32-wasi/release/adminapi.wasm", "--stub-wasm", "target/wasm32-wasi/release/registry_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/ids_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/matching_engine_stub.wasm", "--stub-wasm", "target/wasm32-wasi/release/accountant_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/adminapi_composed.wasm"]
 command = "wasm-rpc-stubgen"
@@ -111,6 +124,11 @@ cwd = "."
 
 [tasks.compose-release-matching-engine]
 args = ["compose", "--source-wasm", "target/wasm32-wasi/release/matching_engine.wasm", "--stub-wasm", "target/wasm32-wasi/release/accountant_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/matching_engine_composed.wasm"]
+command = "wasm-rpc-stubgen"
+cwd = "."
+
+[tasks.compose-release-ethereummonitor]
+args = ["compose", "--source-wasm", "target/wasm32-wasi/release/ethereummonitor.wasm", "--stub-wasm", "target/wasm32-wasi/release/accountant_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/ethereummonitor_composed.wasm"]
 command = "wasm-rpc-stubgen"
 cwd = "."
 
@@ -144,7 +162,7 @@ dependencies = ["compose-accountant", "compose-adminapi", "compose-traderapi", "
 dependencies = ["compose-release-accountant", "compose-release-adminapi", "compose-release-traderapi", "compose-release-matching-engine"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-registry-adminapi", "add-stub-dependency-ids-adminapi", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant", "add-stub-dependency-matching-engine-adminapi", "add-stub-dependency-accountant-adminapi", "add-stub-dependency-accountant-traderapi", "add-stub-dependency-ids-traderapi", "add-stub-dependency-accountant-matching-engine"]
+dependencies = ["add-stub-dependency-registry-adminapi", "add-stub-dependency-ids-adminapi", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant", "add-stub-dependency-matching-engine-adminapi", "add-stub-dependency-accountant-adminapi", "add-stub-dependency-accountant-traderapi", "add-stub-dependency-ids-traderapi", "add-stub-dependency-accountant-matching-engine", "add-stub-dependency-accountant-ethereummonitor"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]
