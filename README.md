@@ -26,6 +26,10 @@ cargo test
 
 ## Integration Testing
 
+Integration testing requires `dnsmasq` so that all requests to *.golem
+resolve to localhost. Note that integration testing is not currently
+working with Golem Cloud.
+
 ```shell
 docker-compose up -d
 scripts/integration-test.sh
