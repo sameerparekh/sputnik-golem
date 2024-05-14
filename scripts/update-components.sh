@@ -33,3 +33,4 @@ scripts/update-component.sh adminapi
 scripts/update-component.sh traderapi
 scripts/update-component.sh accountant
 scripts/update-component.sh matching-engine
+scripts/update-component.sh ethereummonitor

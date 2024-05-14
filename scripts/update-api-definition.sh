@@ -7,6 +7,8 @@ usage() {
   echo "  component-name: API to update"
 }
 
+#set -ex
+
 USE_CLOUD="${USE_CLOUD:-false}"
 ENVIRONMENT="${ENVIRONMENT:-test}"
 

@@ -156,10 +156,10 @@ command = "wasm-rpc-stubgen"
 cwd = "."
 
 [tasks.post-build]
-dependencies = ["compose-accountant", "compose-adminapi", "compose-traderapi", "compose-matching-engine"]
+dependencies = ["compose-accountant", "compose-adminapi", "compose-traderapi", "compose-matching-engine", "compose-ethereummonitor"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-accountant", "compose-release-adminapi", "compose-release-traderapi", "compose-release-matching-engine"]
+dependencies = ["compose-release-accountant", "compose-release-adminapi", "compose-release-traderapi", "compose-release-matching-engine", "compose-release-ethereummonitor"]
 
 [tasks.regenerate-stubs]
 dependencies = ["add-stub-dependency-registry-adminapi", "add-stub-dependency-ids-adminapi", "add-stub-dependency-registry-accountant", "add-stub-dependency-matching-engine-accountant", "add-stub-dependency-matching-engine-adminapi", "add-stub-dependency-accountant-adminapi", "add-stub-dependency-accountant-traderapi", "add-stub-dependency-ids-traderapi", "add-stub-dependency-accountant-matching-engine", "add-stub-dependency-accountant-ethereummonitor"]

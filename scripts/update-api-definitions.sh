@@ -36,3 +36,4 @@ export USE_CLOUD
 
 scripts/update-api-definition.sh traderapi
 scripts/update-api-definition.sh adminapi
+scripts/update-api-definition.sh ethereummonitor

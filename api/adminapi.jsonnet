@@ -4,6 +4,7 @@ local environment = std.extVar('environment');
 {
   id: "adminapi",
   version: "0.0.1",
+  draft: true,
   routes: [
     {
       method: "Post",

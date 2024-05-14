@@ -1974,6 +1974,7 @@ version = "0.1.0"
 dependencies = [
  "bip32",
  "ethers-core",
+ "mockall",
  "secp256k1",
  "sha3 0.11.0-pre.3",
  "wit-bindgen",

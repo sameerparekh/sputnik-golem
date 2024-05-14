@@ -1,7 +1,9 @@
 package sputnik: ethereummonitor;
 
 interface api {
-  process-deposit: func(address: string, amount: u64, asset-id: u64, block-height: u64);
+  process-deposit: func(address: string, tx: string, amount: u64, asset-id: u64, block-height: u64);
+  complete-block: func(block: u64);
+  block-height: func() -> u64;
   new-address-for-trader: func(trader: u64) -> string;
 }
 
