@@ -55,8 +55,8 @@ scripts/launch-workers.sh -e "$ENVIRONMENT" >/dev/null
 scripts/deploy-apis.sh -e "$ENVIRONMENT" >/dev/null
 echo
 
-ADMIN_API=http://"${ENVIRONMENT}".adminapi.sputnik.dev:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
-TRADER_API=http://"${ENVIRONMENT}".traderapi.sputnik.dev:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
+ADMIN_API=http://"${ENVIRONMENT}".adminapi.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
+TRADER_API=http://"${ENVIRONMENT}".traderapi.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 #
 #set -ex
 
