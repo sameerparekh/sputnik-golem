@@ -6,6 +6,7 @@ local matching_engine_id = std.extVar('matching_engine_id');
 {
   id: "traderapi",
   version: "0.0.1",
+  draft: true,
   routes: [
     {
       method: "Get",
