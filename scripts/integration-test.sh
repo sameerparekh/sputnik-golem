@@ -57,6 +57,7 @@ echo
 
 ADMIN_API=http://"${ENVIRONMENT}".adminapi.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 TRADER_API=http://"${ENVIRONMENT}".traderapi.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
+MONITOR_API=http://"${ENVIRONMENT}".ethereummonitor.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 #
 #set -ex
 
@@ -93,31 +94,32 @@ TRADER_B_ID=$(curl --silent -X POST "$ADMIN_API"/trader/traderb \
 echo "Trader A: $TRADER_A_ID"
 echo "Trader B: $TRADER_B_ID"
 
-echo -n "Funding accounts..."
+echo "Funding accounts..."
 
-"$CMD" worker invoke-and-await \
-  --component-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_A_ID}" \
-  --function=sputnik:accountant/api/deposit \
-  --parameters="[$BTC_ID, 100000000]" >/dev/null
+#set -ex
 
-"$CMD" worker invoke-and-await \
-  --component-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_A_ID}" \
-  --function=sputnik:accountant/api/deposit \
-  --parameters="[$USD_ID, 6000000]" >/dev/null
+TRADER_A_ADDRESS=$(curl --silent -X GET "$TRADER_API"/evm-address/"${TRADER_A_ID}")
+TRADER_B_ADDRESS=$(curl --silent -X GET "$TRADER_API"/evm-address/"${TRADER_B_ID}")
 
-"$CMD" worker invoke-and-await \
-  --component-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_B_ID}" \
-  --function=sputnik:accountant/api/deposit \
-  --parameters="[$BTC_ID, 100000000]" >/dev/null
+echo -n "Trader A BTC: "
+curl --silent -X POST "$MONITOR_API"/deposit \
+  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx1\", \"amount\": 100000000, \"asset_id\": $BTC_ID, \"block_height\": 10}" \
+  | jq .ok.balance
 
-"$CMD" worker invoke-and-await \
-  --component-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_B_ID}" \
-  --function=sputnik:accountant/api/deposit \
-  --parameters="[$USD_ID, 6000000]" >/dev/null
+echo -n "Trader A USD: "
+curl --silent -X POST "$MONITOR_API"/deposit \
+  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx2\", \"amount\": 6000000, \"asset_id\": $USD_ID, \"block_height\": 10}" \
+  | jq .ok.balance
+
+echo -n "Trader B BTC: "
+curl --silent -X POST "$MONITOR_API"/deposit \
+  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx3\", \"amount\": 100000000, \"asset_id\": $BTC_ID, \"block_height\": 10}" \
+  | jq .ok.balance
+
+echo -n "Trader B USD: "
+curl --silent -X POST "$MONITOR_API"/deposit \
+  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx4\", \"amount\": 6000000, \"asset_id\": $USD_ID, \"block_height\": 10}" \
+  | jq .ok.balance
 
 echo
 

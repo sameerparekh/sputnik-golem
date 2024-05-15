@@ -3,13 +3,15 @@ use std::collections::{HashMap, HashSet};
 use std::env;
 
 use bip32::{ChildNumber, PublicKey, XPrv};
+use bip32::secp256k1::elliptic_curve::weierstrass::add;
 use ethers_core::utils::hex::hex::encode;
 use mockall::automock;
 use sha3::{Digest, Keccak256};
 
-use crate::bindings::exports::sputnik::ethereummonitor::api::Guest;
+use crate::bindings::exports::sputnik::ethereummonitor::api::{Error, Guest};
+use crate::bindings::exports::sputnik::ethereummonitor::api::Error::{BlockSeen, TxSeen, UnknownAddress};
 use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::sputnik::accountant::api::Error;
+use crate::bindings::sputnik::accountant::api::Error as AccountantError;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
 use crate::bindings::sputnik::accountant_stub::stub_accountant::AssetBalance;
 
@@ -30,10 +32,16 @@ struct Configuration {}
 trait ExternalServiceApi {
     fn get_accountant(&self, trader_id: u64) -> stub_accountant::Api;
 
-    fn deposit(&self, trader_id: u64, asset_id: u64, amount: u64) -> Result<AssetBalance, Error>;
+    fn deposit(&self, trader_id: u64, asset_id: u64, amount: u64) -> Result<AssetBalance, AccountantError>;
 }
 
 struct ExternalServiceApiProd;
+
+impl From<AccountantError> for Error {
+    fn from(value: AccountantError) -> Self {
+        Error::AccountantError(value)
+    }
+}
 
 impl ExternalServiceApi for ExternalServiceApiProd {
     fn get_accountant(&self, trader_id: u64) -> stub_accountant::Api {
@@ -48,7 +56,7 @@ impl ExternalServiceApi for ExternalServiceApiProd {
     }
 
 
-    fn deposit(&self, trader_id: u64, asset_id: u64, amount: u64) -> Result<AssetBalance, Error> {
+    fn deposit(&self, trader_id: u64, asset_id: u64, amount: u64) -> Result<AssetBalance, AccountantError> {
         self.get_accountant(trader_id).deposit(asset_id, amount)
     }
 }
@@ -69,21 +77,25 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 struct Component;
 
 impl Guest for Component {
-    fn process_deposit(address: String, tx: String, amount: u64, asset_id: u64, block_height: u64) {
+    fn process_deposit(address: String, tx: String, amount: u64, asset_id: u64, block_height: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
             if let Some(bh) = state.block_height {
                 if bh >= block_height {
-                    println!("Already seen block {block_height}");
+                    return Err(BlockSeen(block_height));
                 }
-            } else if state.txes.contains(&tx) {
-                println!("Already processed tx {tx}")
+            }
+
+            if state.txes.contains(&tx) {
+                Err(TxSeen(tx))
             } else {
                 state.txes.insert(tx);
                 if let Some(trader) = state.address_map.get(&address.to_lowercase()) {
-                    state.external_service_api.deposit(*trader, asset_id, amount).expect("successful deposit");
+                    Ok(state.external_service_api.deposit(*trader, asset_id, amount)?)
+                } else {
+                    Err(UnknownAddress(address))
                 }
             }
-        });
+        })
     }
 
     fn complete_block(block: u64) {
@@ -103,7 +115,6 @@ impl Guest for Component {
     fn new_address_for_trader(trader: u64) -> String {
         with_state(|state| {
             let private_key_str = env::var("PRIVATE_KEY").unwrap();
-            // let chain_code_str = env::var("CHAIN_CODE").unwrap();
 
             let xpriv: XPrv = private_key_str.parse().unwrap();
 

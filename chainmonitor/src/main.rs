@@ -1,13 +1,15 @@
+use std::str::FromStr;
+
 use alloy::{
     providers::{Provider, ProviderBuilder},
     rpc::client::WsConnect,
 };
 use alloy::eips::BlockNumberOrTag;
-use alloy::hex::encode;
 use alloy::rpc::types::eth::BlockTransactions;
 use alloy::signers::wallet::coins_bip39::{English, Mnemonic};
+use bip32::{ChildNumber, Prefix, PublicKey, XPrv};
 use futures_util::StreamExt;
-use hdwallet::ExtendedPrivKey;
+use sha3::{Digest, Keccak256};
 
 #[tokio::main]
 pub async fn main() {
@@ -15,9 +17,29 @@ pub async fn main() {
     let mnemonic: Mnemonic<English> = Mnemonic::new_from_phrase("weather creek place resemble fitness rebel what artwork devote exclude goat paper").unwrap();
     let seed = mnemonic.to_seed(None).unwrap();
 
-    let priv_key = ExtendedPrivKey::with_seed(&seed).unwrap();
-    println!("Private Key: {:?}", encode(priv_key.private_key.as_ref()));
-    println!("Chain Code {:?}", encode(priv_key.chain_code));
+    let priv_key = XPrv::new(&seed).unwrap();
+    let encoded_key = priv_key.to_extended_key(Prefix::XPRV).to_string();
+    println!("Private Key: {:?}", encoded_key);
+    // println!("Chain Code {:?}", encode(priv_key.chain_code));
+
+    // let chain_code_str = env::var("CHAIN_CODE").unwrap();
+
+    let xpriv: XPrv = XPrv::from_str(&encoded_key).unwrap();
+
+    let derived_key = xpriv.derive_child(ChildNumber(1)).unwrap();
+    let pubkey = derived_key.public_key();
+
+    let mut hasher = Keccak256::new();
+    hasher.update(pubkey.public_key().to_bytes());
+    let result = hasher.finalize();
+
+    // Take the last 20 bytes as the Ethereum address
+    let mut address = [0u8; 20];
+    address.copy_from_slice(&result[12..32]);
+    // state.address_idx += 1;
+    // state.address_map.insert(alloy::hex::hex::encode(address), trader);
+    println!("Address: {}", alloy::hex::hex::encode(address));
+
     let rpc_url = "wss://eth-sepolia.g.alchemy.com/v2/C2AMPkL7J84rizAWoLcCt5rTflAU0tGY";
     let ws = WsConnect::new(rpc_url);
     let provider = ProviderBuilder::new().on_ws(ws).await.unwrap();

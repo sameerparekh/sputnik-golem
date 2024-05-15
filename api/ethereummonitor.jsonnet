@@ -25,7 +25,7 @@ local environment = std.extVar('environment');
         workerId: environment,
         functionName: "sputnik:ethereummonitor/api/process-deposit",
         functionParams: [
-          "${request.body.asset}",
+          "${request.body.address}",
           "${request.body.tx}",
           "${request.body.amount}",
           "${request.body.asset_id}",
