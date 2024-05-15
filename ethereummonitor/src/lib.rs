@@ -3,13 +3,13 @@ use std::collections::{HashMap, HashSet};
 use std::env;
 
 use bip32::{ChildNumber, PublicKey, XPrv};
-use bip32::secp256k1::elliptic_curve::weierstrass::add;
+use ethers_core::types::Address;
 use ethers_core::utils::hex::hex::encode;
 use mockall::automock;
 use sha3::{Digest, Keccak256};
 
 use crate::bindings::exports::sputnik::ethereummonitor::api::{Error, Guest};
-use crate::bindings::exports::sputnik::ethereummonitor::api::Error::{BlockSeen, TxSeen, UnknownAddress};
+use crate::bindings::exports::sputnik::ethereummonitor::api::Error::{TxSeen, UnknownAddress, WrongBlock};
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant::api::Error as AccountantError;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
@@ -19,8 +19,8 @@ mod bindings;
 
 struct State {
     address_idx: u32,
-    address_map: HashMap<String, u64>,
-    block_height: Option<u64>,
+    address_map: HashMap<Address, u64>,
+    block_height: u64,
     external_service_api: Box<dyn ExternalServiceApi>,
     txes: HashSet<String>,
 }
@@ -40,6 +40,12 @@ struct ExternalServiceApiProd;
 impl From<AccountantError> for Error {
     fn from(value: AccountantError) -> Self {
         Error::AccountantError(value)
+    }
+}
+
+impl From<rustc_hex::FromHexError> for Error {
+    fn from(value: rustc_hex::FromHexError) -> Self {
+        Error::InvalidAddress(value.to_string())
     }
 }
 
@@ -65,7 +71,7 @@ thread_local! {
     static STATE: RefCell<State> = RefCell::new(State {
         address_idx: 1,
         address_map: HashMap::new(),
-        block_height: None,
+        block_height: 0,
         external_service_api: Box::new(ExternalServiceApiProd),
         txes: HashSet::new(),
     });
@@ -79,17 +85,14 @@ struct Component;
 impl Guest for Component {
     fn process_deposit(address: String, tx: String, amount: u64, asset_id: u64, block_height: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
-            if let Some(bh) = state.block_height {
-                if bh >= block_height {
-                    return Err(BlockSeen(block_height));
-                }
-            }
-
-            if state.txes.contains(&tx) {
+            if block_height != state.block_height {
+                Err(WrongBlock(state.block_height))
+            } else if state.txes.contains(&tx) {
                 Err(TxSeen(tx))
             } else {
                 state.txes.insert(tx);
-                if let Some(trader) = state.address_map.get(&address.to_lowercase()) {
+                let parsed_address = &address.parse()?;
+                if let Some(trader) = state.address_map.get(&parsed_address) {
                     Ok(state.external_service_api.deposit(*trader, asset_id, amount)?)
                 } else {
                     Err(UnknownAddress(address))
@@ -98,27 +101,30 @@ impl Guest for Component {
         })
     }
 
-    fn complete_block(block: u64) {
+    fn complete_block(block: u64) -> Result<(), Error> {
         with_state(|state| {
-            state.block_height = Some(block);
-            state.txes.clear();
+            if block != state.block_height { Err(WrongBlock(state.block_height)) } else {
+                state.block_height = block + 1;
+                state.txes.clear();
+                Ok(())
+            }
         })
     }
 
     fn block_height() -> u64 {
         with_state(|state| {
-            state.block_height.unwrap_or(0)
+            state.block_height
         })
     }
 
 
     fn new_address_for_trader(trader: u64) -> String {
         with_state(|state| {
-            let private_key_str = env::var("PRIVATE_KEY").unwrap();
+            let private_key_str = env::var("PRIVATE_KEY").expect("PRIVATE_KEY is not set");
 
-            let xpriv: XPrv = private_key_str.parse().unwrap();
+            let xpriv: XPrv = private_key_str.parse().expect("PRIVATE_KEY parses correctly");
 
-            let derived_key = xpriv.derive_child(ChildNumber(state.address_idx)).unwrap();
+            let derived_key = xpriv.derive_child(ChildNumber(state.address_idx)).unwrap_or_else(|_| panic!("derive_child works for index {}", state.address_idx));
             let pubkey = derived_key.public_key();
 
             let mut hasher = Keccak256::new();
@@ -128,8 +134,9 @@ impl Guest for Component {
             // Take the last 20 bytes as the Ethereum address
             let mut address = [0u8; 20];
             address.copy_from_slice(&result[12..32]);
+
             state.address_idx += 1;
-            state.address_map.insert(encode(address), trader);
+            state.address_map.insert(Address::from(address), trader);
             encode(address)
         })
     }

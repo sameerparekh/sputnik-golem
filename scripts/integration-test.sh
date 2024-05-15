@@ -101,25 +101,34 @@ echo "Funding accounts..."
 TRADER_A_ADDRESS=$(curl --silent -X GET "$TRADER_API"/evm-address/"${TRADER_A_ID}")
 TRADER_B_ADDRESS=$(curl --silent -X GET "$TRADER_API"/evm-address/"${TRADER_B_ID}")
 
+BLOCK_HEIGHT=$(curl --silent -X GET "$MONITOR_API"/blockheight)
+
 echo -n "Trader A BTC: "
 curl --silent -X POST "$MONITOR_API"/deposit \
-  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx1\", \"amount\": 100000000, \"asset_id\": $BTC_ID, \"block_height\": 10}" \
+  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx1\", \"amount\": 100000000, \"asset_id\": $BTC_ID, \"block_height\": $BLOCK_HEIGHT}" \
   | jq .ok.balance
 
 echo -n "Trader A USD: "
 curl --silent -X POST "$MONITOR_API"/deposit \
-  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx2\", \"amount\": 6000000, \"asset_id\": $USD_ID, \"block_height\": 10}" \
+  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx2\", \"amount\": 6000000, \"asset_id\": $USD_ID, \"block_height\": $BLOCK_HEIGHT}" \
   | jq .ok.balance
 
 echo -n "Trader B BTC: "
 curl --silent -X POST "$MONITOR_API"/deposit \
-  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx3\", \"amount\": 100000000, \"asset_id\": $BTC_ID, \"block_height\": 10}" \
+  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx3\", \"amount\": 100000000, \"asset_id\": $BTC_ID, \"block_height\": $BLOCK_HEIGHT}" \
   | jq .ok.balance
 
 echo -n "Trader B USD: "
 curl --silent -X POST "$MONITOR_API"/deposit \
-  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx4\", \"amount\": 6000000, \"asset_id\": $USD_ID, \"block_height\": 10}" \
+  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx4\", \"amount\": 6000000, \"asset_id\": $USD_ID, \"block_height\": $BLOCK_HEIGHT}" \
   | jq .ok.balance
+
+echo -n "Completing block..."
+curl --silent -X POST "$MONITOR_API"/completeblock/"$BLOCK_HEIGHT" >/dev/null
+echo
+
+echo -n "New block height: "
+curl --silent -X GET "$MONITOR_API"/blockheight
 
 echo
 

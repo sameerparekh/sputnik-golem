@@ -78,7 +78,6 @@ pub async fn main() {
                 // let receipt = provider.get_transaction_receipt(tx.hash).await.unwrap().unwrap();
 
 
-                // Check if the transaction is a contract creation or a normal transaction
                 if let Some(to) = tx.to {
                     println!("Deposit received: {:?} {:?} {:?}", tx.hash, tx.value.to_base_be(10000000000000000000).collect::<Vec<_>>(), to);
                     let amount = tx.value.to_base_be(10000000000000000000).collect::<Vec<_>>();

@@ -6,13 +6,14 @@ interface api {
   use sputnik: accountant/api.{asset-balance};
 
   variant error {
-    block-seen(u64),
+    wrong-block(u64),
     tx-seen(string),
     accountant-error(accountant-error),
     unknown-address(string),
+    invalid-address(string),
   }
   process-deposit: func(address: string, tx: string, amount: u64, asset-id: u64, block-height: u64) -> result<asset-balance, error>;
-  complete-block: func(block: u64);
+  complete-block: func(block: u64) -> result<_, error>;
   block-height: func() -> u64;
   new-address-for-trader: func(trader: u64) -> string;
 }

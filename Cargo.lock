@@ -1978,6 +1978,7 @@ dependencies = [
  "bip32",
  "ethers-core",
  "mockall",
+ "rustc-hex",
  "secp256k1",
  "sha3 0.11.0-pre.3",
  "wit-bindgen",
