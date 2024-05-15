@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
+use std::collections::hash_map::Entry;
 use std::env;
 
 use bip32::{ChildNumber, PublicKey, XPrv};
@@ -9,7 +10,7 @@ use mockall::automock;
 use sha3::{Digest, Keccak256};
 
 use crate::bindings::exports::sputnik::ethereummonitor::api::{Error, Guest};
-use crate::bindings::exports::sputnik::ethereummonitor::api::Error::{TxSeen, UnknownAddress, WrongBlock};
+use crate::bindings::exports::sputnik::ethereummonitor::api::Error::{InvalidAddress, TokenExists, TxSeen, UnknownAddress, WrongBlock};
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant::api::Error as AccountantError;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
@@ -20,6 +21,7 @@ mod bindings;
 struct State {
     address_idx: u32,
     address_map: HashMap<Address, u64>,
+    token_asset_map: HashMap<Address, u64>,
     block_height: u64,
     external_service_api: Box<dyn ExternalServiceApi>,
     txes: HashSet<String>,
@@ -45,7 +47,7 @@ impl From<AccountantError> for Error {
 
 impl From<rustc_hex::FromHexError> for Error {
     fn from(value: rustc_hex::FromHexError) -> Self {
-        Error::InvalidAddress(value.to_string())
+        InvalidAddress(value.to_string())
     }
 }
 
@@ -71,7 +73,8 @@ thread_local! {
     static STATE: RefCell<State> = RefCell::new(State {
         address_idx: 1,
         address_map: HashMap::new(),
-        block_height: 0,
+        token_asset_map: HashMap::new(),
+        block_height: 5897196,
         external_service_api: Box::new(ExternalServiceApiProd),
         txes: HashSet::new(),
     });
@@ -83,20 +86,25 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 struct Component;
 
 impl Guest for Component {
-    fn process_deposit(address: String, tx: String, amount: u64, asset_id: u64, block_height: u64) -> Result<AssetBalance, Error> {
+    fn process_deposit(address: String, tx: String, amount: u64, token_address: String, block_height: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
-            if block_height != state.block_height {
-                Err(WrongBlock(state.block_height))
-            } else if state.txes.contains(&tx) {
-                Err(TxSeen(tx))
-            } else {
-                state.txes.insert(tx);
-                let parsed_address = &address.parse()?;
-                if let Some(trader) = state.address_map.get(&parsed_address) {
-                    Ok(state.external_service_api.deposit(*trader, asset_id, amount)?)
+            let token_address_parsed = token_address.parse()?;
+            if let Some(asset_id) = state.token_asset_map.get(&token_address_parsed) {
+                if block_height != state.block_height {
+                    Err(WrongBlock(state.block_height))
+                } else if state.txes.contains(&tx) {
+                    Err(TxSeen(tx))
                 } else {
-                    Err(UnknownAddress(address))
+                    state.txes.insert(tx);
+                    let parsed_address = address.parse()?;
+                    if let Some(trader) = state.address_map.get(&parsed_address) {
+                        Ok(state.external_service_api.deposit(*trader, *asset_id, amount)?)
+                    } else {
+                        Err(UnknownAddress(address))
+                    }
                 }
+            } else {
+                Err(UnknownAddress(token_address))
             }
         })
     }
@@ -138,6 +146,16 @@ impl Guest for Component {
             state.address_idx += 1;
             state.address_map.insert(Address::from(address), trader);
             encode(address)
+        })
+    }
+
+    fn add_token(address: String, asset_id: u64) -> Result<(), Error> {
+        with_state(|state| {
+            let parsed_address: Address = address.parse()?;
+            if let Entry::Vacant(e) = state.token_asset_map.entry(parsed_address) {
+                e.insert(asset_id);
+                Ok(())
+            } else { Err(TokenExists(address)) }
         })
     }
 }

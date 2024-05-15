@@ -12,7 +12,7 @@ interface api {
     internal(string),
   }
 
-  create-asset: func(name: string, decimals: u8) -> result<asset, error>;
+  create-asset: func(name: string, decimals: u8, token-address: string) -> result<asset, error>;
   create-spot-pair: func(name: string, numerator: u64, denominator: u64) -> result<hydrated-spot-pair, error>;
   create-trader: func(name: string) -> result<trader, error>;
 }

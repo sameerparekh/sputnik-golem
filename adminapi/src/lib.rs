@@ -131,8 +131,9 @@ impl ExternalServiceApi for ExternalServiceApiProd {
 fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
     STATE.with_borrow_mut(f)
 }
+
 impl Guest for Component {
-    fn create_asset(name: String, decimals: u8) -> Result<Asset, Error> {
+    fn create_asset(name: String, decimals: u8, token_address: String) -> Result<Asset, Error> {
         with_state(|state| {
             let asset_id = state.external_service_api.get_new_id();
             match state.external_service_api.create_asset(&Asset {
