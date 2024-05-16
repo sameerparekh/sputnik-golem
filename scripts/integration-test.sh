@@ -52,18 +52,19 @@ echo
 ADMIN_API=http://"${ENVIRONMENT}".adminapi.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 TRADER_API=http://"${ENVIRONMENT}".traderapi.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 MONITOR_API=http://"${ENVIRONMENT}".ethereummonitor.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
-#
-#set -ex
 
 echo "Creating assets/pairs"
 
+USDC_ADDRESS=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+ETH_ADDRESS=0x0000000000000000000000000000000000000000
+
 ETH_ID=$(curl --silent -X POST "$ADMIN_API"/asset/ETH \
-  --data '{ "decimals": 8 }' | jq '.ok.id')
+  --data "{ \"decimals\": 10, \"token_address\": \"$ETH_ADDRESS\" }" | jq '.ok.id')
 
 echo "ETH: $ETH_ID"
 
 USDC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/USDC \
-  --data '{ "decimals": 2 }' | jq '.ok.id')
+  --data "{ \"decimals\": 6, \"token_address\": \"$USDC_ADDRESS\" }" | jq '.ok.id')
 
 echo "USDC: $USDC_ID"
 
@@ -99,22 +100,22 @@ BLOCK_HEIGHT=$(curl --silent -X GET "$MONITOR_API"/blockheight)
 
 echo -n "Trader A ETH: "
 curl --silent -X POST "$MONITOR_API"/deposit \
-  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx1\", \"amount\": 100000000, \"asset_id\": $ETH_ID, \"block_height\": $BLOCK_HEIGHT}" \
+  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx1\", \"amount\": 100000000, \"token_address\": \"$ETH_ADDRESS\", \"block_height\": $BLOCK_HEIGHT}" \
   | jq .ok.balance
 
 echo -n "Trader A USDC: "
 curl --silent -X POST "$MONITOR_API"/deposit \
-  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx2\", \"amount\": 6000000, \"asset_id\": $USDC_ID, \"block_height\": $BLOCK_HEIGHT}" \
+  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx2\", \"amount\": 6000000, \"token_address\": \"$USDC_ADDRESS\", \"block_height\": $BLOCK_HEIGHT}" \
   | jq .ok.balance
 
 echo -n "Trader B ETH: "
 curl --silent -X POST "$MONITOR_API"/deposit \
-  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx3\", \"amount\": 100000000, \"asset_id\": $ETH_ID, \"block_height\": $BLOCK_HEIGHT}" \
+  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx3\", \"amount\": 100000000, \"token_address\": \"$ETH_ADDRESS\", \"block_height\": $BLOCK_HEIGHT}" \
   | jq .ok.balance
 
 echo -n "Trader B USDC: "
 curl --silent -X POST "$MONITOR_API"/deposit \
-  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx4\", \"amount\": 6000000, \"asset_id\": $USDC_ID, \"block_height\": $BLOCK_HEIGHT}" \
+  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx4\", \"amount\": 6000000, \"token_address\": \"$USDC_ADDRESS\", \"block_height\": $BLOCK_HEIGHT}" \
   | jq .ok.balance
 
 echo -n "Completing block..."

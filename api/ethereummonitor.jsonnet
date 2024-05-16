@@ -28,7 +28,7 @@ local environment = std.extVar('environment');
           "${request.body.address}",
           "${request.body.tx}",
           "${request.body.amount}",
-          "${request.body.asset_id}",
+          "${request.body.token_address}",
           "${request.body.block_height}",
         ],
         response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 200}}"
