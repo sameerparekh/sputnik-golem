@@ -122,25 +122,25 @@ mod tests {
     fn populate() {
         <Component as Guest>::add_asset(Asset {
             id: 0,
-            name: "BTC".to_string(),
+            name: "ETH".to_string(),
             decimals: 8,
         })
-        .expect("add asset returns ok");
+            .expect("add asset returns ok");
 
         <Component as Guest>::add_asset(Asset {
             id: 1,
-            name: "USD".to_string(),
+            name: "USDC".to_string(),
             decimals: 4,
         })
-        .expect("add asset returns ok");
+            .expect("add asset returns ok");
 
         <Component as Guest>::add_spot_pair(SpotPair {
             id: 2,
-            name: "BTCUSD".to_string(),
+            name: "ETHUSDC".to_string(),
             numerator_id: 0,
             denominator_id: 1,
         })
-        .expect("add spotpair returns ok");
+            .expect("add spotpair returns ok");
     }
 
     impl PartialEq for SpotPair {
@@ -170,12 +170,12 @@ mod tests {
             &vec![
                 Asset {
                     id: 0,
-                    name: "BTC".to_string(),
+                    name: "ETH".to_string(),
                     decimals: 8
                 },
                 Asset {
                     id: 1,
-                    name: "USD".to_string(),
+                    name: "USDC".to_string(),
                     decimals: 4
                 }
             ]
@@ -190,17 +190,17 @@ mod tests {
             spot_pairs,
             vec![HydratedSpotPair {
                 id: 2,
-                name: "BTCUSD".to_string(),
+                name: "ETHUSDC".to_string(),
                 numerator: Asset {
                     id: 0,
-                    name: "BTC".to_string(),
+                    name: "ETH".to_string(),
                     decimals: 8,
                 },
                 denominator: Asset {
                     id: 1,
-                    name: "USD".to_string(),
+                    name: "USDC".to_string(),
                     decimals: 4,
-                }
+                },
             }]
         );
     }

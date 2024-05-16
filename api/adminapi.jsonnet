@@ -15,7 +15,8 @@ local environment = std.extVar('environment');
         functionName: "sputnik:adminapi/api/create-asset",
         functionParams: [
           "${request.path.name}",
-          "${request.body.decimals}"
+          "${request.body.decimals}",
+          "${request.body.token_address}"
         ],
         response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 201}}"
       }

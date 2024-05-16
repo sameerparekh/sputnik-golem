@@ -3,14 +3,14 @@ use std::env;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::adminapi::api::{Error, Guest, Trader};
+use crate::bindings::exports::sputnik::adminapi::api::{Error, EthereummonitorError, Guest, Trader};
 use crate::bindings::exports::sputnik::adminapi::api::Error::{
     Internal, UnableToMakeAccountant, UnableToMakeEngine,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
+use crate::bindings::sputnik::ethereummonitor::api::Error as EthereumMonitorError;
 use crate::bindings::sputnik::ethereummonitor_stub::stub_ethereummonitor;
-use crate::bindings::sputnik::ethereummonitor_stub::stub_ethereummonitor::Api;
 use crate::bindings::sputnik::ids_stub::stub_ids;
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
 use crate::bindings::sputnik::registry::api::{
@@ -30,12 +30,26 @@ thread_local! {
     static STATE: RefCell<State> = RefCell::new(State { external_service_api: Box::new(ExternalServiceApiProd) });
 }
 
+impl From<EthereumMonitorError> for Error {
+    fn from(value: EthereumMonitorError) -> Self {
+        Error::EthereummonitorError(value)
+    }
+}
+
+impl From<RegistryError> for Error {
+    fn from(value: RegistryError) -> Self {
+        Internal(format!("{}", value))
+    }
+}
+
 #[automock]
 trait ExternalServiceApi {
     fn get_registry(&self) -> stub_registry::Api;
     fn get_ids(&self) -> stub_ids::Api;
 
     fn get_ethereummonitor(&self) -> stub_ethereummonitor::Api;
+
+    fn add_token(&self, address: &str, asset_id: u64) -> Result<(), EthereummonitorError>;
 
     fn get_new_id(&self) -> u64;
 
@@ -62,6 +76,16 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         stub_registry::Api::new(&uri)
     }
 
+    fn get_ids(&self) -> stub_ids::Api {
+        let component_id = env::var("IDS_COMPONENT_ID").expect("IDS_COMPONENT_ID not set");
+        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
+        let uri = Uri {
+            value: format!("worker://{component_id}/{environment}"),
+        };
+
+        stub_ids::Api::new(&uri)
+    }
+
     fn get_ethereummonitor(&self) -> stub_ethereummonitor::Api {
         let component_id =
             env::var("ETHEREUMMONITOR_COMPONENT_ID").expect("ETHEREUMMONITOR_COMPONENT_ID not set");
@@ -73,14 +97,8 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         stub_ethereummonitor::Api::new(&uri)
     }
 
-    fn get_ids(&self) -> stub_ids::Api {
-        let component_id = env::var("IDS_COMPONENT_ID").expect("IDS_COMPONENT_ID not set");
-        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
-        let uri = Uri {
-            value: format!("worker://{component_id}/{environment}"),
-        };
-
-        stub_ids::Api::new(&uri)
+    fn add_token(&self, address: &str, asset_id: u64) -> Result<(), EthereummonitorError> {
+        self.get_ethereummonitor().add_token(address, asset_id)
     }
 
     fn get_new_id(&self) -> u64 {
@@ -151,14 +169,12 @@ impl Guest for Component {
     fn create_asset(name: String, decimals: u8, token_address: String) -> Result<Asset, Error> {
         with_state(|state| {
             let asset_id = state.external_service_api.get_new_id();
-            match state.external_service_api.create_asset(&Asset {
+            state.external_service_api.add_token(&token_address, asset_id)?;
+            Ok(state.external_service_api.create_asset(&Asset {
                 id: asset_id,
                 name,
                 decimals,
-            }) {
-                Ok(result) => Ok(result),
-                Err(err) => Err(Internal(format!("{}", err))),
-            }
+            })?)
         })
     }
 
