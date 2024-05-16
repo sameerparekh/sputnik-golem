@@ -1,12 +1,13 @@
 [package]
-name = "adminapi"
+name = "ethereummonitor-stub"
 edition = "2021"
-version = "0.1.0"
+version = "0.0.1"
 
 [package.metadata.component]
-package = "sputnik:adminapi"
+package = "sputnik:ethereummonitor"
 
 [package.metadata.component.target]
+world = "wasm-rpc-stub-ethereummonitor"
 path = "wit"
 
 [package.metadata.component.target.dependencies."golem:rpc"]
@@ -21,15 +22,6 @@ path = "wit/deps/sputnik_accountant-stub"
 [package.metadata.component.target.dependencies."sputnik:ethereummonitor"]
 path = "wit/deps/sputnik_ethereummonitor"
 
-[package.metadata.component.target.dependencies."sputnik:ethereummonitor-stub"]
-path = "wit/deps/sputnik_ethereummonitor-stub"
-
-[package.metadata.component.target.dependencies."sputnik:ids"]
-path = "wit/deps/sputnik_ids"
-
-[package.metadata.component.target.dependencies."sputnik:ids-stub"]
-path = "wit/deps/sputnik_ids-stub"
-
 [package.metadata.component.target.dependencies."sputnik:matching-engine"]
 path = "wit/deps/sputnik_matching-engine"
 
@@ -42,8 +34,10 @@ path = "wit/deps/sputnik_registry"
 [package.metadata.component.target.dependencies."sputnik:registry-stub"]
 path = "wit/deps/sputnik_registry-stub"
 
-[dependencies]
-mockall = "0.12.1"
+[dependencies.golem-wasm-rpc]
+version = "0.0.22"
+features = ["stub"]
+default-features = false
 
 [dependencies.wit-bindgen]
 version = "0.17.0"
@@ -52,7 +46,10 @@ default-features = false
 
 [lib]
 path = "src/lib.rs"
-name = "adminapi"
-edition = "2021"
 crate-type = ["cdylib"]
 required-features = []
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

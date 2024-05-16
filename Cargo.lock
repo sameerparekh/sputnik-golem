@@ -1985,6 +1985,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ethereummonitor-stub"
+version = "0.0.1"
+dependencies = [
+ "golem-wasm-rpc",
+ "wit-bindgen",
+]
+
+[[package]]
 name = "ethers-core"
 version = "2.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"

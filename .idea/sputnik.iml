@@ -17,6 +17,7 @@
       <sourceFolder url="file://$MODULE_DIR$/bitcoinmonitor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/chainmonitor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ethereummonitor/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ethereummonitor-stub/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

@@ -1947,927 +1947,672 @@ pub mod golem {
                         }
                         
                       }
-                      pub mod accountant_stub {
+                      pub mod ethereummonitor {
                         
                         #[allow(clippy::all)]
-                        pub mod stub_accountant {
+                        pub mod api {
                           #[used]
                           #[doc(hidden)]
                           #[cfg(target_arch = "wasm32")]
                           static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
-                          pub type Uri = super::super::super::golem::rpc::types::Uri;
-                          pub type Fill = super::super::super::sputnik::accountant::api::Fill;
-                          pub type Error = super::super::super::sputnik::accountant::api::Error;
+                          pub type AccountantError = super::super::super::sputnik::accountant::api::Error;
                           pub type AssetBalance = super::super::super::sputnik::accountant::api::AssetBalance;
-                          pub type Order = super::super::super::sputnik::accountant::api::Order;
-                          pub type OrderStatus = super::super::super::sputnik::accountant::api::OrderStatus;
-                          pub type OrderAndStatus = super::super::super::sputnik::accountant::api::OrderAndStatus;
-                          
-                          #[derive(Debug)]
-                          #[repr(transparent)]
-                          pub struct Api{
-                            handle: wit_bindgen::rt::Resource<Api>,
+                          #[derive(Clone)]
+                          pub enum Error{
+                            WrongBlock(u64),
+                            TxSeen(wit_bindgen::rt::string::String),
+                            AccountantError(AccountantError),
+                            UnknownAddress(wit_bindgen::rt::string::String),
+                            InvalidAddress(wit_bindgen::rt::string::String),
+                            TokenExists(wit_bindgen::rt::string::String),
                           }
-                          
-                          impl Api{
-                            #[doc(hidden)]
-                            pub unsafe fn from_handle(handle: u32) -> Self {
-                              Self {
-                                handle: wit_bindgen::rt::Resource::from_handle(handle),
+                          impl ::core::fmt::Debug for Error {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              match self {
+                                Error::WrongBlock(e) => {
+                                  f.debug_tuple("Error::WrongBlock").field(e).finish()
+                                }
+                                Error::TxSeen(e) => {
+                                  f.debug_tuple("Error::TxSeen").field(e).finish()
+                                }
+                                Error::AccountantError(e) => {
+                                  f.debug_tuple("Error::AccountantError").field(e).finish()
+                                }
+                                Error::UnknownAddress(e) => {
+                                  f.debug_tuple("Error::UnknownAddress").field(e).finish()
+                                }
+                                Error::InvalidAddress(e) => {
+                                  f.debug_tuple("Error::InvalidAddress").field(e).finish()
+                                }
+                                Error::TokenExists(e) => {
+                                  f.debug_tuple("Error::TokenExists").field(e).finish()
+                                }
                               }
                             }
-                            
-                            #[doc(hidden)]
-                            pub fn into_handle(self) -> u32 {
-                              wit_bindgen::rt::Resource::into_handle(self.handle)
-                            }
-                            
-                            #[doc(hidden)]
-                            pub fn handle(&self) -> u32 {
-                              wit_bindgen::rt::Resource::handle(&self.handle)
+                          }
+                          impl ::core::fmt::Display for Error {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              write!(f, "{:?}", self)
                             }
                           }
                           
-                          
-                          unsafe impl wit_bindgen::rt::WasmResource for Api{
-                            #[inline]
-                            unsafe fn drop(_handle: u32) {
-                              #[cfg(not(target_arch = "wasm32"))]
-                              unreachable!();
+                          impl std::error::Error for Error {}
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn process_deposit(address: &str,tx: &str,amount: u64,token_address: &str,block_height: u64,) -> Result<AssetBalance,Error>{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
                               
+                              #[repr(align(8))]
+                              struct RetArea([u8; 48]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let vec0 = address;
+                              let ptr0 = vec0.as_ptr() as i32;
+                              let len0 = vec0.len() as i32;
+                              let vec1 = tx;
+                              let ptr1 = vec1.as_ptr() as i32;
+                              let len1 = vec1.len() as i32;
+                              let vec2 = token_address;
+                              let ptr2 = vec2.as_ptr() as i32;
+                              let len2 = vec2.len() as i32;
+                              let ptr3 = ret_area.as_mut_ptr() as i32;
                               #[cfg(target_arch = "wasm32")]
-                              {
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[resource-drop]api"]
-                                  fn drop(_: u32);
-                                }
-                                
-                                drop(_handle);
+                              #[link(wasm_import_module = "sputnik:ethereummonitor/api")]
+                              extern "C" {
+                                #[link_name = "process-deposit"]
+                                fn wit_import(_: i32, _: i32, _: i32, _: i32, _: i64, _: i32, _: i32, _: i64, _: i32, );
                               }
-                            }
-                          }
-                          
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn new(location: &Uri,) -> Self{
                               
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                let super::super::super::golem::rpc::types::Uri{ value:value0, } = location;
-                                let vec1 = value0;
-                                let ptr1 = vec1.as_ptr() as i32;
-                                let len1 = vec1.len() as i32;
-                                
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[constructor]api"]
-                                  fn wit_import(_: i32, _: i32, ) -> i32;
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, ) -> i32{ unreachable!() }
-                                let ret = wit_import(ptr1, len1);
-                                Api::from_handle(ret as u32)
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn initialize(&self,id: u64,matching_engine_component_id: &str,registry_component_id: &str,environment: &str,) -> Result<u64,Error>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(8))]
-                                struct RetArea([u8; 32]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let vec0 = matching_engine_component_id;
-                                let ptr0 = vec0.as_ptr() as i32;
-                                let len0 = vec0.len() as i32;
-                                let vec1 = registry_component_id;
-                                let ptr1 = vec1.as_ptr() as i32;
-                                let len1 = vec1.len() as i32;
-                                let vec2 = environment;
-                                let ptr2 = vec2.as_ptr() as i32;
-                                let len2 = vec2.len() as i32;
-                                let ptr3 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[method]api.initialize"]
-                                  fn wit_import(_: i32, _: i64, _: i32, _: i32, _: i32, _: i32, _: i32, _: i32, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i32, _: i32, _: i32, _: i32, _: i32, _: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(id), ptr0, len0, ptr1, len1, ptr2, len2, ptr3);
-                                let l4 = i32::from(*((ptr3 + 0) as *const u8));
-                                match l4 {
-                                  0 => {
-                                    let e = {
-                                      let l5 = *((ptr3 + 8) as *const i64);
-                                      
-                                      l5 as u64
-                                    };
-                                    Ok(e)
-                                  }
-                                  1 => {
-                                    let e = {
-                                      let l6 = i32::from(*((ptr3 + 8) as *const u8));
-                                      use super::super::super::sputnik::accountant::api::Error as V16;
-                                      let v16 = match l6 {
-                                        0 => {
-                                          let e16 = {
-                                            let l7 = *((ptr3 + 16) as *const i64);
-                                            
-                                            l7 as u64
-                                          };
-                                          V16::DuplicateId(e16)
-                                        }
-                                        1 => {
-                                          let e16 = {
-                                            let l8 = *((ptr3 + 16) as *const i64);
-                                            
-                                            l8 as u64
-                                          };
-                                          V16::InsufficientFunds(e16)
-                                        }
-                                        2 => {
-                                          let e16 = {
-                                            let l9 = *((ptr3 + 16) as *const i64);
-                                            
-                                            l9 as u64
-                                          };
-                                          V16::AlreadyInitialized(e16)
-                                        }
-                                        3 => {
-                                          V16::NotInitialized
-                                        }
-                                        4 => {
-                                          let e16 = {
-                                            let l10 = *((ptr3 + 16) as *const i64);
-                                            
-                                            l10 as u64
-                                          };
-                                          V16::InvalidAsset(e16)
-                                        }
-                                        5 => {
-                                          let e16 = {
-                                            let l11 = *((ptr3 + 16) as *const i64);
-                                            
-                                            l11 as u64
-                                          };
-                                          V16::InvalidSpotPair(e16)
-                                        }
-                                        n => {
-                                          debug_assert_eq!(n, 6, "invalid enum discriminant");
-                                          let e16 = {
-                                            let l12 = i32::from(*((ptr3 + 16) as *const u8));
-                                            use super::super::super::sputnik::matching_engine::api::Error as V15;
-                                            let v15 = match l12 {
-                                              0 => {
-                                                let e15 = {
-                                                  let l13 = *((ptr3 + 24) as *const i64);
-                                                  
-                                                  l13 as u64
-                                                };
-                                                V15::DuplicateId(e15)
-                                              }
-                                              1 => {
-                                                let e15 = {
-                                                  let l14 = *((ptr3 + 24) as *const i64);
-                                                  
-                                                  l14 as u64
-                                                };
-                                                V15::MissingOrder(e15)
-                                              }
-                                              n => {
-                                                debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                                V15::AlreadyIntialized
-                                              }
-                                            };
-                                            
-                                            v15
-                                          };
-                                          V16::MatchingEngineError(e16)
-                                        }
-                                      };
-                                      
-                                      v16
-                                    };
-                                    Err(e)
-                                  }
-                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                                }
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn get_balances(&self,) -> wit_bindgen::rt::vec::Vec::<AssetBalance>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(4))]
-                                struct RetArea([u8; 8]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let ptr0 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[method]api.get-balances"]
-                                  fn wit_import(_: i32, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, ptr0);
-                                let l1 = *((ptr0 + 0) as *const i32);
-                                let l2 = *((ptr0 + 4) as *const i32);
-                                let base10 = l1;
-                                let len10 = l2;
-                                let mut result10 = Vec::with_capacity(len10 as usize);
-                                for i in 0..len10 {
-                                  let base = base10 + i * 40;
-                                  let e10 = {
-                                    let l3 = *((base + 0) as *const i64);
-                                    let l4 = *((base + 8) as *const i32);
-                                    let l5 = *((base + 12) as *const i32);
-                                    let len6 = l5 as usize;
-                                    let bytes6 = Vec::from_raw_parts(l4 as *mut _, len6, len6);
-                                    let l7 = i32::from(*((base + 16) as *const u8));
-                                    let l8 = *((base + 24) as *const i64);
-                                    let l9 = *((base + 32) as *const i64);
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i32, _: i32, _: i32, _: i32, _: i64, _: i32, _: i32, _: i64, _: i32, ){ unreachable!() }
+                              wit_import(ptr0, len0, ptr1, len1, wit_bindgen::rt::as_i64(amount), ptr2, len2, wit_bindgen::rt::as_i64(block_height), ptr3);
+                              let l4 = i32::from(*((ptr3 + 0) as *const u8));
+                              match l4 {
+                                0 => {
+                                  let e = {
+                                    let l5 = *((ptr3 + 8) as *const i64);
+                                    let l6 = *((ptr3 + 16) as *const i32);
+                                    let l7 = *((ptr3 + 20) as *const i32);
+                                    let len8 = l7 as usize;
+                                    let bytes8 = Vec::from_raw_parts(l6 as *mut _, len8, len8);
+                                    let l9 = i32::from(*((ptr3 + 24) as *const u8));
+                                    let l10 = *((ptr3 + 32) as *const i64);
+                                    let l11 = *((ptr3 + 40) as *const i64);
                                     
                                     super::super::super::sputnik::accountant::api::AssetBalance{
                                       asset: super::super::super::sputnik::registry::api::Asset{
-                                        id: l3 as u64,
-                                        name: wit_bindgen::rt::string_lift(bytes6),
-                                        decimals: l7 as u8,
+                                        id: l5 as u64,
+                                        name: wit_bindgen::rt::string_lift(bytes8),
+                                        decimals: l9 as u8,
                                       },
-                                      balance: l8 as u64,
-                                      available_balance: l9 as u64,
+                                      balance: l10 as u64,
+                                      available_balance: l11 as u64,
                                     }
                                   };
-                                  result10.push(e10);
+                                  Ok(e)
                                 }
-                                wit_bindgen::rt::dealloc(base10, (len10 as usize) * 40, 8);
-                                result10
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn place_order(&self,order: Order,) -> Result<OrderStatus,Error>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(8))]
-                                struct RetArea([u8; 32]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let super::super::super::sputnik::accountant::api::Order{ id:id0, spot_pair:spot_pair0, timestamp:timestamp0, side:side0, price:price0, size:size0, } = order;
-                                let ptr1 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[method]api.place-order"]
-                                  fn wit_import(_: i32, _: i64, _: i64, _: i64, _: i32, _: i64, _: i64, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i64, _: i64, _: i32, _: i64, _: i64, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(id0), wit_bindgen::rt::as_i64(spot_pair0), wit_bindgen::rt::as_i64(timestamp0), side0.clone() as i32, wit_bindgen::rt::as_i64(price0), wit_bindgen::rt::as_i64(size0), ptr1);
-                                let l2 = i32::from(*((ptr1 + 0) as *const u8));
-                                match l2 {
-                                  0 => {
-                                    let e = {
-                                      let l3 = *((ptr1 + 8) as *const i64);
-                                      
-                                      super::super::super::sputnik::accountant::api::OrderStatus{
-                                        id: l3 as u64,
+                                1 => {
+                                  let e = {
+                                    let l12 = i32::from(*((ptr3 + 8) as *const u8));
+                                    let v37 = match l12 {
+                                      0 => {
+                                        let e37 = {
+                                          let l13 = *((ptr3 + 16) as *const i64);
+                                          
+                                          l13 as u64
+                                        };
+                                        Error::WrongBlock(e37)
+                                      }
+                                      1 => {
+                                        let e37 = {
+                                          let l14 = *((ptr3 + 16) as *const i32);
+                                          let l15 = *((ptr3 + 20) as *const i32);
+                                          let len16 = l15 as usize;
+                                          let bytes16 = Vec::from_raw_parts(l14 as *mut _, len16, len16);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes16)
+                                        };
+                                        Error::TxSeen(e37)
+                                      }
+                                      2 => {
+                                        let e37 = {
+                                          let l17 = i32::from(*((ptr3 + 16) as *const u8));
+                                          use super::super::super::sputnik::accountant::api::Error as V27;
+                                          let v27 = match l17 {
+                                            0 => {
+                                              let e27 = {
+                                                let l18 = *((ptr3 + 24) as *const i64);
+                                                
+                                                l18 as u64
+                                              };
+                                              V27::DuplicateId(e27)
+                                            }
+                                            1 => {
+                                              let e27 = {
+                                                let l19 = *((ptr3 + 24) as *const i64);
+                                                
+                                                l19 as u64
+                                              };
+                                              V27::InsufficientFunds(e27)
+                                            }
+                                            2 => {
+                                              let e27 = {
+                                                let l20 = *((ptr3 + 24) as *const i64);
+                                                
+                                                l20 as u64
+                                              };
+                                              V27::AlreadyInitialized(e27)
+                                            }
+                                            3 => {
+                                              V27::NotInitialized
+                                            }
+                                            4 => {
+                                              let e27 = {
+                                                let l21 = *((ptr3 + 24) as *const i64);
+                                                
+                                                l21 as u64
+                                              };
+                                              V27::InvalidAsset(e27)
+                                            }
+                                            5 => {
+                                              let e27 = {
+                                                let l22 = *((ptr3 + 24) as *const i64);
+                                                
+                                                l22 as u64
+                                              };
+                                              V27::InvalidSpotPair(e27)
+                                            }
+                                            n => {
+                                              debug_assert_eq!(n, 6, "invalid enum discriminant");
+                                              let e27 = {
+                                                let l23 = i32::from(*((ptr3 + 24) as *const u8));
+                                                use super::super::super::sputnik::matching_engine::api::Error as V26;
+                                                let v26 = match l23 {
+                                                  0 => {
+                                                    let e26 = {
+                                                      let l24 = *((ptr3 + 32) as *const i64);
+                                                      
+                                                      l24 as u64
+                                                    };
+                                                    V26::DuplicateId(e26)
+                                                  }
+                                                  1 => {
+                                                    let e26 = {
+                                                      let l25 = *((ptr3 + 32) as *const i64);
+                                                      
+                                                      l25 as u64
+                                                    };
+                                                    V26::MissingOrder(e26)
+                                                  }
+                                                  n => {
+                                                    debug_assert_eq!(n, 2, "invalid enum discriminant");
+                                                    V26::AlreadyIntialized
+                                                  }
+                                                };
+                                                
+                                                v26
+                                              };
+                                              V27::MatchingEngineError(e27)
+                                            }
+                                          };
+                                          
+                                          v27
+                                        };
+                                        Error::AccountantError(e37)
+                                      }
+                                      3 => {
+                                        let e37 = {
+                                          let l28 = *((ptr3 + 16) as *const i32);
+                                          let l29 = *((ptr3 + 20) as *const i32);
+                                          let len30 = l29 as usize;
+                                          let bytes30 = Vec::from_raw_parts(l28 as *mut _, len30, len30);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes30)
+                                        };
+                                        Error::UnknownAddress(e37)
+                                      }
+                                      4 => {
+                                        let e37 = {
+                                          let l31 = *((ptr3 + 16) as *const i32);
+                                          let l32 = *((ptr3 + 20) as *const i32);
+                                          let len33 = l32 as usize;
+                                          let bytes33 = Vec::from_raw_parts(l31 as *mut _, len33, len33);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes33)
+                                        };
+                                        Error::InvalidAddress(e37)
+                                      }
+                                      n => {
+                                        debug_assert_eq!(n, 5, "invalid enum discriminant");
+                                        let e37 = {
+                                          let l34 = *((ptr3 + 16) as *const i32);
+                                          let l35 = *((ptr3 + 20) as *const i32);
+                                          let len36 = l35 as usize;
+                                          let bytes36 = Vec::from_raw_parts(l34 as *mut _, len36, len36);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes36)
+                                        };
+                                        Error::TokenExists(e37)
                                       }
                                     };
-                                    Ok(e)
-                                  }
-                                  1 => {
-                                    let e = {
-                                      let l4 = i32::from(*((ptr1 + 8) as *const u8));
-                                      use super::super::super::sputnik::accountant::api::Error as V14;
-                                      let v14 = match l4 {
-                                        0 => {
-                                          let e14 = {
-                                            let l5 = *((ptr1 + 16) as *const i64);
-                                            
-                                            l5 as u64
-                                          };
-                                          V14::DuplicateId(e14)
-                                        }
-                                        1 => {
-                                          let e14 = {
-                                            let l6 = *((ptr1 + 16) as *const i64);
-                                            
-                                            l6 as u64
-                                          };
-                                          V14::InsufficientFunds(e14)
-                                        }
-                                        2 => {
-                                          let e14 = {
-                                            let l7 = *((ptr1 + 16) as *const i64);
-                                            
-                                            l7 as u64
-                                          };
-                                          V14::AlreadyInitialized(e14)
-                                        }
-                                        3 => {
-                                          V14::NotInitialized
-                                        }
-                                        4 => {
-                                          let e14 = {
-                                            let l8 = *((ptr1 + 16) as *const i64);
-                                            
-                                            l8 as u64
-                                          };
-                                          V14::InvalidAsset(e14)
-                                        }
-                                        5 => {
-                                          let e14 = {
-                                            let l9 = *((ptr1 + 16) as *const i64);
-                                            
-                                            l9 as u64
-                                          };
-                                          V14::InvalidSpotPair(e14)
-                                        }
-                                        n => {
-                                          debug_assert_eq!(n, 6, "invalid enum discriminant");
-                                          let e14 = {
-                                            let l10 = i32::from(*((ptr1 + 16) as *const u8));
-                                            use super::super::super::sputnik::matching_engine::api::Error as V13;
-                                            let v13 = match l10 {
-                                              0 => {
-                                                let e13 = {
-                                                  let l11 = *((ptr1 + 24) as *const i64);
-                                                  
-                                                  l11 as u64
-                                                };
-                                                V13::DuplicateId(e13)
-                                              }
-                                              1 => {
-                                                let e13 = {
-                                                  let l12 = *((ptr1 + 24) as *const i64);
-                                                  
-                                                  l12 as u64
-                                                };
-                                                V13::MissingOrder(e13)
-                                              }
-                                              n => {
-                                                debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                                V13::AlreadyIntialized
-                                              }
-                                            };
-                                            
-                                            v13
-                                          };
-                                          V14::MatchingEngineError(e14)
-                                        }
-                                      };
-                                      
-                                      v14
-                                    };
-                                    Err(e)
-                                  }
-                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                                }
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn deposit(&self,asset: u64,amount: u64,) -> Result<AssetBalance,Error>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(8))]
-                                struct RetArea([u8; 48]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let ptr0 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[method]api.deposit"]
-                                  fn wit_import(_: i32, _: i64, _: i64, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i64, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(asset), wit_bindgen::rt::as_i64(amount), ptr0);
-                                let l1 = i32::from(*((ptr0 + 0) as *const u8));
-                                match l1 {
-                                  0 => {
-                                    let e = {
-                                      let l2 = *((ptr0 + 8) as *const i64);
-                                      let l3 = *((ptr0 + 16) as *const i32);
-                                      let l4 = *((ptr0 + 20) as *const i32);
-                                      let len5 = l4 as usize;
-                                      let bytes5 = Vec::from_raw_parts(l3 as *mut _, len5, len5);
-                                      let l6 = i32::from(*((ptr0 + 24) as *const u8));
-                                      let l7 = *((ptr0 + 32) as *const i64);
-                                      let l8 = *((ptr0 + 40) as *const i64);
-                                      
-                                      super::super::super::sputnik::accountant::api::AssetBalance{
-                                        asset: super::super::super::sputnik::registry::api::Asset{
-                                          id: l2 as u64,
-                                          name: wit_bindgen::rt::string_lift(bytes5),
-                                          decimals: l6 as u8,
-                                        },
-                                        balance: l7 as u64,
-                                        available_balance: l8 as u64,
-                                      }
-                                    };
-                                    Ok(e)
-                                  }
-                                  1 => {
-                                    let e = {
-                                      let l9 = i32::from(*((ptr0 + 8) as *const u8));
-                                      use super::super::super::sputnik::accountant::api::Error as V19;
-                                      let v19 = match l9 {
-                                        0 => {
-                                          let e19 = {
-                                            let l10 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l10 as u64
-                                          };
-                                          V19::DuplicateId(e19)
-                                        }
-                                        1 => {
-                                          let e19 = {
-                                            let l11 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l11 as u64
-                                          };
-                                          V19::InsufficientFunds(e19)
-                                        }
-                                        2 => {
-                                          let e19 = {
-                                            let l12 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l12 as u64
-                                          };
-                                          V19::AlreadyInitialized(e19)
-                                        }
-                                        3 => {
-                                          V19::NotInitialized
-                                        }
-                                        4 => {
-                                          let e19 = {
-                                            let l13 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l13 as u64
-                                          };
-                                          V19::InvalidAsset(e19)
-                                        }
-                                        5 => {
-                                          let e19 = {
-                                            let l14 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l14 as u64
-                                          };
-                                          V19::InvalidSpotPair(e19)
-                                        }
-                                        n => {
-                                          debug_assert_eq!(n, 6, "invalid enum discriminant");
-                                          let e19 = {
-                                            let l15 = i32::from(*((ptr0 + 16) as *const u8));
-                                            use super::super::super::sputnik::matching_engine::api::Error as V18;
-                                            let v18 = match l15 {
-                                              0 => {
-                                                let e18 = {
-                                                  let l16 = *((ptr0 + 24) as *const i64);
-                                                  
-                                                  l16 as u64
-                                                };
-                                                V18::DuplicateId(e18)
-                                              }
-                                              1 => {
-                                                let e18 = {
-                                                  let l17 = *((ptr0 + 24) as *const i64);
-                                                  
-                                                  l17 as u64
-                                                };
-                                                V18::MissingOrder(e18)
-                                              }
-                                              n => {
-                                                debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                                V18::AlreadyIntialized
-                                              }
-                                            };
-                                            
-                                            v18
-                                          };
-                                          V19::MatchingEngineError(e19)
-                                        }
-                                      };
-                                      
-                                      v19
-                                    };
-                                    Err(e)
-                                  }
-                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                                }
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn withdraw(&self,asset: u64,amount: u64,) -> Result<AssetBalance,Error>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(8))]
-                                struct RetArea([u8; 48]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let ptr0 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[method]api.withdraw"]
-                                  fn wit_import(_: i32, _: i64, _: i64, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i64, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(asset), wit_bindgen::rt::as_i64(amount), ptr0);
-                                let l1 = i32::from(*((ptr0 + 0) as *const u8));
-                                match l1 {
-                                  0 => {
-                                    let e = {
-                                      let l2 = *((ptr0 + 8) as *const i64);
-                                      let l3 = *((ptr0 + 16) as *const i32);
-                                      let l4 = *((ptr0 + 20) as *const i32);
-                                      let len5 = l4 as usize;
-                                      let bytes5 = Vec::from_raw_parts(l3 as *mut _, len5, len5);
-                                      let l6 = i32::from(*((ptr0 + 24) as *const u8));
-                                      let l7 = *((ptr0 + 32) as *const i64);
-                                      let l8 = *((ptr0 + 40) as *const i64);
-                                      
-                                      super::super::super::sputnik::accountant::api::AssetBalance{
-                                        asset: super::super::super::sputnik::registry::api::Asset{
-                                          id: l2 as u64,
-                                          name: wit_bindgen::rt::string_lift(bytes5),
-                                          decimals: l6 as u8,
-                                        },
-                                        balance: l7 as u64,
-                                        available_balance: l8 as u64,
-                                      }
-                                    };
-                                    Ok(e)
-                                  }
-                                  1 => {
-                                    let e = {
-                                      let l9 = i32::from(*((ptr0 + 8) as *const u8));
-                                      use super::super::super::sputnik::accountant::api::Error as V19;
-                                      let v19 = match l9 {
-                                        0 => {
-                                          let e19 = {
-                                            let l10 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l10 as u64
-                                          };
-                                          V19::DuplicateId(e19)
-                                        }
-                                        1 => {
-                                          let e19 = {
-                                            let l11 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l11 as u64
-                                          };
-                                          V19::InsufficientFunds(e19)
-                                        }
-                                        2 => {
-                                          let e19 = {
-                                            let l12 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l12 as u64
-                                          };
-                                          V19::AlreadyInitialized(e19)
-                                        }
-                                        3 => {
-                                          V19::NotInitialized
-                                        }
-                                        4 => {
-                                          let e19 = {
-                                            let l13 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l13 as u64
-                                          };
-                                          V19::InvalidAsset(e19)
-                                        }
-                                        5 => {
-                                          let e19 = {
-                                            let l14 = *((ptr0 + 16) as *const i64);
-                                            
-                                            l14 as u64
-                                          };
-                                          V19::InvalidSpotPair(e19)
-                                        }
-                                        n => {
-                                          debug_assert_eq!(n, 6, "invalid enum discriminant");
-                                          let e19 = {
-                                            let l15 = i32::from(*((ptr0 + 16) as *const u8));
-                                            use super::super::super::sputnik::matching_engine::api::Error as V18;
-                                            let v18 = match l15 {
-                                              0 => {
-                                                let e18 = {
-                                                  let l16 = *((ptr0 + 24) as *const i64);
-                                                  
-                                                  l16 as u64
-                                                };
-                                                V18::DuplicateId(e18)
-                                              }
-                                              1 => {
-                                                let e18 = {
-                                                  let l17 = *((ptr0 + 24) as *const i64);
-                                                  
-                                                  l17 as u64
-                                                };
-                                                V18::MissingOrder(e18)
-                                              }
-                                              n => {
-                                                debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                                V18::AlreadyIntialized
-                                              }
-                                            };
-                                            
-                                            v18
-                                          };
-                                          V19::MatchingEngineError(e19)
-                                        }
-                                      };
-                                      
-                                      v19
-                                    };
-                                    Err(e)
-                                  }
-                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                                }
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn blocking_process_maker_fill(&self,fill: Fill,){
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                let super::super::super::sputnik::matching_engine::api::Fill{ price:price0, size:size0, taker_order_id:taker_order_id0, maker_order_id:maker_order_id0, timestamp:timestamp0, } = fill;
-                                
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[method]api.blocking-process-maker-fill"]
-                                  fn wit_import(_: i32, _: i64, _: i64, _: i64, _: i64, _: i64, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i64, _: i64, _: i64, _: i64, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(price0), wit_bindgen::rt::as_i64(size0), wit_bindgen::rt::as_i64(taker_order_id0), wit_bindgen::rt::as_i64(maker_order_id0), wit_bindgen::rt::as_i64(timestamp0));
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn process_maker_fill(&self,fill: Fill,){
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                let super::super::super::sputnik::matching_engine::api::Fill{ price:price0, size:size0, taker_order_id:taker_order_id0, maker_order_id:maker_order_id0, timestamp:timestamp0, } = fill;
-                                
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[method]api.process-maker-fill"]
-                                  fn wit_import(_: i32, _: i64, _: i64, _: i64, _: i64, _: i64, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i64, _: i64, _: i64, _: i64, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(price0), wit_bindgen::rt::as_i64(size0), wit_bindgen::rt::as_i64(taker_order_id0), wit_bindgen::rt::as_i64(maker_order_id0), wit_bindgen::rt::as_i64(timestamp0));
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn get_orders(&self,) -> wit_bindgen::rt::vec::Vec::<OrderAndStatus>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(4))]
-                                struct RetArea([u8; 8]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let ptr0 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:accountant-stub/stub-accountant")]
-                                extern "C" {
-                                  #[link_name = "[method]api.get-orders"]
-                                  fn wit_import(_: i32, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, ptr0);
-                                let l1 = *((ptr0 + 0) as *const i32);
-                                let l2 = *((ptr0 + 4) as *const i32);
-                                let base15 = l1;
-                                let len15 = l2;
-                                let mut result15 = Vec::with_capacity(len15 as usize);
-                                for i in 0..len15 {
-                                  let base = base15 + i * 80;
-                                  let e15 = {
-                                    let l3 = *((base + 0) as *const i64);
-                                    let l4 = *((base + 8) as *const i64);
-                                    let l5 = *((base + 16) as *const i64);
-                                    let l6 = i32::from(*((base + 24) as *const u8));
-                                    let l7 = *((base + 32) as *const i64);
-                                    let l8 = *((base + 40) as *const i64);
-                                    let l9 = *((base + 48) as *const i64);
-                                    let l10 = *((base + 56) as *const i32);
-                                    let l11 = *((base + 60) as *const i32);
-                                    let len12 = l11 as usize;
-                                    let l13 = i32::from(*((base + 64) as *const u8));
-                                    let l14 = *((base + 72) as *const i64);
                                     
-                                    super::super::super::sputnik::accountant::api::OrderAndStatus{
-                                      order: super::super::super::sputnik::accountant::api::Order{
-                                        id: l3 as u64,
-                                        spot_pair: l4 as u64,
-                                        timestamp: l5 as u64,
-                                        side: super::super::super::sputnik::matching_engine::api::Side::_lift(l6 as u8),
-                                        price: l7 as u64,
-                                        size: l8 as u64,
-                                      },
-                                      status: super::super::super::sputnik::matching_engine::api::OrderStatus{
-                                        id: l9 as u64,
-                                        fills: Vec::from_raw_parts(l10 as *mut _, len12, len12),
-                                        status: super::super::super::sputnik::matching_engine::api::Status::_lift(l13 as u8),
-                                        original_size: l14 as u64,
-                                      },
-                                    }
+                                    v37
                                   };
-                                  result15.push(e15);
+                                  Err(e)
                                 }
-                                wit_bindgen::rt::dealloc(base15, (len15 as usize) * 80, 8);
-                                result15
+                                _ => wit_bindgen::rt::invalid_enum_discriminant(),
                               }
                             }
                           }
-                          
-                        }
-                        
-                      }
-                      pub mod ids_stub {
-                        
-                        #[allow(clippy::all)]
-                        pub mod stub_ids {
-                          #[used]
-                          #[doc(hidden)]
-                          #[cfg(target_arch = "wasm32")]
-                          static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
-                          pub type Uri = super::super::super::golem::rpc::types::Uri;
-                          
-                          #[derive(Debug)]
-                          #[repr(transparent)]
-                          pub struct Api{
-                            handle: wit_bindgen::rt::Resource<Api>,
-                          }
-                          
-                          impl Api{
-                            #[doc(hidden)]
-                            pub unsafe fn from_handle(handle: u32) -> Self {
-                              Self {
-                                handle: wit_bindgen::rt::Resource::from_handle(handle),
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn complete_block(block: u64,) -> Result<(),Error>{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              
+                              #[repr(align(8))]
+                              struct RetArea([u8; 40]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let ptr0 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "sputnik:ethereummonitor/api")]
+                              extern "C" {
+                                #[link_name = "complete-block"]
+                                fn wit_import(_: i64, _: i32, );
                               }
-                            }
-                            
-                            #[doc(hidden)]
-                            pub fn into_handle(self) -> u32 {
-                              wit_bindgen::rt::Resource::into_handle(self.handle)
-                            }
-                            
-                            #[doc(hidden)]
-                            pub fn handle(&self) -> u32 {
-                              wit_bindgen::rt::Resource::handle(&self.handle)
-                            }
-                          }
-                          
-                          
-                          unsafe impl wit_bindgen::rt::WasmResource for Api{
-                            #[inline]
-                            unsafe fn drop(_handle: u32) {
+                              
                               #[cfg(not(target_arch = "wasm32"))]
-                              unreachable!();
+                              fn wit_import(_: i64, _: i32, ){ unreachable!() }
+                              wit_import(wit_bindgen::rt::as_i64(block), ptr0);
+                              let l1 = i32::from(*((ptr0 + 0) as *const u8));
+                              match l1 {
+                                0 => {
+                                  let e = ();
+                                  Ok(e)
+                                }
+                                1 => {
+                                  let e = {
+                                    let l2 = i32::from(*((ptr0 + 8) as *const u8));
+                                    let v27 = match l2 {
+                                      0 => {
+                                        let e27 = {
+                                          let l3 = *((ptr0 + 16) as *const i64);
+                                          
+                                          l3 as u64
+                                        };
+                                        Error::WrongBlock(e27)
+                                      }
+                                      1 => {
+                                        let e27 = {
+                                          let l4 = *((ptr0 + 16) as *const i32);
+                                          let l5 = *((ptr0 + 20) as *const i32);
+                                          let len6 = l5 as usize;
+                                          let bytes6 = Vec::from_raw_parts(l4 as *mut _, len6, len6);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes6)
+                                        };
+                                        Error::TxSeen(e27)
+                                      }
+                                      2 => {
+                                        let e27 = {
+                                          let l7 = i32::from(*((ptr0 + 16) as *const u8));
+                                          use super::super::super::sputnik::accountant::api::Error as V17;
+                                          let v17 = match l7 {
+                                            0 => {
+                                              let e17 = {
+                                                let l8 = *((ptr0 + 24) as *const i64);
+                                                
+                                                l8 as u64
+                                              };
+                                              V17::DuplicateId(e17)
+                                            }
+                                            1 => {
+                                              let e17 = {
+                                                let l9 = *((ptr0 + 24) as *const i64);
+                                                
+                                                l9 as u64
+                                              };
+                                              V17::InsufficientFunds(e17)
+                                            }
+                                            2 => {
+                                              let e17 = {
+                                                let l10 = *((ptr0 + 24) as *const i64);
+                                                
+                                                l10 as u64
+                                              };
+                                              V17::AlreadyInitialized(e17)
+                                            }
+                                            3 => {
+                                              V17::NotInitialized
+                                            }
+                                            4 => {
+                                              let e17 = {
+                                                let l11 = *((ptr0 + 24) as *const i64);
+                                                
+                                                l11 as u64
+                                              };
+                                              V17::InvalidAsset(e17)
+                                            }
+                                            5 => {
+                                              let e17 = {
+                                                let l12 = *((ptr0 + 24) as *const i64);
+                                                
+                                                l12 as u64
+                                              };
+                                              V17::InvalidSpotPair(e17)
+                                            }
+                                            n => {
+                                              debug_assert_eq!(n, 6, "invalid enum discriminant");
+                                              let e17 = {
+                                                let l13 = i32::from(*((ptr0 + 24) as *const u8));
+                                                use super::super::super::sputnik::matching_engine::api::Error as V16;
+                                                let v16 = match l13 {
+                                                  0 => {
+                                                    let e16 = {
+                                                      let l14 = *((ptr0 + 32) as *const i64);
+                                                      
+                                                      l14 as u64
+                                                    };
+                                                    V16::DuplicateId(e16)
+                                                  }
+                                                  1 => {
+                                                    let e16 = {
+                                                      let l15 = *((ptr0 + 32) as *const i64);
+                                                      
+                                                      l15 as u64
+                                                    };
+                                                    V16::MissingOrder(e16)
+                                                  }
+                                                  n => {
+                                                    debug_assert_eq!(n, 2, "invalid enum discriminant");
+                                                    V16::AlreadyIntialized
+                                                  }
+                                                };
+                                                
+                                                v16
+                                              };
+                                              V17::MatchingEngineError(e17)
+                                            }
+                                          };
+                                          
+                                          v17
+                                        };
+                                        Error::AccountantError(e27)
+                                      }
+                                      3 => {
+                                        let e27 = {
+                                          let l18 = *((ptr0 + 16) as *const i32);
+                                          let l19 = *((ptr0 + 20) as *const i32);
+                                          let len20 = l19 as usize;
+                                          let bytes20 = Vec::from_raw_parts(l18 as *mut _, len20, len20);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes20)
+                                        };
+                                        Error::UnknownAddress(e27)
+                                      }
+                                      4 => {
+                                        let e27 = {
+                                          let l21 = *((ptr0 + 16) as *const i32);
+                                          let l22 = *((ptr0 + 20) as *const i32);
+                                          let len23 = l22 as usize;
+                                          let bytes23 = Vec::from_raw_parts(l21 as *mut _, len23, len23);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes23)
+                                        };
+                                        Error::InvalidAddress(e27)
+                                      }
+                                      n => {
+                                        debug_assert_eq!(n, 5, "invalid enum discriminant");
+                                        let e27 = {
+                                          let l24 = *((ptr0 + 16) as *const i32);
+                                          let l25 = *((ptr0 + 20) as *const i32);
+                                          let len26 = l25 as usize;
+                                          let bytes26 = Vec::from_raw_parts(l24 as *mut _, len26, len26);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes26)
+                                        };
+                                        Error::TokenExists(e27)
+                                      }
+                                    };
+                                    
+                                    v27
+                                  };
+                                  Err(e)
+                                }
+                                _ => wit_bindgen::rt::invalid_enum_discriminant(),
+                              }
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn block_height() -> u64{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
                               
                               #[cfg(target_arch = "wasm32")]
-                              {
-                                #[link(wasm_import_module = "sputnik:ids-stub/stub-ids")]
-                                extern "C" {
-                                  #[link_name = "[resource-drop]api"]
-                                  fn drop(_: u32);
-                                }
-                                
-                                drop(_handle);
+                              #[link(wasm_import_module = "sputnik:ethereummonitor/api")]
+                              extern "C" {
+                                #[link_name = "block-height"]
+                                fn wit_import() -> i64;
                               }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import() -> i64{ unreachable!() }
+                              let ret = wit_import();
+                              ret as u64
                             }
                           }
-                          
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn new(location: &Uri,) -> Self{
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn new_address_for_trader(trader: u64,) -> wit_bindgen::rt::string::String{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
                               
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                let super::super::super::golem::rpc::types::Uri{ value:value0, } = location;
-                                let vec1 = value0;
-                                let ptr1 = vec1.as_ptr() as i32;
-                                let len1 = vec1.len() as i32;
-                                
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:ids-stub/stub-ids")]
-                                extern "C" {
-                                  #[link_name = "[constructor]api"]
-                                  fn wit_import(_: i32, _: i32, ) -> i32;
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, ) -> i32{ unreachable!() }
-                                let ret = wit_import(ptr1, len1);
-                                Api::from_handle(ret as u32)
+                              #[repr(align(4))]
+                              struct RetArea([u8; 8]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let ptr0 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "sputnik:ethereummonitor/api")]
+                              extern "C" {
+                                #[link_name = "new-address-for-trader"]
+                                fn wit_import(_: i64, _: i32, );
                               }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i64, _: i32, ){ unreachable!() }
+                              wit_import(wit_bindgen::rt::as_i64(trader), ptr0);
+                              let l1 = *((ptr0 + 0) as *const i32);
+                              let l2 = *((ptr0 + 4) as *const i32);
+                              let len3 = l2 as usize;
+                              let bytes3 = Vec::from_raw_parts(l1 as *mut _, len3, len3);
+                              wit_bindgen::rt::string_lift(bytes3)
                             }
                           }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn get_new_id(&self,) -> u64{
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn add_token(address: &str,asset_id: u64,) -> Result<(),Error>{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
                               
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:ids-stub/stub-ids")]
-                                extern "C" {
-                                  #[link_name = "[method]api.get-new-id"]
-                                  fn wit_import(_: i32, ) -> i64;
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, ) -> i64{ unreachable!() }
-                                let ret = wit_import((self).handle() as i32);
-                                ret as u64
+                              #[repr(align(8))]
+                              struct RetArea([u8; 40]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let vec0 = address;
+                              let ptr0 = vec0.as_ptr() as i32;
+                              let len0 = vec0.len() as i32;
+                              let ptr1 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "sputnik:ethereummonitor/api")]
+                              extern "C" {
+                                #[link_name = "add-token"]
+                                fn wit_import(_: i32, _: i32, _: i64, _: i32, );
                               }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn get_new_ids(&self,qty: u8,) -> wit_bindgen::rt::vec::Vec::<u64>{
                               
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(4))]
-                                struct RetArea([u8; 8]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let ptr0 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:ids-stub/stub-ids")]
-                                extern "C" {
-                                  #[link_name = "[method]api.get-new-ids"]
-                                  fn wit_import(_: i32, _: i32, _: i32, );
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i32, _: i32, _: i64, _: i32, ){ unreachable!() }
+                              wit_import(ptr0, len0, wit_bindgen::rt::as_i64(asset_id), ptr1);
+                              let l2 = i32::from(*((ptr1 + 0) as *const u8));
+                              match l2 {
+                                0 => {
+                                  let e = ();
+                                  Ok(e)
                                 }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i32(qty), ptr0);
-                                let l1 = *((ptr0 + 0) as *const i32);
-                                let l2 = *((ptr0 + 4) as *const i32);
-                                let len3 = l2 as usize;
-                                Vec::from_raw_parts(l1 as *mut _, len3, len3)
+                                1 => {
+                                  let e = {
+                                    let l3 = i32::from(*((ptr1 + 8) as *const u8));
+                                    let v28 = match l3 {
+                                      0 => {
+                                        let e28 = {
+                                          let l4 = *((ptr1 + 16) as *const i64);
+                                          
+                                          l4 as u64
+                                        };
+                                        Error::WrongBlock(e28)
+                                      }
+                                      1 => {
+                                        let e28 = {
+                                          let l5 = *((ptr1 + 16) as *const i32);
+                                          let l6 = *((ptr1 + 20) as *const i32);
+                                          let len7 = l6 as usize;
+                                          let bytes7 = Vec::from_raw_parts(l5 as *mut _, len7, len7);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes7)
+                                        };
+                                        Error::TxSeen(e28)
+                                      }
+                                      2 => {
+                                        let e28 = {
+                                          let l8 = i32::from(*((ptr1 + 16) as *const u8));
+                                          use super::super::super::sputnik::accountant::api::Error as V18;
+                                          let v18 = match l8 {
+                                            0 => {
+                                              let e18 = {
+                                                let l9 = *((ptr1 + 24) as *const i64);
+                                                
+                                                l9 as u64
+                                              };
+                                              V18::DuplicateId(e18)
+                                            }
+                                            1 => {
+                                              let e18 = {
+                                                let l10 = *((ptr1 + 24) as *const i64);
+                                                
+                                                l10 as u64
+                                              };
+                                              V18::InsufficientFunds(e18)
+                                            }
+                                            2 => {
+                                              let e18 = {
+                                                let l11 = *((ptr1 + 24) as *const i64);
+                                                
+                                                l11 as u64
+                                              };
+                                              V18::AlreadyInitialized(e18)
+                                            }
+                                            3 => {
+                                              V18::NotInitialized
+                                            }
+                                            4 => {
+                                              let e18 = {
+                                                let l12 = *((ptr1 + 24) as *const i64);
+                                                
+                                                l12 as u64
+                                              };
+                                              V18::InvalidAsset(e18)
+                                            }
+                                            5 => {
+                                              let e18 = {
+                                                let l13 = *((ptr1 + 24) as *const i64);
+                                                
+                                                l13 as u64
+                                              };
+                                              V18::InvalidSpotPair(e18)
+                                            }
+                                            n => {
+                                              debug_assert_eq!(n, 6, "invalid enum discriminant");
+                                              let e18 = {
+                                                let l14 = i32::from(*((ptr1 + 24) as *const u8));
+                                                use super::super::super::sputnik::matching_engine::api::Error as V17;
+                                                let v17 = match l14 {
+                                                  0 => {
+                                                    let e17 = {
+                                                      let l15 = *((ptr1 + 32) as *const i64);
+                                                      
+                                                      l15 as u64
+                                                    };
+                                                    V17::DuplicateId(e17)
+                                                  }
+                                                  1 => {
+                                                    let e17 = {
+                                                      let l16 = *((ptr1 + 32) as *const i64);
+                                                      
+                                                      l16 as u64
+                                                    };
+                                                    V17::MissingOrder(e17)
+                                                  }
+                                                  n => {
+                                                    debug_assert_eq!(n, 2, "invalid enum discriminant");
+                                                    V17::AlreadyIntialized
+                                                  }
+                                                };
+                                                
+                                                v17
+                                              };
+                                              V18::MatchingEngineError(e18)
+                                            }
+                                          };
+                                          
+                                          v18
+                                        };
+                                        Error::AccountantError(e28)
+                                      }
+                                      3 => {
+                                        let e28 = {
+                                          let l19 = *((ptr1 + 16) as *const i32);
+                                          let l20 = *((ptr1 + 20) as *const i32);
+                                          let len21 = l20 as usize;
+                                          let bytes21 = Vec::from_raw_parts(l19 as *mut _, len21, len21);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes21)
+                                        };
+                                        Error::UnknownAddress(e28)
+                                      }
+                                      4 => {
+                                        let e28 = {
+                                          let l22 = *((ptr1 + 16) as *const i32);
+                                          let l23 = *((ptr1 + 20) as *const i32);
+                                          let len24 = l23 as usize;
+                                          let bytes24 = Vec::from_raw_parts(l22 as *mut _, len24, len24);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes24)
+                                        };
+                                        Error::InvalidAddress(e28)
+                                      }
+                                      n => {
+                                        debug_assert_eq!(n, 5, "invalid enum discriminant");
+                                        let e28 = {
+                                          let l25 = *((ptr1 + 16) as *const i32);
+                                          let l26 = *((ptr1 + 20) as *const i32);
+                                          let len27 = l26 as usize;
+                                          let bytes27 = Vec::from_raw_parts(l25 as *mut _, len27, len27);
+                                          
+                                          wit_bindgen::rt::string_lift(bytes27)
+                                        };
+                                        Error::TokenExists(e28)
+                                      }
+                                    };
+                                    
+                                    v28
+                                  };
+                                  Err(e)
+                                }
+                                _ => wit_bindgen::rt::invalid_enum_discriminant(),
                               }
                             }
                           }
@@ -3875,570 +3620,89 @@ pub mod golem {
                         }
                         
                       }
-                      pub mod registry_stub {
-                        
-                        #[allow(clippy::all)]
-                        pub mod stub_registry {
-                          #[used]
-                          #[doc(hidden)]
-                          #[cfg(target_arch = "wasm32")]
-                          static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
-                          pub type Uri = super::super::super::golem::rpc::types::Uri;
-                          pub type Error = super::super::super::sputnik::registry::api::Error;
-                          pub type Asset = super::super::super::sputnik::registry::api::Asset;
-                          pub type HydratedSpotPair = super::super::super::sputnik::registry::api::HydratedSpotPair;
-                          pub type SpotPair = super::super::super::sputnik::registry::api::SpotPair;
-                          pub type Trader = super::super::super::sputnik::registry::api::Trader;
-                          
-                          #[derive(Debug)]
-                          #[repr(transparent)]
-                          pub struct Api{
-                            handle: wit_bindgen::rt::Resource<Api>,
-                          }
-                          
-                          impl Api{
-                            #[doc(hidden)]
-                            pub unsafe fn from_handle(handle: u32) -> Self {
-                              Self {
-                                handle: wit_bindgen::rt::Resource::from_handle(handle),
-                              }
-                            }
-                            
-                            #[doc(hidden)]
-                            pub fn into_handle(self) -> u32 {
-                              wit_bindgen::rt::Resource::into_handle(self.handle)
-                            }
-                            
-                            #[doc(hidden)]
-                            pub fn handle(&self) -> u32 {
-                              wit_bindgen::rt::Resource::handle(&self.handle)
-                            }
-                          }
-                          
-                          
-                          unsafe impl wit_bindgen::rt::WasmResource for Api{
-                            #[inline]
-                            unsafe fn drop(_handle: u32) {
-                              #[cfg(not(target_arch = "wasm32"))]
-                              unreachable!();
-                              
-                              #[cfg(target_arch = "wasm32")]
-                              {
-                                #[link(wasm_import_module = "sputnik:registry-stub/stub-registry")]
-                                extern "C" {
-                                  #[link_name = "[resource-drop]api"]
-                                  fn drop(_: u32);
-                                }
-                                
-                                drop(_handle);
-                              }
-                            }
-                          }
-                          
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn new(location: &Uri,) -> Self{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                let super::super::super::golem::rpc::types::Uri{ value:value0, } = location;
-                                let vec1 = value0;
-                                let ptr1 = vec1.as_ptr() as i32;
-                                let len1 = vec1.len() as i32;
-                                
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:registry-stub/stub-registry")]
-                                extern "C" {
-                                  #[link_name = "[constructor]api"]
-                                  fn wit_import(_: i32, _: i32, ) -> i32;
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, ) -> i32{ unreachable!() }
-                                let ret = wit_import(ptr1, len1);
-                                Api::from_handle(ret as u32)
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn get_assets(&self,) -> wit_bindgen::rt::vec::Vec::<Asset>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(4))]
-                                struct RetArea([u8; 8]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let ptr0 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:registry-stub/stub-registry")]
-                                extern "C" {
-                                  #[link_name = "[method]api.get-assets"]
-                                  fn wit_import(_: i32, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, ptr0);
-                                let l1 = *((ptr0 + 0) as *const i32);
-                                let l2 = *((ptr0 + 4) as *const i32);
-                                let base8 = l1;
-                                let len8 = l2;
-                                let mut result8 = Vec::with_capacity(len8 as usize);
-                                for i in 0..len8 {
-                                  let base = base8 + i * 24;
-                                  let e8 = {
-                                    let l3 = *((base + 0) as *const i64);
-                                    let l4 = *((base + 8) as *const i32);
-                                    let l5 = *((base + 12) as *const i32);
-                                    let len6 = l5 as usize;
-                                    let bytes6 = Vec::from_raw_parts(l4 as *mut _, len6, len6);
-                                    let l7 = i32::from(*((base + 16) as *const u8));
-                                    
-                                    super::super::super::sputnik::registry::api::Asset{
-                                      id: l3 as u64,
-                                      name: wit_bindgen::rt::string_lift(bytes6),
-                                      decimals: l7 as u8,
-                                    }
-                                  };
-                                  result8.push(e8);
-                                }
-                                wit_bindgen::rt::dealloc(base8, (len8 as usize) * 24, 8);
-                                result8
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn get_spot_pairs(&self,) -> wit_bindgen::rt::vec::Vec::<HydratedSpotPair>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(4))]
-                                struct RetArea([u8; 8]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let ptr0 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:registry-stub/stub-registry")]
-                                extern "C" {
-                                  #[link_name = "[method]api.get-spot-pairs"]
-                                  fn wit_import(_: i32, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, ptr0);
-                                let l1 = *((ptr0 + 0) as *const i32);
-                                let l2 = *((ptr0 + 4) as *const i32);
-                                let base17 = l1;
-                                let len17 = l2;
-                                let mut result17 = Vec::with_capacity(len17 as usize);
-                                for i in 0..len17 {
-                                  let base = base17 + i * 64;
-                                  let e17 = {
-                                    let l3 = *((base + 0) as *const i64);
-                                    let l4 = *((base + 8) as *const i32);
-                                    let l5 = *((base + 12) as *const i32);
-                                    let len6 = l5 as usize;
-                                    let bytes6 = Vec::from_raw_parts(l4 as *mut _, len6, len6);
-                                    let l7 = *((base + 16) as *const i64);
-                                    let l8 = *((base + 24) as *const i32);
-                                    let l9 = *((base + 28) as *const i32);
-                                    let len10 = l9 as usize;
-                                    let bytes10 = Vec::from_raw_parts(l8 as *mut _, len10, len10);
-                                    let l11 = i32::from(*((base + 32) as *const u8));
-                                    let l12 = *((base + 40) as *const i64);
-                                    let l13 = *((base + 48) as *const i32);
-                                    let l14 = *((base + 52) as *const i32);
-                                    let len15 = l14 as usize;
-                                    let bytes15 = Vec::from_raw_parts(l13 as *mut _, len15, len15);
-                                    let l16 = i32::from(*((base + 56) as *const u8));
-                                    
-                                    super::super::super::sputnik::registry::api::HydratedSpotPair{
-                                      id: l3 as u64,
-                                      name: wit_bindgen::rt::string_lift(bytes6),
-                                      numerator: super::super::super::sputnik::registry::api::Asset{
-                                        id: l7 as u64,
-                                        name: wit_bindgen::rt::string_lift(bytes10),
-                                        decimals: l11 as u8,
-                                      },
-                                      denominator: super::super::super::sputnik::registry::api::Asset{
-                                        id: l12 as u64,
-                                        name: wit_bindgen::rt::string_lift(bytes15),
-                                        decimals: l16 as u8,
-                                      },
-                                    }
-                                  };
-                                  result17.push(e17);
-                                }
-                                wit_bindgen::rt::dealloc(base17, (len17 as usize) * 64, 8);
-                                result17
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn get_traders(&self,) -> wit_bindgen::rt::vec::Vec::<Trader>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(4))]
-                                struct RetArea([u8; 8]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let ptr0 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:registry-stub/stub-registry")]
-                                extern "C" {
-                                  #[link_name = "[method]api.get-traders"]
-                                  fn wit_import(_: i32, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, ptr0);
-                                let l1 = *((ptr0 + 0) as *const i32);
-                                let l2 = *((ptr0 + 4) as *const i32);
-                                let base7 = l1;
-                                let len7 = l2;
-                                let mut result7 = Vec::with_capacity(len7 as usize);
-                                for i in 0..len7 {
-                                  let base = base7 + i * 16;
-                                  let e7 = {
-                                    let l3 = *((base + 0) as *const i64);
-                                    let l4 = *((base + 8) as *const i32);
-                                    let l5 = *((base + 12) as *const i32);
-                                    let len6 = l5 as usize;
-                                    let bytes6 = Vec::from_raw_parts(l4 as *mut _, len6, len6);
-                                    
-                                    super::super::super::sputnik::registry::api::Trader{
-                                      id: l3 as u64,
-                                      name: wit_bindgen::rt::string_lift(bytes6),
-                                    }
-                                  };
-                                  result7.push(e7);
-                                }
-                                wit_bindgen::rt::dealloc(base7, (len7 as usize) * 16, 8);
-                                result7
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn add_asset(&self,asset: &Asset,) -> Result<Asset,Error>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(8))]
-                                struct RetArea([u8; 32]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let super::super::super::sputnik::registry::api::Asset{ id:id0, name:name0, decimals:decimals0, } = asset;
-                                let vec1 = name0;
-                                let ptr1 = vec1.as_ptr() as i32;
-                                let len1 = vec1.len() as i32;
-                                let ptr2 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:registry-stub/stub-registry")]
-                                extern "C" {
-                                  #[link_name = "[method]api.add-asset"]
-                                  fn wit_import(_: i32, _: i64, _: i32, _: i32, _: i32, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i32, _: i32, _: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(id0), ptr1, len1, wit_bindgen::rt::as_i32(decimals0), ptr2);
-                                let l3 = i32::from(*((ptr2 + 0) as *const u8));
-                                match l3 {
-                                  0 => {
-                                    let e = {
-                                      let l4 = *((ptr2 + 8) as *const i64);
-                                      let l5 = *((ptr2 + 16) as *const i32);
-                                      let l6 = *((ptr2 + 20) as *const i32);
-                                      let len7 = l6 as usize;
-                                      let bytes7 = Vec::from_raw_parts(l5 as *mut _, len7, len7);
-                                      let l8 = i32::from(*((ptr2 + 24) as *const u8));
-                                      
-                                      super::super::super::sputnik::registry::api::Asset{
-                                        id: l4 as u64,
-                                        name: wit_bindgen::rt::string_lift(bytes7),
-                                        decimals: l8 as u8,
-                                      }
-                                    };
-                                    Ok(e)
-                                  }
-                                  1 => {
-                                    let e = {
-                                      let l9 = i32::from(*((ptr2 + 8) as *const u8));
-                                      use super::super::super::sputnik::registry::api::Error as V12;
-                                      let v12 = match l9 {
-                                        0 => {
-                                          let e12 = {
-                                            let l10 = *((ptr2 + 16) as *const i64);
-                                            
-                                            l10 as u64
-                                          };
-                                          V12::DuplicateId(e12)
-                                        }
-                                        n => {
-                                          debug_assert_eq!(n, 1, "invalid enum discriminant");
-                                          let e12 = {
-                                            let l11 = *((ptr2 + 16) as *const i64);
-                                            
-                                            l11 as u64
-                                          };
-                                          V12::NoSuchAsset(e12)
-                                        }
-                                      };
-                                      
-                                      v12
-                                    };
-                                    Err(e)
-                                  }
-                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                                }
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn add_spot_pair(&self,pair: &SpotPair,) -> Result<HydratedSpotPair,Error>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(8))]
-                                struct RetArea([u8; 72]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let super::super::super::sputnik::registry::api::SpotPair{ id:id0, name:name0, numerator_id:numerator_id0, denominator_id:denominator_id0, } = pair;
-                                let vec1 = name0;
-                                let ptr1 = vec1.as_ptr() as i32;
-                                let len1 = vec1.len() as i32;
-                                let ptr2 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:registry-stub/stub-registry")]
-                                extern "C" {
-                                  #[link_name = "[method]api.add-spot-pair"]
-                                  fn wit_import(_: i32, _: i64, _: i32, _: i32, _: i64, _: i64, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i32, _: i32, _: i64, _: i64, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(id0), ptr1, len1, wit_bindgen::rt::as_i64(numerator_id0), wit_bindgen::rt::as_i64(denominator_id0), ptr2);
-                                let l3 = i32::from(*((ptr2 + 0) as *const u8));
-                                match l3 {
-                                  0 => {
-                                    let e = {
-                                      let l4 = *((ptr2 + 8) as *const i64);
-                                      let l5 = *((ptr2 + 16) as *const i32);
-                                      let l6 = *((ptr2 + 20) as *const i32);
-                                      let len7 = l6 as usize;
-                                      let bytes7 = Vec::from_raw_parts(l5 as *mut _, len7, len7);
-                                      let l8 = *((ptr2 + 24) as *const i64);
-                                      let l9 = *((ptr2 + 32) as *const i32);
-                                      let l10 = *((ptr2 + 36) as *const i32);
-                                      let len11 = l10 as usize;
-                                      let bytes11 = Vec::from_raw_parts(l9 as *mut _, len11, len11);
-                                      let l12 = i32::from(*((ptr2 + 40) as *const u8));
-                                      let l13 = *((ptr2 + 48) as *const i64);
-                                      let l14 = *((ptr2 + 56) as *const i32);
-                                      let l15 = *((ptr2 + 60) as *const i32);
-                                      let len16 = l15 as usize;
-                                      let bytes16 = Vec::from_raw_parts(l14 as *mut _, len16, len16);
-                                      let l17 = i32::from(*((ptr2 + 64) as *const u8));
-                                      
-                                      super::super::super::sputnik::registry::api::HydratedSpotPair{
-                                        id: l4 as u64,
-                                        name: wit_bindgen::rt::string_lift(bytes7),
-                                        numerator: super::super::super::sputnik::registry::api::Asset{
-                                          id: l8 as u64,
-                                          name: wit_bindgen::rt::string_lift(bytes11),
-                                          decimals: l12 as u8,
-                                        },
-                                        denominator: super::super::super::sputnik::registry::api::Asset{
-                                          id: l13 as u64,
-                                          name: wit_bindgen::rt::string_lift(bytes16),
-                                          decimals: l17 as u8,
-                                        },
-                                      }
-                                    };
-                                    Ok(e)
-                                  }
-                                  1 => {
-                                    let e = {
-                                      let l18 = i32::from(*((ptr2 + 8) as *const u8));
-                                      use super::super::super::sputnik::registry::api::Error as V21;
-                                      let v21 = match l18 {
-                                        0 => {
-                                          let e21 = {
-                                            let l19 = *((ptr2 + 16) as *const i64);
-                                            
-                                            l19 as u64
-                                          };
-                                          V21::DuplicateId(e21)
-                                        }
-                                        n => {
-                                          debug_assert_eq!(n, 1, "invalid enum discriminant");
-                                          let e21 = {
-                                            let l20 = *((ptr2 + 16) as *const i64);
-                                            
-                                            l20 as u64
-                                          };
-                                          V21::NoSuchAsset(e21)
-                                        }
-                                      };
-                                      
-                                      v21
-                                    };
-                                    Err(e)
-                                  }
-                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                                }
-                              }
-                            }
-                          }
-                          impl Api {
-                            #[allow(unused_unsafe, clippy::all)]
-                            pub fn add_trader(&self,trader: &Trader,) -> Result<Trader,Error>{
-                              
-                              #[allow(unused_imports)]
-                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                              unsafe {
-                                
-                                #[repr(align(8))]
-                                struct RetArea([u8; 24]);
-                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                                let super::super::super::sputnik::registry::api::Trader{ id:id0, name:name0, } = trader;
-                                let vec1 = name0;
-                                let ptr1 = vec1.as_ptr() as i32;
-                                let len1 = vec1.len() as i32;
-                                let ptr2 = ret_area.as_mut_ptr() as i32;
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(wasm_import_module = "sputnik:registry-stub/stub-registry")]
-                                extern "C" {
-                                  #[link_name = "[method]api.add-trader"]
-                                  fn wit_import(_: i32, _: i64, _: i32, _: i32, _: i32, );
-                                }
-                                
-                                #[cfg(not(target_arch = "wasm32"))]
-                                fn wit_import(_: i32, _: i64, _: i32, _: i32, _: i32, ){ unreachable!() }
-                                wit_import((self).handle() as i32, wit_bindgen::rt::as_i64(id0), ptr1, len1, ptr2);
-                                let l3 = i32::from(*((ptr2 + 0) as *const u8));
-                                match l3 {
-                                  0 => {
-                                    let e = {
-                                      let l4 = *((ptr2 + 8) as *const i64);
-                                      let l5 = *((ptr2 + 16) as *const i32);
-                                      let l6 = *((ptr2 + 20) as *const i32);
-                                      let len7 = l6 as usize;
-                                      let bytes7 = Vec::from_raw_parts(l5 as *mut _, len7, len7);
-                                      
-                                      super::super::super::sputnik::registry::api::Trader{
-                                        id: l4 as u64,
-                                        name: wit_bindgen::rt::string_lift(bytes7),
-                                      }
-                                    };
-                                    Ok(e)
-                                  }
-                                  1 => {
-                                    let e = {
-                                      let l8 = i32::from(*((ptr2 + 8) as *const u8));
-                                      use super::super::super::sputnik::registry::api::Error as V11;
-                                      let v11 = match l8 {
-                                        0 => {
-                                          let e11 = {
-                                            let l9 = *((ptr2 + 16) as *const i64);
-                                            
-                                            l9 as u64
-                                          };
-                                          V11::DuplicateId(e11)
-                                        }
-                                        n => {
-                                          debug_assert_eq!(n, 1, "invalid enum discriminant");
-                                          let e11 = {
-                                            let l10 = *((ptr2 + 16) as *const i64);
-                                            
-                                            l10 as u64
-                                          };
-                                          V11::NoSuchAsset(e11)
-                                        }
-                                      };
-                                      
-                                      v11
-                                    };
-                                    Err(e)
-                                  }
-                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
-                                }
-                              }
-                            }
-                          }
-                          
-                        }
-                        
-                      }
                     }
                     pub mod exports {
                       pub mod sputnik {
-                        pub mod traderapi {
+                        pub mod ethereummonitor_stub {
                           
                           #[allow(clippy::all)]
-                          pub mod api {
+                          pub mod stub_ethereummonitor {
                             #[used]
                             #[doc(hidden)]
                             #[cfg(target_arch = "wasm32")]
                             static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_section;
-                            pub type AssetBalance = super::super::super::super::sputnik::accountant::api::AssetBalance;
-                            pub type Side = super::super::super::super::sputnik::accountant::api::Side;
-                            pub type OrderAndStatus = super::super::super::super::sputnik::accountant::api::OrderAndStatus;
-                            pub type AccountantError = super::super::super::super::sputnik::accountant::api::Error;
-                            #[repr(C)]
-                            #[derive(Clone, Copy)]
-                            pub struct Order {
-                              pub spot_pair: u64,
-                              pub side: Side,
-                              pub price: u64,
-                              pub size: u64,
-                            }
-                            impl ::core::fmt::Debug for Order {
-                              fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                                f.debug_struct("Order").field("spot-pair", &self.spot_pair).field("side", &self.side).field("price", &self.price).field("size", &self.size).finish()
+                            pub type Uri = super::super::super::super::golem::rpc::types::Uri;
+                            pub type AssetBalance = super::super::super::super::sputnik::ethereummonitor::api::AssetBalance;
+                            pub type Error = super::super::super::super::sputnik::ethereummonitor::api::Error;
+                            
+                            pub use super::super::super::super::super::Api as Api;
+                            const _: () = {
+                              #[doc(hidden)]
+                              #[export_name = "sputnik:ethereummonitor-stub/stub-ethereummonitor#[dtor]api"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn dtor(rep: usize) {
+                                wit_bindgen::rt::Resource::<Api>::dtor(rep)
                               }
-                            }
-                            #[derive(Clone, Copy)]
-                            pub enum Error{
-                              InternalError(AccountantError),
-                            }
-                            impl ::core::fmt::Debug for Error {
-                              fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                                match self {
-                                  Error::InternalError(e) => {
-                                    f.debug_tuple("Error::InternalError").field(e).finish()
+                            };
+                            unsafe impl wit_bindgen::rt::RustResource for Api{
+                              unsafe fn new(_rep: usize) -> u32 {
+                                #[cfg(not(target_arch = "wasm32"))]
+                                unreachable!();
+                                
+                                #[cfg(target_arch = "wasm32")]
+                                {
+                                  #[link(wasm_import_module = "[export]sputnik:ethereummonitor-stub/stub-ethereummonitor")]
+                                  extern "C" {
+                                    #[link_name = "[resource-new]api"]
+                                    fn new(_: usize) -> u32;
                                   }
+                                  new(_rep)
+                                }
+                              }
+                              
+                              unsafe fn rep(_handle: u32) -> usize {
+                                #[cfg(not(target_arch = "wasm32"))]
+                                unreachable!();
+                                
+                                #[cfg(target_arch = "wasm32")]
+                                {
+                                  #[link(wasm_import_module = "[export]sputnik:ethereummonitor-stub/stub-ethereummonitor")]
+                                  extern "C" {
+                                    #[link_name = "[resource-rep]api"]
+                                    fn rep(_: u32) -> usize;
+                                  }
+                                  rep(_handle)
                                 }
                               }
                             }
-                            impl ::core::fmt::Display for Error {
-                              fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                                write!(f, "{:?}", self)
+                            pub type OwnApi = wit_bindgen::rt::Resource<Api>;
+                            
+                            
+                            unsafe impl wit_bindgen::rt::WasmResource for Api{
+                              #[inline]
+                              unsafe fn drop(_handle: u32) {
+                                #[cfg(not(target_arch = "wasm32"))]
+                                unreachable!();
+                                
+                                #[cfg(target_arch = "wasm32")]
+                                {
+                                  #[link(wasm_import_module = "[export]sputnik:ethereummonitor-stub/stub-ethereummonitor")]
+                                  extern "C" {
+                                    #[link_name = "[resource-drop]api"]
+                                    fn drop(_: u32);
+                                  }
+                                  
+                                  drop(_handle);
+                                }
                               }
                             }
                             
-                            impl std::error::Error for Error {}
                             const _: () = {
                               
                               #[doc(hidden)]
-                              #[export_name = "sputnik:traderapi/api#get-balances"]
+                              #[export_name = "sputnik:ethereummonitor-stub/stub-ethereummonitor#[constructor]api"]
                               #[allow(non_snake_case)]
-                              unsafe extern "C" fn __export_get_balances(arg0: i64,) -> i32 {
+                              unsafe extern "C" fn __export_constructor_api(arg0: i32,arg1: i32,) -> i32 {
                                 #[allow(unused_imports)]
                                 use wit_bindgen::rt::{alloc, vec::Vec, string::String};
                                 
@@ -4456,71 +3720,209 @@ pub mod golem {
                                 #[cfg(target_arch="wasm32")]
                                 wit_bindgen::rt::run_ctors_once();
                                 
-                                let result0 = <_GuestImpl as Guest>::get_balances(arg0 as u64);
-                                let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
-                                let vec5 = result0;
-                                let len5 = vec5.len() as i32;
-                                let layout5 = alloc::Layout::from_size_align_unchecked(vec5.len() * 40, 8);
-                                let result5 = if layout5.size() != 0
-                                {
-                                  let ptr = alloc::alloc(layout5);
-                                  if ptr.is_null()
-                                  {
-                                    alloc::handle_alloc_error(layout5);
-                                  }
-                                  ptr
-                                }else {{
-                                  ::core::ptr::null_mut()
-                                }};
-                                for (i, e) in vec5.into_iter().enumerate() {
-                                  let base = result5 as i32 + (i as i32) * 40;
-                                  {
-                                    let super::super::super::super::sputnik::accountant::api::AssetBalance{ asset:asset2, balance:balance2, available_balance:available_balance2, } = e;
-                                    let super::super::super::super::sputnik::registry::api::Asset{ id:id3, name:name3, decimals:decimals3, } = asset2;
-                                    *((base + 0) as *mut i64) = wit_bindgen::rt::as_i64(id3);
-                                    let vec4 = (name3.into_bytes()).into_boxed_slice();
-                                    let ptr4 = vec4.as_ptr() as i32;
-                                    let len4 = vec4.len() as i32;
-                                    ::core::mem::forget(vec4);
-                                    *((base + 12) as *mut i32) = len4;
-                                    *((base + 8) as *mut i32) = ptr4;
-                                    *((base + 16) as *mut u8) = (wit_bindgen::rt::as_i32(decimals3)) as u8;
-                                    *((base + 24) as *mut i64) = wit_bindgen::rt::as_i64(balance2);
-                                    *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(available_balance2);
-                                  }
-                                }
-                                *((ptr1 + 4) as *mut i32) = len5;
-                                *((ptr1 + 0) as *mut i32) = result5 as i32;
-                                ptr1
+                                let len0 = arg1 as usize;
+                                let bytes0 = Vec::from_raw_parts(arg0 as *mut _, len0, len0);
+                                let result1 = OwnApi::new(<_ApiImpl as GuestApi>::new(super::super::super::super::golem::rpc::types::Uri{
+                                  value: wit_bindgen::rt::string_lift(bytes0),
+                                }));
+                                wit_bindgen::rt::Resource::into_handle(result1) as i32
+                              }
+                            };
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.process-deposit"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_method_api_process_deposit(arg0: i32,arg1: i32,arg2: i32,arg3: i32,arg4: i32,arg5: i64,arg6: i32,arg7: i32,arg8: i64,) -> i32 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let len0 = arg2 as usize;
+                                let bytes0 = Vec::from_raw_parts(arg1 as *mut _, len0, len0);
+                                let len1 = arg4 as usize;
+                                let bytes1 = Vec::from_raw_parts(arg3 as *mut _, len1, len1);
+                                let len2 = arg7 as usize;
+                                let bytes2 = Vec::from_raw_parts(arg6 as *mut _, len2, len2);
+                                let result3 = <_ApiImpl as GuestApi>::process_deposit(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), wit_bindgen::rt::string_lift(bytes0), wit_bindgen::rt::string_lift(bytes1), arg5 as u64, wit_bindgen::rt::string_lift(bytes2), arg8 as u64);
+                                let ptr4 = _RET_AREA.0.as_mut_ptr() as i32;
+                                match result3 {
+                                  Ok(e) => { {
+                                    *((ptr4 + 0) as *mut u8) = (0i32) as u8;
+                                    let super::super::super::super::sputnik::accountant::api::AssetBalance{ asset:asset5, balance:balance5, available_balance:available_balance5, } = e;
+                                    let super::super::super::super::sputnik::registry::api::Asset{ id:id6, name:name6, decimals:decimals6, } = asset5;
+                                    *((ptr4 + 8) as *mut i64) = wit_bindgen::rt::as_i64(id6);
+                                    let vec7 = (name6.into_bytes()).into_boxed_slice();
+                                    let ptr7 = vec7.as_ptr() as i32;
+                                    let len7 = vec7.len() as i32;
+                                    ::core::mem::forget(vec7);
+                                    *((ptr4 + 20) as *mut i32) = len7;
+                                    *((ptr4 + 16) as *mut i32) = ptr7;
+                                    *((ptr4 + 24) as *mut u8) = (wit_bindgen::rt::as_i32(decimals6)) as u8;
+                                    *((ptr4 + 32) as *mut i64) = wit_bindgen::rt::as_i64(balance5);
+                                    *((ptr4 + 40) as *mut i64) = wit_bindgen::rt::as_i64(available_balance5);
+                                  } },
+                                  Err(e) => { {
+                                    *((ptr4 + 0) as *mut u8) = (1i32) as u8;
+                                    use super::super::super::super::sputnik::ethereummonitor::api::Error as V14;
+                                    match e {
+                                      V14::WrongBlock(e) => {
+                                        *((ptr4 + 8) as *mut u8) = (0i32) as u8;
+                                        *((ptr4 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                      },
+                                      V14::TxSeen(e) => {
+                                        *((ptr4 + 8) as *mut u8) = (1i32) as u8;
+                                        let vec8 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr8 = vec8.as_ptr() as i32;
+                                        let len8 = vec8.len() as i32;
+                                        ::core::mem::forget(vec8);
+                                        *((ptr4 + 20) as *mut i32) = len8;
+                                        *((ptr4 + 16) as *mut i32) = ptr8;
+                                      },
+                                      V14::AccountantError(e) => {
+                                        *((ptr4 + 8) as *mut u8) = (2i32) as u8;
+                                        use super::super::super::super::sputnik::accountant::api::Error as V10;
+                                        match e {
+                                          V10::DuplicateId(e) => {
+                                            *((ptr4 + 16) as *mut u8) = (0i32) as u8;
+                                            *((ptr4 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V10::InsufficientFunds(e) => {
+                                            *((ptr4 + 16) as *mut u8) = (1i32) as u8;
+                                            *((ptr4 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V10::AlreadyInitialized(e) => {
+                                            *((ptr4 + 16) as *mut u8) = (2i32) as u8;
+                                            *((ptr4 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V10::NotInitialized=> {
+                                            {
+                                              *((ptr4 + 16) as *mut u8) = (3i32) as u8;
+                                            }
+                                          }
+                                          V10::InvalidAsset(e) => {
+                                            *((ptr4 + 16) as *mut u8) = (4i32) as u8;
+                                            *((ptr4 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V10::InvalidSpotPair(e) => {
+                                            *((ptr4 + 16) as *mut u8) = (5i32) as u8;
+                                            *((ptr4 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V10::MatchingEngineError(e) => {
+                                            *((ptr4 + 16) as *mut u8) = (6i32) as u8;
+                                            use super::super::super::super::sputnik::matching_engine::api::Error as V9;
+                                            match e {
+                                              V9::DuplicateId(e) => {
+                                                *((ptr4 + 24) as *mut u8) = (0i32) as u8;
+                                                *((ptr4 + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                              },
+                                              V9::MissingOrder(e) => {
+                                                *((ptr4 + 24) as *mut u8) = (1i32) as u8;
+                                                *((ptr4 + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                              },
+                                              V9::AlreadyIntialized=> {
+                                                {
+                                                  *((ptr4 + 24) as *mut u8) = (2i32) as u8;
+                                                }
+                                              }
+                                            }
+                                          },
+                                        }
+                                      },
+                                      V14::UnknownAddress(e) => {
+                                        *((ptr4 + 8) as *mut u8) = (3i32) as u8;
+                                        let vec11 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr11 = vec11.as_ptr() as i32;
+                                        let len11 = vec11.len() as i32;
+                                        ::core::mem::forget(vec11);
+                                        *((ptr4 + 20) as *mut i32) = len11;
+                                        *((ptr4 + 16) as *mut i32) = ptr11;
+                                      },
+                                      V14::InvalidAddress(e) => {
+                                        *((ptr4 + 8) as *mut u8) = (4i32) as u8;
+                                        let vec12 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr12 = vec12.as_ptr() as i32;
+                                        let len12 = vec12.len() as i32;
+                                        ::core::mem::forget(vec12);
+                                        *((ptr4 + 20) as *mut i32) = len12;
+                                        *((ptr4 + 16) as *mut i32) = ptr12;
+                                      },
+                                      V14::TokenExists(e) => {
+                                        *((ptr4 + 8) as *mut u8) = (5i32) as u8;
+                                        let vec13 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr13 = vec13.as_ptr() as i32;
+                                        let len13 = vec13.len() as i32;
+                                        ::core::mem::forget(vec13);
+                                        *((ptr4 + 20) as *mut i32) = len13;
+                                        *((ptr4 + 16) as *mut i32) = ptr13;
+                                      },
+                                    }
+                                  } },
+                                };ptr4
                               }
                               
                               const _: () = {
                                 #[doc(hidden)]
-                                #[export_name = "cabi_post_sputnik:traderapi/api#get-balances"]
+                                #[export_name = "cabi_post_sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.process-deposit"]
                                 #[allow(non_snake_case)]
-                                unsafe extern "C" fn __post_return_get_balances(arg0: i32,) {
-                                  let l2 = *((arg0 + 0) as *const i32);
-                                  let l3 = *((arg0 + 4) as *const i32);
-                                  let base4 = l2;
-                                  let len4 = l3;
-                                  for i in 0..len4 {
-                                    let base = base4 + i *40;
-                                    {
-                                      let l0 = *((base + 8) as *const i32);
-                                      let l1 = *((base + 12) as *const i32);
-                                      wit_bindgen::rt::dealloc(l0, (l1) as usize, 1);
-                                    }
+                                unsafe extern "C" fn __post_return_method_api_process_deposit(arg0: i32,) {
+                                  let l0 = i32::from(*((arg0 + 0) as *const u8));
+                                  match l0 {
+                                    0 => {
+                                      let l1 = *((arg0 + 16) as *const i32);
+                                      let l2 = *((arg0 + 20) as *const i32);
+                                      wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
+                                    },
+                                    _ => {
+                                      let l3 = i32::from(*((arg0 + 8) as *const u8));
+                                      match l3 {
+                                        0 => (),
+                                        1 => {
+                                          let l4 = *((arg0 + 16) as *const i32);
+                                          let l5 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l4, (l5) as usize, 1);
+                                        },
+                                        2 => (),
+                                        3 => {
+                                          let l6 = *((arg0 + 16) as *const i32);
+                                          let l7 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l6, (l7) as usize, 1);
+                                        },
+                                        4 => {
+                                          let l8 = *((arg0 + 16) as *const i32);
+                                          let l9 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l8, (l9) as usize, 1);
+                                        },
+                                        _ => {
+                                          let l10 = *((arg0 + 16) as *const i32);
+                                          let l11 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l10, (l11) as usize, 1);
+                                        },
+                                      }
+                                    },
                                   }
-                                  wit_bindgen::rt::dealloc(base4, (len4 as usize) * 40, 8);
                                 }
                               };
                             };
                             const _: () = {
                               
                               #[doc(hidden)]
-                              #[export_name = "sputnik:traderapi/api#get-orders"]
+                              #[export_name = "sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.complete-block"]
                               #[allow(non_snake_case)]
-                              unsafe extern "C" fn __export_get_orders(arg0: i64,) -> i32 {
+                              unsafe extern "C" fn __export_method_api_complete_block(arg0: i32,arg1: i64,) -> i32 {
                                 #[allow(unused_imports)]
                                 use wit_bindgen::rt::{alloc, vec::Vec, string::String};
                                 
@@ -4538,153 +3940,71 @@ pub mod golem {
                                 #[cfg(target_arch="wasm32")]
                                 wit_bindgen::rt::run_ctors_once();
                                 
-                                let result0 = <_GuestImpl as Guest>::get_orders(arg0 as u64);
-                                let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
-                                let vec6 = result0;
-                                let len6 = vec6.len() as i32;
-                                let layout6 = alloc::Layout::from_size_align_unchecked(vec6.len() * 80, 8);
-                                let result6 = if layout6.size() != 0
-                                {
-                                  let ptr = alloc::alloc(layout6);
-                                  if ptr.is_null()
-                                  {
-                                    alloc::handle_alloc_error(layout6);
-                                  }
-                                  ptr
-                                }else {{
-                                  ::core::ptr::null_mut()
-                                }};
-                                for (i, e) in vec6.into_iter().enumerate() {
-                                  let base = result6 as i32 + (i as i32) * 80;
-                                  {
-                                    let super::super::super::super::sputnik::accountant::api::OrderAndStatus{ order:order2, status:status2, } = e;
-                                    let super::super::super::super::sputnik::accountant::api::Order{ id:id3, spot_pair:spot_pair3, timestamp:timestamp3, side:side3, price:price3, size:size3, } = order2;
-                                    *((base + 0) as *mut i64) = wit_bindgen::rt::as_i64(id3);
-                                    *((base + 8) as *mut i64) = wit_bindgen::rt::as_i64(spot_pair3);
-                                    *((base + 16) as *mut i64) = wit_bindgen::rt::as_i64(timestamp3);
-                                    *((base + 24) as *mut u8) = (side3.clone() as i32) as u8;
-                                    *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(price3);
-                                    *((base + 40) as *mut i64) = wit_bindgen::rt::as_i64(size3);
-                                    let super::super::super::super::sputnik::matching_engine::api::OrderStatus{ id:id4, fills:fills4, status:status4, original_size:original_size4, } = status2;
-                                    *((base + 48) as *mut i64) = wit_bindgen::rt::as_i64(id4);
-                                    let vec5 = (fills4).into_boxed_slice();
-                                    let ptr5 = vec5.as_ptr() as i32;
-                                    let len5 = vec5.len() as i32;
-                                    ::core::mem::forget(vec5);
-                                    *((base + 60) as *mut i32) = len5;
-                                    *((base + 56) as *mut i32) = ptr5;
-                                    *((base + 64) as *mut u8) = (status4.clone() as i32) as u8;
-                                    *((base + 72) as *mut i64) = wit_bindgen::rt::as_i64(original_size4);
-                                  }
-                                }
-                                *((ptr1 + 4) as *mut i32) = len6;
-                                *((ptr1 + 0) as *mut i32) = result6 as i32;
-                                ptr1
-                              }
-                              
-                              const _: () = {
-                                #[doc(hidden)]
-                                #[export_name = "cabi_post_sputnik:traderapi/api#get-orders"]
-                                #[allow(non_snake_case)]
-                                unsafe extern "C" fn __post_return_get_orders(arg0: i32,) {
-                                  let l3 = *((arg0 + 0) as *const i32);
-                                  let l4 = *((arg0 + 4) as *const i32);
-                                  let base5 = l3;
-                                  let len5 = l4;
-                                  for i in 0..len5 {
-                                    let base = base5 + i *80;
-                                    {
-                                      let l0 = *((base + 56) as *const i32);
-                                      let l1 = *((base + 60) as *const i32);
-                                      let base2 = l0;
-                                      let len2 = l1;
-                                      wit_bindgen::rt::dealloc(base2, (len2 as usize) * 40, 8);
-                                    }
-                                  }
-                                  wit_bindgen::rt::dealloc(base5, (len5 as usize) * 80, 8);
-                                }
-                              };
-                            };
-                            const _: () = {
-                              
-                              #[doc(hidden)]
-                              #[export_name = "sputnik:traderapi/api#place-order"]
-                              #[allow(non_snake_case)]
-                              unsafe extern "C" fn __export_place_order(arg0: i64,arg1: i64,arg2: i32,arg3: i64,arg4: i64,) -> i32 {
-                                #[allow(unused_imports)]
-                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                                
-                                // Before executing any other code, use this function to run all static
-                                // constructors, if they have not yet been run. This is a hack required
-                                // to work around wasi-libc ctors calling import functions to initialize
-                                // the environment.
-                                //
-                                // This functionality will be removed once rust 1.69.0 is stable, at which
-                                // point wasi-libc will no longer have this behavior.
-                                //
-                                // See
-                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
-                                // for more details.
-                                #[cfg(target_arch="wasm32")]
-                                wit_bindgen::rt::run_ctors_once();
-                                
-                                let result0 = <_GuestImpl as Guest>::place_order(arg0 as u64, Order{
-                                  spot_pair: arg1 as u64,
-                                  side: super::super::super::super::sputnik::matching_engine::api::Side::_lift(arg2 as u8),
-                                  price: arg3 as u64,
-                                  size: arg4 as u64,
-                                });
+                                let result0 = <_ApiImpl as GuestApi>::complete_block(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), arg1 as u64);
                                 let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
                                 match result0 {
-                                  Ok(e) => { {
+                                  Ok(_) => { {
                                     *((ptr1 + 0) as *mut u8) = (0i32) as u8;
-                                    *((ptr1 + 8) as *mut i64) = wit_bindgen::rt::as_i64(e);
                                   } },
                                   Err(e) => { {
                                     *((ptr1 + 0) as *mut u8) = (1i32) as u8;
+                                    use super::super::super::super::sputnik::ethereummonitor::api::Error as V8;
                                     match e {
-                                      Error::InternalError(e) => {
+                                      V8::WrongBlock(e) => {
                                         *((ptr1 + 8) as *mut u8) = (0i32) as u8;
-                                        use super::super::super::super::sputnik::accountant::api::Error as V3;
+                                        *((ptr1 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                      },
+                                      V8::TxSeen(e) => {
+                                        *((ptr1 + 8) as *mut u8) = (1i32) as u8;
+                                        let vec2 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr2 = vec2.as_ptr() as i32;
+                                        let len2 = vec2.len() as i32;
+                                        ::core::mem::forget(vec2);
+                                        *((ptr1 + 20) as *mut i32) = len2;
+                                        *((ptr1 + 16) as *mut i32) = ptr2;
+                                      },
+                                      V8::AccountantError(e) => {
+                                        *((ptr1 + 8) as *mut u8) = (2i32) as u8;
+                                        use super::super::super::super::sputnik::accountant::api::Error as V4;
                                         match e {
-                                          V3::DuplicateId(e) => {
+                                          V4::DuplicateId(e) => {
                                             *((ptr1 + 16) as *mut u8) = (0i32) as u8;
                                             *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
                                           },
-                                          V3::InsufficientFunds(e) => {
+                                          V4::InsufficientFunds(e) => {
                                             *((ptr1 + 16) as *mut u8) = (1i32) as u8;
                                             *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
                                           },
-                                          V3::AlreadyInitialized(e) => {
+                                          V4::AlreadyInitialized(e) => {
                                             *((ptr1 + 16) as *mut u8) = (2i32) as u8;
                                             *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
                                           },
-                                          V3::NotInitialized=> {
+                                          V4::NotInitialized=> {
                                             {
                                               *((ptr1 + 16) as *mut u8) = (3i32) as u8;
                                             }
                                           }
-                                          V3::InvalidAsset(e) => {
+                                          V4::InvalidAsset(e) => {
                                             *((ptr1 + 16) as *mut u8) = (4i32) as u8;
                                             *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
                                           },
-                                          V3::InvalidSpotPair(e) => {
+                                          V4::InvalidSpotPair(e) => {
                                             *((ptr1 + 16) as *mut u8) = (5i32) as u8;
                                             *((ptr1 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
                                           },
-                                          V3::MatchingEngineError(e) => {
+                                          V4::MatchingEngineError(e) => {
                                             *((ptr1 + 16) as *mut u8) = (6i32) as u8;
-                                            use super::super::super::super::sputnik::matching_engine::api::Error as V2;
+                                            use super::super::super::super::sputnik::matching_engine::api::Error as V3;
                                             match e {
-                                              V2::DuplicateId(e) => {
+                                              V3::DuplicateId(e) => {
                                                 *((ptr1 + 24) as *mut u8) = (0i32) as u8;
                                                 *((ptr1 + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
                                               },
-                                              V2::MissingOrder(e) => {
+                                              V3::MissingOrder(e) => {
                                                 *((ptr1 + 24) as *mut u8) = (1i32) as u8;
                                                 *((ptr1 + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
                                               },
-                                              V2::AlreadyIntialized=> {
+                                              V3::AlreadyIntialized=> {
                                                 {
                                                   *((ptr1 + 24) as *mut u8) = (2i32) as u8;
                                                 }
@@ -4693,24 +4013,334 @@ pub mod golem {
                                           },
                                         }
                                       },
+                                      V8::UnknownAddress(e) => {
+                                        *((ptr1 + 8) as *mut u8) = (3i32) as u8;
+                                        let vec5 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr5 = vec5.as_ptr() as i32;
+                                        let len5 = vec5.len() as i32;
+                                        ::core::mem::forget(vec5);
+                                        *((ptr1 + 20) as *mut i32) = len5;
+                                        *((ptr1 + 16) as *mut i32) = ptr5;
+                                      },
+                                      V8::InvalidAddress(e) => {
+                                        *((ptr1 + 8) as *mut u8) = (4i32) as u8;
+                                        let vec6 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr6 = vec6.as_ptr() as i32;
+                                        let len6 = vec6.len() as i32;
+                                        ::core::mem::forget(vec6);
+                                        *((ptr1 + 20) as *mut i32) = len6;
+                                        *((ptr1 + 16) as *mut i32) = ptr6;
+                                      },
+                                      V8::TokenExists(e) => {
+                                        *((ptr1 + 8) as *mut u8) = (5i32) as u8;
+                                        let vec7 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr7 = vec7.as_ptr() as i32;
+                                        let len7 = vec7.len() as i32;
+                                        ::core::mem::forget(vec7);
+                                        *((ptr1 + 20) as *mut i32) = len7;
+                                        *((ptr1 + 16) as *mut i32) = ptr7;
+                                      },
                                     }
                                   } },
                                 };ptr1
                               }
+                              
+                              const _: () = {
+                                #[doc(hidden)]
+                                #[export_name = "cabi_post_sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.complete-block"]
+                                #[allow(non_snake_case)]
+                                unsafe extern "C" fn __post_return_method_api_complete_block(arg0: i32,) {
+                                  let l0 = i32::from(*((arg0 + 0) as *const u8));
+                                  match l0 {
+                                    0 => (),
+                                    _ => {
+                                      let l1 = i32::from(*((arg0 + 8) as *const u8));
+                                      match l1 {
+                                        0 => (),
+                                        1 => {
+                                          let l2 = *((arg0 + 16) as *const i32);
+                                          let l3 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l2, (l3) as usize, 1);
+                                        },
+                                        2 => (),
+                                        3 => {
+                                          let l4 = *((arg0 + 16) as *const i32);
+                                          let l5 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l4, (l5) as usize, 1);
+                                        },
+                                        4 => {
+                                          let l6 = *((arg0 + 16) as *const i32);
+                                          let l7 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l6, (l7) as usize, 1);
+                                        },
+                                        _ => {
+                                          let l8 = *((arg0 + 16) as *const i32);
+                                          let l9 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l8, (l9) as usize, 1);
+                                        },
+                                      }
+                                    },
+                                  }
+                                }
+                              };
                             };
-                            use super::super::super::super::super::Component as _GuestImpl;
-                            pub trait Guest {
-                              fn get_balances(trader: u64,) -> wit_bindgen::rt::vec::Vec::<AssetBalance>;
-                              fn get_orders(trader: u64,) -> wit_bindgen::rt::vec::Vec::<OrderAndStatus>;
-                              fn place_order(trader: u64,order: Order,) -> Result<u64,Error>;
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.block-height"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_method_api_block_height(arg0: i32,) -> i64 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let result0 = <_ApiImpl as GuestApi>::block_height(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize));
+                                wit_bindgen::rt::as_i64(result0)
+                              }
+                            };
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.new-address-for-trader"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_method_api_new_address_for_trader(arg0: i32,arg1: i64,) -> i32 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let result0 = <_ApiImpl as GuestApi>::new_address_for_trader(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), arg1 as u64);
+                                let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
+                                let vec2 = (result0.into_bytes()).into_boxed_slice();
+                                let ptr2 = vec2.as_ptr() as i32;
+                                let len2 = vec2.len() as i32;
+                                ::core::mem::forget(vec2);
+                                *((ptr1 + 4) as *mut i32) = len2;
+                                *((ptr1 + 0) as *mut i32) = ptr2;
+                                ptr1
+                              }
+                              
+                              const _: () = {
+                                #[doc(hidden)]
+                                #[export_name = "cabi_post_sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.new-address-for-trader"]
+                                #[allow(non_snake_case)]
+                                unsafe extern "C" fn __post_return_method_api_new_address_for_trader(arg0: i32,) {
+                                  let l0 = *((arg0 + 0) as *const i32);
+                                  let l1 = *((arg0 + 4) as *const i32);
+                                  wit_bindgen::rt::dealloc(l0, (l1) as usize, 1);
+                                }
+                              };
+                            };
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.add-token"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_method_api_add_token(arg0: i32,arg1: i32,arg2: i32,arg3: i64,) -> i32 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let len0 = arg2 as usize;
+                                let bytes0 = Vec::from_raw_parts(arg1 as *mut _, len0, len0);
+                                let result1 = <_ApiImpl as GuestApi>::add_token(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), wit_bindgen::rt::string_lift(bytes0), arg3 as u64);
+                                let ptr2 = _RET_AREA.0.as_mut_ptr() as i32;
+                                match result1 {
+                                  Ok(_) => { {
+                                    *((ptr2 + 0) as *mut u8) = (0i32) as u8;
+                                  } },
+                                  Err(e) => { {
+                                    *((ptr2 + 0) as *mut u8) = (1i32) as u8;
+                                    use super::super::super::super::sputnik::ethereummonitor::api::Error as V9;
+                                    match e {
+                                      V9::WrongBlock(e) => {
+                                        *((ptr2 + 8) as *mut u8) = (0i32) as u8;
+                                        *((ptr2 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                      },
+                                      V9::TxSeen(e) => {
+                                        *((ptr2 + 8) as *mut u8) = (1i32) as u8;
+                                        let vec3 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr3 = vec3.as_ptr() as i32;
+                                        let len3 = vec3.len() as i32;
+                                        ::core::mem::forget(vec3);
+                                        *((ptr2 + 20) as *mut i32) = len3;
+                                        *((ptr2 + 16) as *mut i32) = ptr3;
+                                      },
+                                      V9::AccountantError(e) => {
+                                        *((ptr2 + 8) as *mut u8) = (2i32) as u8;
+                                        use super::super::super::super::sputnik::accountant::api::Error as V5;
+                                        match e {
+                                          V5::DuplicateId(e) => {
+                                            *((ptr2 + 16) as *mut u8) = (0i32) as u8;
+                                            *((ptr2 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V5::InsufficientFunds(e) => {
+                                            *((ptr2 + 16) as *mut u8) = (1i32) as u8;
+                                            *((ptr2 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V5::AlreadyInitialized(e) => {
+                                            *((ptr2 + 16) as *mut u8) = (2i32) as u8;
+                                            *((ptr2 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V5::NotInitialized=> {
+                                            {
+                                              *((ptr2 + 16) as *mut u8) = (3i32) as u8;
+                                            }
+                                          }
+                                          V5::InvalidAsset(e) => {
+                                            *((ptr2 + 16) as *mut u8) = (4i32) as u8;
+                                            *((ptr2 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V5::InvalidSpotPair(e) => {
+                                            *((ptr2 + 16) as *mut u8) = (5i32) as u8;
+                                            *((ptr2 + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V5::MatchingEngineError(e) => {
+                                            *((ptr2 + 16) as *mut u8) = (6i32) as u8;
+                                            use super::super::super::super::sputnik::matching_engine::api::Error as V4;
+                                            match e {
+                                              V4::DuplicateId(e) => {
+                                                *((ptr2 + 24) as *mut u8) = (0i32) as u8;
+                                                *((ptr2 + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                              },
+                                              V4::MissingOrder(e) => {
+                                                *((ptr2 + 24) as *mut u8) = (1i32) as u8;
+                                                *((ptr2 + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                              },
+                                              V4::AlreadyIntialized=> {
+                                                {
+                                                  *((ptr2 + 24) as *mut u8) = (2i32) as u8;
+                                                }
+                                              }
+                                            }
+                                          },
+                                        }
+                                      },
+                                      V9::UnknownAddress(e) => {
+                                        *((ptr2 + 8) as *mut u8) = (3i32) as u8;
+                                        let vec6 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr6 = vec6.as_ptr() as i32;
+                                        let len6 = vec6.len() as i32;
+                                        ::core::mem::forget(vec6);
+                                        *((ptr2 + 20) as *mut i32) = len6;
+                                        *((ptr2 + 16) as *mut i32) = ptr6;
+                                      },
+                                      V9::InvalidAddress(e) => {
+                                        *((ptr2 + 8) as *mut u8) = (4i32) as u8;
+                                        let vec7 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr7 = vec7.as_ptr() as i32;
+                                        let len7 = vec7.len() as i32;
+                                        ::core::mem::forget(vec7);
+                                        *((ptr2 + 20) as *mut i32) = len7;
+                                        *((ptr2 + 16) as *mut i32) = ptr7;
+                                      },
+                                      V9::TokenExists(e) => {
+                                        *((ptr2 + 8) as *mut u8) = (5i32) as u8;
+                                        let vec8 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr8 = vec8.as_ptr() as i32;
+                                        let len8 = vec8.len() as i32;
+                                        ::core::mem::forget(vec8);
+                                        *((ptr2 + 20) as *mut i32) = len8;
+                                        *((ptr2 + 16) as *mut i32) = ptr8;
+                                      },
+                                    }
+                                  } },
+                                };ptr2
+                              }
+                              
+                              const _: () = {
+                                #[doc(hidden)]
+                                #[export_name = "cabi_post_sputnik:ethereummonitor-stub/stub-ethereummonitor#[method]api.add-token"]
+                                #[allow(non_snake_case)]
+                                unsafe extern "C" fn __post_return_method_api_add_token(arg0: i32,) {
+                                  let l0 = i32::from(*((arg0 + 0) as *const u8));
+                                  match l0 {
+                                    0 => (),
+                                    _ => {
+                                      let l1 = i32::from(*((arg0 + 8) as *const u8));
+                                      match l1 {
+                                        0 => (),
+                                        1 => {
+                                          let l2 = *((arg0 + 16) as *const i32);
+                                          let l3 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l2, (l3) as usize, 1);
+                                        },
+                                        2 => (),
+                                        3 => {
+                                          let l4 = *((arg0 + 16) as *const i32);
+                                          let l5 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l4, (l5) as usize, 1);
+                                        },
+                                        4 => {
+                                          let l6 = *((arg0 + 16) as *const i32);
+                                          let l7 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l6, (l7) as usize, 1);
+                                        },
+                                        _ => {
+                                          let l8 = *((arg0 + 16) as *const i32);
+                                          let l9 = *((arg0 + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l8, (l9) as usize, 1);
+                                        },
+                                      }
+                                    },
+                                  }
+                                }
+                              };
+                            };
+                            use super::super::super::super::super::Api as _ApiImpl;
+                            pub trait GuestApi {
+                              fn new(location: Uri,) -> Self;
+                              fn process_deposit(&self,address: wit_bindgen::rt::string::String,tx: wit_bindgen::rt::string::String,amount: u64,token_address: wit_bindgen::rt::string::String,block_height: u64,) -> Result<AssetBalance,Error>;
+                              fn complete_block(&self,block: u64,) -> Result<(),Error>;
+                              fn block_height(&self,) -> u64;
+                              fn new_address_for_trader(&self,trader: u64,) -> wit_bindgen::rt::string::String;
+                              fn add_token(&self,address: wit_bindgen::rt::string::String,asset_id: u64,) -> Result<(),Error>;
                             }
                             
                             #[allow(unused_imports)]
                             use wit_bindgen::rt::{alloc, vec::Vec, string::String};
                             
                             #[repr(align(8))]
-                            struct _RetArea([u8; 40]);
-                            static mut _RET_AREA: _RetArea = _RetArea([0; 40]);
+                            struct _RetArea([u8; 48]);
+                            static mut _RET_AREA: _RetArea = _RetArea([0; 48]);
                             
                           }
                           
@@ -4719,9 +4349,9 @@ pub mod golem {
                     }
                     
                     #[cfg(target_arch = "wasm32")]
-                    #[link_section = "component-type:traderapi"]
+                    #[link_section = "component-type:wasm-rpc-stub-ethereummonitor"]
                     #[doc(hidden)]
-                    pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6179] = [3, 0, 9, 116, 114, 97, 100, 101, 114, 97, 112, 105, 0, 97, 115, 109, 13, 0, 1, 0, 7, 255, 11, 1, 65, 17, 1, 66, 16, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 109, 105, 115, 115, 105, 110, 103, 45, 111, 114, 100, 101, 114, 1, 119, 0, 18, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 109, 2, 3, 98, 117, 121, 4, 115, 101, 108, 108, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 1, 114, 6, 2, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 6, 116, 114, 97, 100, 101, 114, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 4, 1, 112, 5, 1, 114, 2, 4, 98, 105, 100, 115, 6, 4, 97, 115, 107, 115, 6, 4, 0, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 3, 0, 7, 1, 109, 4, 4, 111, 112, 101, 110, 6, 102, 105, 108, 108, 101, 100, 14, 112, 97, 114, 116, 105, 97, 108, 45, 102, 105, 108, 108, 101, 100, 8, 99, 97, 110, 99, 101, 108, 101, 100, 4, 0, 6, 115, 116, 97, 116, 117, 115, 3, 0, 9, 1, 114, 5, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 14, 116, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 14, 109, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 0, 4, 102, 105, 108, 108, 3, 0, 11, 1, 112, 12, 1, 114, 4, 2, 105, 100, 119, 5, 102, 105, 108, 108, 115, 13, 6, 115, 116, 97, 116, 117, 115, 10, 13, 111, 114, 105, 103, 105, 110, 97, 108, 45, 115, 105, 122, 101, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 14, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 47, 97, 112, 105, 5, 0, 1, 66, 10, 1, 113, 2, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 2, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 3, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 3, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 2, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 8, 3, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 1, 2, 3, 0, 0, 5, 101, 114, 114, 111, 114, 2, 3, 0, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 1, 5, 97, 115, 115, 101, 116, 2, 3, 0, 0, 4, 115, 105, 100, 101, 2, 3, 0, 0, 4, 102, 105, 108, 108, 1, 66, 20, 2, 3, 2, 1, 2, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 3, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 2, 2, 3, 2, 1, 4, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 5, 4, 0, 4, 115, 105, 100, 101, 3, 0, 6, 2, 3, 2, 1, 6, 4, 0, 4, 102, 105, 108, 108, 3, 0, 8, 1, 113, 7, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 18, 105, 110, 115, 117, 102, 102, 105, 99, 105, 101, 110, 116, 45, 102, 117, 110, 100, 115, 1, 119, 0, 19, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 1, 119, 0, 15, 110, 111, 116, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 13, 105, 110, 118, 97, 108, 105, 100, 45, 97, 115, 115, 101, 116, 1, 119, 0, 17, 105, 110, 118, 97, 108, 105, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 119, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 1, 1, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 114, 3, 5, 97, 115, 115, 101, 116, 5, 7, 98, 97, 108, 97, 110, 99, 101, 119, 17, 97, 118, 97, 105, 108, 97, 98, 108, 101, 45, 98, 97, 108, 97, 110, 99, 101, 119, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 12, 1, 114, 6, 2, 105, 100, 119, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 7, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 14, 1, 114, 1, 2, 105, 100, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 16, 1, 114, 2, 5, 111, 114, 100, 101, 114, 15, 6, 115, 116, 97, 116, 117, 115, 3, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 3, 1, 22, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 47, 97, 112, 105, 5, 7, 2, 3, 0, 2, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 2, 3, 0, 2, 4, 115, 105, 100, 101, 2, 3, 0, 2, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 2, 5, 101, 114, 114, 111, 114, 1, 66, 21, 2, 3, 2, 1, 8, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 0, 2, 3, 2, 1, 9, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 2, 3, 2, 1, 10, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 4, 2, 3, 2, 1, 11, 4, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 3, 0, 6, 1, 114, 4, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 8, 1, 113, 1, 14, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 7, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 112, 1, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 12, 4, 0, 12, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 13, 1, 112, 5, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 14, 4, 0, 10, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 15, 1, 106, 1, 119, 1, 11, 1, 64, 2, 6, 116, 114, 97, 100, 101, 114, 119, 5, 111, 114, 100, 101, 114, 9, 0, 16, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 17, 4, 1, 21, 115, 112, 117, 116, 110, 105, 107, 58, 116, 114, 97, 100, 101, 114, 97, 112, 105, 47, 97, 112, 105, 5, 12, 11, 9, 1, 0, 3, 97, 112, 105, 3, 0, 0, 7, 148, 35, 1, 65, 2, 1, 65, 36, 1, 66, 29, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 1, 105, 17, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 3, 0, 18, 4, 0, 21, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 119, 97, 115, 109, 45, 114, 112, 99, 1, 19, 1, 104, 17, 1, 112, 14, 1, 106, 1, 14, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 22, 4, 0, 33, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 45, 97, 110, 100, 45, 97, 119, 97, 105, 116, 1, 23, 1, 106, 0, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 24, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 1, 25, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 29, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 109, 105, 115, 115, 105, 110, 103, 45, 111, 114, 100, 101, 114, 1, 119, 0, 18, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 109, 2, 3, 98, 117, 121, 4, 115, 101, 108, 108, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 1, 114, 6, 2, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 6, 116, 114, 97, 100, 101, 114, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 4, 1, 112, 5, 1, 114, 2, 4, 98, 105, 100, 115, 6, 4, 97, 115, 107, 115, 6, 4, 0, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 3, 0, 7, 1, 109, 4, 4, 111, 112, 101, 110, 6, 102, 105, 108, 108, 101, 100, 14, 112, 97, 114, 116, 105, 97, 108, 45, 102, 105, 108, 108, 101, 100, 8, 99, 97, 110, 99, 101, 108, 101, 100, 4, 0, 6, 115, 116, 97, 116, 117, 115, 3, 0, 9, 1, 114, 5, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 14, 116, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 14, 109, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 0, 4, 102, 105, 108, 108, 3, 0, 11, 1, 112, 12, 1, 114, 4, 2, 105, 100, 119, 5, 102, 105, 108, 108, 115, 13, 6, 115, 116, 97, 116, 117, 115, 10, 13, 111, 114, 105, 103, 105, 110, 97, 108, 45, 115, 105, 122, 101, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 14, 1, 106, 0, 1, 1, 1, 64, 2, 23, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 16, 4, 0, 4, 105, 110, 105, 116, 1, 17, 1, 106, 1, 15, 1, 1, 1, 64, 1, 5, 111, 114, 100, 101, 114, 5, 0, 18, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 19, 1, 64, 1, 2, 105, 100, 119, 0, 18, 4, 0, 12, 99, 97, 110, 99, 101, 108, 45, 111, 114, 100, 101, 114, 1, 20, 1, 64, 0, 0, 8, 4, 0, 14, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 1, 21, 1, 107, 15, 1, 64, 1, 2, 105, 100, 119, 0, 22, 4, 0, 16, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 1, 23, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 47, 97, 112, 105, 5, 1, 1, 66, 28, 1, 113, 2, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 2, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 3, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 3, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 2, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 8, 1, 112, 3, 1, 64, 0, 0, 10, 4, 0, 10, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 11, 1, 112, 5, 1, 64, 0, 0, 12, 4, 0, 14, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 13, 1, 112, 9, 1, 64, 0, 0, 14, 4, 0, 11, 103, 101, 116, 45, 116, 114, 97, 100, 101, 114, 115, 1, 15, 1, 106, 1, 3, 1, 1, 1, 64, 1, 5, 97, 115, 115, 101, 116, 3, 0, 16, 4, 0, 9, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 17, 1, 106, 1, 5, 1, 1, 1, 64, 1, 4, 112, 97, 105, 114, 7, 0, 18, 4, 0, 13, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 19, 1, 106, 1, 9, 1, 1, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 9, 0, 20, 4, 0, 10, 97, 100, 100, 45, 116, 114, 97, 100, 101, 114, 1, 21, 3, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 2, 2, 3, 0, 1, 5, 101, 114, 114, 111, 114, 2, 3, 0, 1, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 2, 5, 97, 115, 115, 101, 116, 2, 3, 0, 1, 4, 115, 105, 100, 101, 2, 3, 0, 1, 4, 102, 105, 108, 108, 1, 66, 38, 2, 3, 2, 1, 3, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 4, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 2, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 6, 4, 0, 4, 115, 105, 100, 101, 3, 0, 6, 2, 3, 2, 1, 7, 4, 0, 4, 102, 105, 108, 108, 3, 0, 8, 1, 113, 7, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 18, 105, 110, 115, 117, 102, 102, 105, 99, 105, 101, 110, 116, 45, 102, 117, 110, 100, 115, 1, 119, 0, 19, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 1, 119, 0, 15, 110, 111, 116, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 13, 105, 110, 118, 97, 108, 105, 100, 45, 97, 115, 115, 101, 116, 1, 119, 0, 17, 105, 110, 118, 97, 108, 105, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 119, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 1, 1, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 114, 3, 5, 97, 115, 115, 101, 116, 5, 7, 98, 97, 108, 97, 110, 99, 101, 119, 17, 97, 118, 97, 105, 108, 97, 98, 108, 101, 45, 98, 97, 108, 97, 110, 99, 101, 119, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 12, 1, 114, 6, 2, 105, 100, 119, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 7, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 14, 1, 114, 1, 2, 105, 100, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 16, 1, 114, 2, 5, 111, 114, 100, 101, 114, 15, 6, 115, 116, 97, 116, 117, 115, 3, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 1, 106, 1, 119, 1, 11, 1, 64, 4, 2, 105, 100, 119, 28, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 105, 100, 115, 21, 114, 101, 103, 105, 115, 116, 114, 121, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 20, 4, 0, 10, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 21, 1, 112, 13, 1, 64, 0, 0, 22, 4, 0, 12, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 23, 1, 106, 1, 17, 1, 11, 1, 64, 1, 5, 111, 114, 100, 101, 114, 15, 0, 24, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 25, 1, 106, 1, 13, 1, 11, 1, 64, 2, 5, 97, 115, 115, 101, 116, 119, 6, 97, 109, 111, 117, 110, 116, 119, 0, 26, 4, 0, 7, 100, 101, 112, 111, 115, 105, 116, 1, 27, 4, 0, 8, 119, 105, 116, 104, 100, 114, 97, 119, 1, 27, 1, 64, 1, 4, 102, 105, 108, 108, 9, 1, 0, 4, 0, 18, 112, 114, 111, 99, 101, 115, 115, 45, 109, 97, 107, 101, 114, 45, 102, 105, 108, 108, 1, 28, 1, 112, 19, 1, 64, 0, 0, 29, 4, 0, 10, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 30, 3, 1, 22, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 47, 97, 112, 105, 5, 8, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 3, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 2, 3, 0, 3, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 3, 5, 97, 115, 115, 101, 116, 2, 3, 0, 3, 4, 115, 105, 100, 101, 2, 3, 0, 3, 4, 102, 105, 108, 108, 2, 3, 0, 3, 5, 101, 114, 114, 111, 114, 2, 3, 0, 3, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 2, 3, 0, 3, 5, 111, 114, 100, 101, 114, 2, 3, 0, 3, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 3, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 1, 66, 46, 2, 3, 2, 1, 9, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 10, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 11, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 4, 2, 3, 2, 1, 12, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 6, 2, 3, 2, 1, 13, 4, 0, 4, 115, 105, 100, 101, 3, 0, 8, 2, 3, 2, 1, 14, 4, 0, 4, 102, 105, 108, 108, 3, 0, 10, 2, 3, 2, 1, 15, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 12, 2, 3, 2, 1, 16, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 14, 2, 3, 2, 1, 17, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 16, 2, 3, 2, 1, 18, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 2, 3, 2, 1, 19, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 20, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 22, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 23, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 24, 1, 104, 22, 1, 106, 1, 119, 1, 13, 1, 64, 5, 4, 115, 101, 108, 102, 25, 2, 105, 100, 119, 28, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 105, 100, 115, 21, 114, 101, 103, 105, 115, 116, 114, 121, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 26, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 27, 1, 112, 15, 1, 64, 1, 4, 115, 101, 108, 102, 25, 0, 28, 4, 0, 24, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 29, 1, 106, 1, 19, 1, 13, 1, 64, 2, 4, 115, 101, 108, 102, 25, 5, 111, 114, 100, 101, 114, 17, 0, 30, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 31, 1, 106, 1, 15, 1, 13, 1, 64, 3, 4, 115, 101, 108, 102, 25, 5, 97, 115, 115, 101, 116, 119, 6, 97, 109, 111, 117, 110, 116, 119, 0, 32, 4, 0, 19, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 100, 101, 112, 111, 115, 105, 116, 1, 33, 4, 0, 20, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 119, 105, 116, 104, 100, 114, 97, 119, 1, 33, 1, 64, 2, 4, 115, 101, 108, 102, 25, 4, 102, 105, 108, 108, 11, 1, 0, 4, 0, 39, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 98, 108, 111, 99, 107, 105, 110, 103, 45, 112, 114, 111, 99, 101, 115, 115, 45, 109, 97, 107, 101, 114, 45, 102, 105, 108, 108, 1, 34, 4, 0, 30, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 114, 111, 99, 101, 115, 115, 45, 109, 97, 107, 101, 114, 45, 102, 105, 108, 108, 1, 34, 1, 112, 21, 1, 64, 1, 4, 115, 101, 108, 102, 25, 0, 35, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 36, 3, 1, 39, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 5, 20, 1, 66, 12, 2, 3, 2, 1, 9, 4, 0, 3, 117, 114, 105, 3, 0, 0, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 2, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 3, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 4, 1, 104, 2, 1, 64, 1, 4, 115, 101, 108, 102, 5, 0, 119, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 110, 101, 119, 45, 105, 100, 1, 6, 1, 112, 119, 1, 64, 2, 4, 115, 101, 108, 102, 5, 3, 113, 116, 121, 125, 0, 7, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 110, 101, 119, 45, 105, 100, 115, 1, 8, 3, 1, 25, 115, 112, 117, 116, 110, 105, 107, 58, 105, 100, 115, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 105, 100, 115, 5, 21, 2, 3, 0, 2, 5, 101, 114, 114, 111, 114, 2, 3, 0, 2, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 2, 3, 0, 2, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 2, 3, 0, 2, 6, 116, 114, 97, 100, 101, 114, 1, 66, 35, 2, 3, 2, 1, 9, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 22, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 23, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 2, 3, 2, 1, 24, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 8, 2, 3, 2, 1, 25, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 10, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 12, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 13, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 14, 1, 104, 12, 1, 112, 5, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 16, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 17, 1, 112, 7, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 18, 4, 0, 26, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 19, 1, 112, 11, 1, 64, 1, 4, 115, 101, 108, 102, 15, 0, 20, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 116, 114, 97, 100, 101, 114, 115, 1, 21, 1, 106, 1, 5, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 5, 97, 115, 115, 101, 116, 5, 0, 22, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 23, 1, 106, 1, 7, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 4, 112, 97, 105, 114, 9, 0, 24, 4, 0, 25, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 25, 1, 106, 1, 11, 1, 3, 1, 64, 2, 4, 115, 101, 108, 102, 15, 6, 116, 114, 97, 100, 101, 114, 11, 0, 26, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 116, 114, 97, 100, 101, 114, 1, 27, 3, 1, 35, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 114, 101, 103, 105, 115, 116, 114, 121, 5, 26, 1, 66, 21, 2, 3, 2, 1, 16, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 0, 2, 3, 2, 1, 13, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 2, 3, 2, 1, 19, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 4, 2, 3, 2, 1, 15, 4, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 3, 0, 6, 1, 114, 4, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 8, 1, 113, 1, 14, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 7, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 112, 1, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 12, 4, 0, 12, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 13, 1, 112, 5, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 14, 4, 0, 10, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 15, 1, 106, 1, 119, 1, 11, 1, 64, 2, 6, 116, 114, 97, 100, 101, 114, 119, 5, 111, 114, 100, 101, 114, 9, 0, 16, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 17, 4, 1, 21, 115, 112, 117, 116, 110, 105, 107, 58, 116, 114, 97, 100, 101, 114, 97, 112, 105, 47, 97, 112, 105, 5, 27, 4, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 116, 114, 97, 100, 101, 114, 97, 112, 105, 47, 116, 114, 97, 100, 101, 114, 97, 112, 105, 4, 0, 11, 15, 1, 0, 9, 116, 114, 97, 100, 101, 114, 97, 112, 105, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
+                    pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6281] = [3, 0, 29, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 0, 97, 115, 109, 13, 0, 1, 0, 7, 182, 19, 1, 65, 23, 1, 66, 18, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 16, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 109, 105, 115, 115, 105, 110, 103, 45, 111, 114, 100, 101, 114, 1, 119, 0, 18, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 109, 2, 3, 98, 117, 121, 4, 115, 101, 108, 108, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 1, 114, 6, 2, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 6, 116, 114, 97, 100, 101, 114, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 4, 1, 112, 5, 1, 114, 2, 4, 98, 105, 100, 115, 6, 4, 97, 115, 107, 115, 6, 4, 0, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 3, 0, 7, 1, 109, 4, 4, 111, 112, 101, 110, 6, 102, 105, 108, 108, 101, 100, 14, 112, 97, 114, 116, 105, 97, 108, 45, 102, 105, 108, 108, 101, 100, 8, 99, 97, 110, 99, 101, 108, 101, 100, 4, 0, 6, 115, 116, 97, 116, 117, 115, 3, 0, 9, 1, 114, 5, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 14, 116, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 14, 109, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 0, 4, 102, 105, 108, 108, 3, 0, 11, 1, 112, 12, 1, 114, 4, 2, 105, 100, 119, 5, 102, 105, 108, 108, 115, 13, 6, 115, 116, 97, 116, 117, 115, 10, 13, 111, 114, 105, 103, 105, 110, 97, 108, 45, 115, 105, 122, 101, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 14, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 47, 97, 112, 105, 5, 1, 1, 66, 10, 1, 113, 2, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 2, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 3, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 3, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 2, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 8, 3, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 2, 2, 3, 0, 1, 5, 101, 114, 114, 111, 114, 2, 3, 0, 1, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 2, 5, 97, 115, 115, 101, 116, 2, 3, 0, 1, 4, 115, 105, 100, 101, 2, 3, 0, 1, 4, 102, 105, 108, 108, 1, 66, 20, 2, 3, 2, 1, 3, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 4, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 2, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 6, 4, 0, 4, 115, 105, 100, 101, 3, 0, 6, 2, 3, 2, 1, 7, 4, 0, 4, 102, 105, 108, 108, 3, 0, 8, 1, 113, 7, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 18, 105, 110, 115, 117, 102, 102, 105, 99, 105, 101, 110, 116, 45, 102, 117, 110, 100, 115, 1, 119, 0, 19, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 1, 119, 0, 15, 110, 111, 116, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 13, 105, 110, 118, 97, 108, 105, 100, 45, 97, 115, 115, 101, 116, 1, 119, 0, 17, 105, 110, 118, 97, 108, 105, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 119, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 1, 1, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 114, 3, 5, 97, 115, 115, 101, 116, 5, 7, 98, 97, 108, 97, 110, 99, 101, 119, 17, 97, 118, 97, 105, 108, 97, 98, 108, 101, 45, 98, 97, 108, 97, 110, 99, 101, 119, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 12, 1, 114, 6, 2, 105, 100, 119, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 7, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 14, 1, 114, 1, 2, 105, 100, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 16, 1, 114, 2, 5, 111, 114, 100, 101, 114, 15, 6, 115, 116, 97, 116, 117, 115, 3, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 3, 1, 22, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 47, 97, 112, 105, 5, 8, 2, 3, 0, 3, 5, 101, 114, 114, 111, 114, 2, 3, 0, 3, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 1, 66, 6, 2, 3, 2, 1, 9, 4, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 10, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 2, 1, 113, 6, 11, 119, 114, 111, 110, 103, 45, 98, 108, 111, 99, 107, 1, 119, 0, 7, 116, 120, 45, 115, 101, 101, 110, 1, 115, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 1, 1, 0, 15, 117, 110, 107, 110, 111, 119, 110, 45, 97, 100, 100, 114, 101, 115, 115, 1, 115, 0, 15, 105, 110, 118, 97, 108, 105, 100, 45, 97, 100, 100, 114, 101, 115, 115, 1, 115, 0, 12, 116, 111, 107, 101, 110, 45, 101, 120, 105, 115, 116, 115, 1, 115, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 4, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 47, 97, 112, 105, 5, 11, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 4, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 2, 3, 0, 4, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 2, 3, 0, 4, 5, 101, 114, 114, 111, 114, 1, 66, 25, 2, 3, 2, 1, 12, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 13, 4, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 14, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 4, 2, 3, 2, 1, 15, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 6, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 8, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 9, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 10, 1, 104, 8, 1, 106, 1, 5, 1, 7, 1, 64, 6, 4, 115, 101, 108, 102, 11, 7, 97, 100, 100, 114, 101, 115, 115, 115, 2, 116, 120, 115, 6, 97, 109, 111, 117, 110, 116, 119, 13, 116, 111, 107, 101, 110, 45, 97, 100, 100, 114, 101, 115, 115, 115, 12, 98, 108, 111, 99, 107, 45, 104, 101, 105, 103, 104, 116, 119, 0, 12, 4, 0, 27, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 114, 111, 99, 101, 115, 115, 45, 100, 101, 112, 111, 115, 105, 116, 1, 13, 1, 106, 0, 1, 7, 1, 64, 2, 4, 115, 101, 108, 102, 11, 5, 98, 108, 111, 99, 107, 119, 0, 14, 4, 0, 26, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 99, 111, 109, 112, 108, 101, 116, 101, 45, 98, 108, 111, 99, 107, 1, 15, 1, 64, 1, 4, 115, 101, 108, 102, 11, 0, 119, 4, 0, 24, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 98, 108, 111, 99, 107, 45, 104, 101, 105, 103, 104, 116, 1, 16, 1, 64, 2, 4, 115, 101, 108, 102, 11, 6, 116, 114, 97, 100, 101, 114, 119, 0, 115, 4, 0, 34, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 110, 101, 119, 45, 97, 100, 100, 114, 101, 115, 115, 45, 102, 111, 114, 45, 116, 114, 97, 100, 101, 114, 1, 17, 1, 64, 3, 4, 115, 101, 108, 102, 11, 7, 97, 100, 100, 114, 101, 115, 115, 115, 8, 97, 115, 115, 101, 116, 45, 105, 100, 119, 0, 14, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 116, 111, 107, 101, 110, 1, 18, 4, 1, 49, 115, 112, 117, 116, 110, 105, 107, 58, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 5, 16, 11, 26, 1, 0, 20, 115, 116, 117, 98, 45, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 3, 0, 0, 7, 138, 28, 1, 65, 2, 1, 65, 23, 1, 66, 29, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 1, 105, 17, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 3, 0, 18, 4, 0, 21, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 119, 97, 115, 109, 45, 114, 112, 99, 1, 19, 1, 104, 17, 1, 112, 14, 1, 106, 1, 14, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 22, 4, 0, 33, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 45, 97, 110, 100, 45, 97, 119, 97, 105, 116, 1, 23, 1, 106, 0, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 24, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 1, 25, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 29, 1, 113, 3, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 109, 105, 115, 115, 105, 110, 103, 45, 111, 114, 100, 101, 114, 1, 119, 0, 18, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 109, 2, 3, 98, 117, 121, 4, 115, 101, 108, 108, 4, 0, 4, 115, 105, 100, 101, 3, 0, 2, 1, 114, 6, 2, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 3, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 6, 116, 114, 97, 100, 101, 114, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 4, 1, 112, 5, 1, 114, 2, 4, 98, 105, 100, 115, 6, 4, 97, 115, 107, 115, 6, 4, 0, 10, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 3, 0, 7, 1, 109, 4, 4, 111, 112, 101, 110, 6, 102, 105, 108, 108, 101, 100, 14, 112, 97, 114, 116, 105, 97, 108, 45, 102, 105, 108, 108, 101, 100, 8, 99, 97, 110, 99, 101, 108, 101, 100, 4, 0, 6, 115, 116, 97, 116, 117, 115, 3, 0, 9, 1, 114, 5, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 14, 116, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 14, 109, 97, 107, 101, 114, 45, 111, 114, 100, 101, 114, 45, 105, 100, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 0, 4, 102, 105, 108, 108, 3, 0, 11, 1, 112, 12, 1, 114, 4, 2, 105, 100, 119, 5, 102, 105, 108, 108, 115, 13, 6, 115, 116, 97, 116, 117, 115, 10, 13, 111, 114, 105, 103, 105, 110, 97, 108, 45, 115, 105, 122, 101, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 14, 1, 106, 0, 1, 1, 1, 64, 2, 23, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 16, 4, 0, 4, 105, 110, 105, 116, 1, 17, 1, 106, 1, 15, 1, 1, 1, 64, 1, 5, 111, 114, 100, 101, 114, 5, 0, 18, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 19, 1, 64, 1, 2, 105, 100, 119, 0, 18, 4, 0, 12, 99, 97, 110, 99, 101, 108, 45, 111, 114, 100, 101, 114, 1, 20, 1, 64, 0, 0, 8, 4, 0, 14, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 98, 111, 111, 107, 1, 21, 1, 107, 15, 1, 64, 1, 2, 105, 100, 119, 0, 22, 4, 0, 16, 103, 101, 116, 45, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 1, 23, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 47, 97, 112, 105, 5, 1, 1, 66, 28, 1, 113, 2, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 13, 110, 111, 45, 115, 117, 99, 104, 45, 97, 115, 115, 101, 116, 1, 119, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 0, 1, 114, 3, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 8, 100, 101, 99, 105, 109, 97, 108, 115, 125, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 2, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 9, 110, 117, 109, 101, 114, 97, 116, 111, 114, 3, 11, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 3, 4, 0, 18, 104, 121, 100, 114, 97, 116, 101, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 4, 1, 114, 4, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 12, 110, 117, 109, 101, 114, 97, 116, 111, 114, 45, 105, 100, 119, 14, 100, 101, 110, 111, 109, 105, 110, 97, 116, 111, 114, 45, 105, 100, 119, 4, 0, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 3, 0, 6, 1, 114, 2, 2, 105, 100, 119, 4, 110, 97, 109, 101, 115, 4, 0, 6, 116, 114, 97, 100, 101, 114, 3, 0, 8, 1, 112, 3, 1, 64, 0, 0, 10, 4, 0, 10, 103, 101, 116, 45, 97, 115, 115, 101, 116, 115, 1, 11, 1, 112, 5, 1, 64, 0, 0, 12, 4, 0, 14, 103, 101, 116, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 115, 1, 13, 1, 112, 9, 1, 64, 0, 0, 14, 4, 0, 11, 103, 101, 116, 45, 116, 114, 97, 100, 101, 114, 115, 1, 15, 1, 106, 1, 3, 1, 1, 1, 64, 1, 5, 97, 115, 115, 101, 116, 3, 0, 16, 4, 0, 9, 97, 100, 100, 45, 97, 115, 115, 101, 116, 1, 17, 1, 106, 1, 5, 1, 1, 1, 64, 1, 4, 112, 97, 105, 114, 7, 0, 18, 4, 0, 13, 97, 100, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 19, 1, 106, 1, 9, 1, 1, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 9, 0, 20, 4, 0, 10, 97, 100, 100, 45, 116, 114, 97, 100, 101, 114, 1, 21, 3, 1, 20, 115, 112, 117, 116, 110, 105, 107, 58, 114, 101, 103, 105, 115, 116, 114, 121, 47, 97, 112, 105, 5, 2, 2, 3, 0, 1, 5, 101, 114, 114, 111, 114, 2, 3, 0, 1, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 2, 3, 0, 2, 5, 97, 115, 115, 101, 116, 2, 3, 0, 1, 4, 115, 105, 100, 101, 2, 3, 0, 1, 4, 102, 105, 108, 108, 1, 66, 38, 2, 3, 2, 1, 3, 4, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 4, 4, 0, 13, 101, 110, 103, 105, 110, 101, 45, 115, 116, 97, 116, 117, 115, 3, 0, 2, 2, 3, 2, 1, 5, 4, 0, 5, 97, 115, 115, 101, 116, 3, 0, 4, 2, 3, 2, 1, 6, 4, 0, 4, 115, 105, 100, 101, 3, 0, 6, 2, 3, 2, 1, 7, 4, 0, 4, 102, 105, 108, 108, 3, 0, 8, 1, 113, 7, 12, 100, 117, 112, 108, 105, 99, 97, 116, 101, 45, 105, 100, 1, 119, 0, 18, 105, 110, 115, 117, 102, 102, 105, 99, 105, 101, 110, 116, 45, 102, 117, 110, 100, 115, 1, 119, 0, 19, 97, 108, 114, 101, 97, 100, 121, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 1, 119, 0, 15, 110, 111, 116, 45, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 100, 0, 0, 13, 105, 110, 118, 97, 108, 105, 100, 45, 97, 115, 115, 101, 116, 1, 119, 0, 17, 105, 110, 118, 97, 108, 105, 100, 45, 115, 112, 111, 116, 45, 112, 97, 105, 114, 1, 119, 0, 21, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 101, 114, 114, 111, 114, 1, 1, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 10, 1, 114, 3, 5, 97, 115, 115, 101, 116, 5, 7, 98, 97, 108, 97, 110, 99, 101, 119, 17, 97, 118, 97, 105, 108, 97, 98, 108, 101, 45, 98, 97, 108, 97, 110, 99, 101, 119, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 12, 1, 114, 6, 2, 105, 100, 119, 9, 115, 112, 111, 116, 45, 112, 97, 105, 114, 119, 9, 116, 105, 109, 101, 115, 116, 97, 109, 112, 119, 4, 115, 105, 100, 101, 7, 5, 112, 114, 105, 99, 101, 119, 4, 115, 105, 122, 101, 119, 4, 0, 5, 111, 114, 100, 101, 114, 3, 0, 14, 1, 114, 1, 2, 105, 100, 119, 4, 0, 12, 111, 114, 100, 101, 114, 45, 115, 116, 97, 116, 117, 115, 3, 0, 16, 1, 114, 2, 5, 111, 114, 100, 101, 114, 15, 6, 115, 116, 97, 116, 117, 115, 3, 4, 0, 16, 111, 114, 100, 101, 114, 45, 97, 110, 100, 45, 115, 116, 97, 116, 117, 115, 3, 0, 18, 1, 106, 1, 119, 1, 11, 1, 64, 4, 2, 105, 100, 119, 28, 109, 97, 116, 99, 104, 105, 110, 103, 45, 101, 110, 103, 105, 110, 101, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 105, 100, 115, 21, 114, 101, 103, 105, 115, 116, 114, 121, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 105, 100, 115, 11, 101, 110, 118, 105, 114, 111, 110, 109, 101, 110, 116, 115, 0, 20, 4, 0, 10, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 21, 1, 112, 13, 1, 64, 0, 0, 22, 4, 0, 12, 103, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 115, 1, 23, 1, 106, 1, 17, 1, 11, 1, 64, 1, 5, 111, 114, 100, 101, 114, 15, 0, 24, 4, 0, 11, 112, 108, 97, 99, 101, 45, 111, 114, 100, 101, 114, 1, 25, 1, 106, 1, 13, 1, 11, 1, 64, 2, 5, 97, 115, 115, 101, 116, 119, 6, 97, 109, 111, 117, 110, 116, 119, 0, 26, 4, 0, 7, 100, 101, 112, 111, 115, 105, 116, 1, 27, 4, 0, 8, 119, 105, 116, 104, 100, 114, 97, 119, 1, 27, 1, 64, 1, 4, 102, 105, 108, 108, 9, 1, 0, 4, 0, 18, 112, 114, 111, 99, 101, 115, 115, 45, 109, 97, 107, 101, 114, 45, 102, 105, 108, 108, 1, 28, 1, 112, 19, 1, 64, 0, 0, 29, 4, 0, 10, 103, 101, 116, 45, 111, 114, 100, 101, 114, 115, 1, 30, 3, 1, 22, 115, 112, 117, 116, 110, 105, 107, 58, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 47, 97, 112, 105, 5, 8, 2, 3, 0, 3, 5, 101, 114, 114, 111, 114, 2, 3, 0, 3, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 1, 66, 18, 2, 3, 2, 1, 9, 4, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 3, 0, 0, 2, 3, 2, 1, 10, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 2, 1, 113, 6, 11, 119, 114, 111, 110, 103, 45, 98, 108, 111, 99, 107, 1, 119, 0, 7, 116, 120, 45, 115, 101, 101, 110, 1, 115, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 1, 1, 0, 15, 117, 110, 107, 110, 111, 119, 110, 45, 97, 100, 100, 114, 101, 115, 115, 1, 115, 0, 15, 105, 110, 118, 97, 108, 105, 100, 45, 97, 100, 100, 114, 101, 115, 115, 1, 115, 0, 12, 116, 111, 107, 101, 110, 45, 101, 120, 105, 115, 116, 115, 1, 115, 0, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 4, 1, 106, 1, 3, 1, 5, 1, 64, 5, 7, 97, 100, 100, 114, 101, 115, 115, 115, 2, 116, 120, 115, 6, 97, 109, 111, 117, 110, 116, 119, 13, 116, 111, 107, 101, 110, 45, 97, 100, 100, 114, 101, 115, 115, 115, 12, 98, 108, 111, 99, 107, 45, 104, 101, 105, 103, 104, 116, 119, 0, 6, 4, 0, 15, 112, 114, 111, 99, 101, 115, 115, 45, 100, 101, 112, 111, 115, 105, 116, 1, 7, 1, 106, 0, 1, 5, 1, 64, 1, 5, 98, 108, 111, 99, 107, 119, 0, 8, 4, 0, 14, 99, 111, 109, 112, 108, 101, 116, 101, 45, 98, 108, 111, 99, 107, 1, 9, 1, 64, 0, 0, 119, 4, 0, 12, 98, 108, 111, 99, 107, 45, 104, 101, 105, 103, 104, 116, 1, 10, 1, 64, 1, 6, 116, 114, 97, 100, 101, 114, 119, 0, 115, 4, 0, 22, 110, 101, 119, 45, 97, 100, 100, 114, 101, 115, 115, 45, 102, 111, 114, 45, 116, 114, 97, 100, 101, 114, 1, 11, 1, 64, 2, 7, 97, 100, 100, 114, 101, 115, 115, 115, 8, 97, 115, 115, 101, 116, 45, 105, 100, 119, 0, 8, 4, 0, 9, 97, 100, 100, 45, 116, 111, 107, 101, 110, 1, 12, 3, 1, 27, 115, 112, 117, 116, 110, 105, 107, 58, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 47, 97, 112, 105, 5, 11, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 4, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 2, 3, 0, 4, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 2, 3, 0, 4, 5, 101, 114, 114, 111, 114, 1, 66, 25, 2, 3, 2, 1, 12, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 13, 4, 0, 16, 97, 99, 99, 111, 117, 110, 116, 97, 110, 116, 45, 101, 114, 114, 111, 114, 3, 0, 2, 2, 3, 2, 1, 14, 4, 0, 13, 97, 115, 115, 101, 116, 45, 98, 97, 108, 97, 110, 99, 101, 3, 0, 4, 2, 3, 2, 1, 15, 4, 0, 5, 101, 114, 114, 111, 114, 3, 0, 6, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 8, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 9, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 10, 1, 104, 8, 1, 106, 1, 5, 1, 7, 1, 64, 6, 4, 115, 101, 108, 102, 11, 7, 97, 100, 100, 114, 101, 115, 115, 115, 2, 116, 120, 115, 6, 97, 109, 111, 117, 110, 116, 119, 13, 116, 111, 107, 101, 110, 45, 97, 100, 100, 114, 101, 115, 115, 115, 12, 98, 108, 111, 99, 107, 45, 104, 101, 105, 103, 104, 116, 119, 0, 12, 4, 0, 27, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 112, 114, 111, 99, 101, 115, 115, 45, 100, 101, 112, 111, 115, 105, 116, 1, 13, 1, 106, 0, 1, 7, 1, 64, 2, 4, 115, 101, 108, 102, 11, 5, 98, 108, 111, 99, 107, 119, 0, 14, 4, 0, 26, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 99, 111, 109, 112, 108, 101, 116, 101, 45, 98, 108, 111, 99, 107, 1, 15, 1, 64, 1, 4, 115, 101, 108, 102, 11, 0, 119, 4, 0, 24, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 98, 108, 111, 99, 107, 45, 104, 101, 105, 103, 104, 116, 1, 16, 1, 64, 2, 4, 115, 101, 108, 102, 11, 6, 116, 114, 97, 100, 101, 114, 119, 0, 115, 4, 0, 34, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 110, 101, 119, 45, 97, 100, 100, 114, 101, 115, 115, 45, 102, 111, 114, 45, 116, 114, 97, 100, 101, 114, 1, 17, 1, 64, 3, 4, 115, 101, 108, 102, 11, 7, 97, 100, 100, 114, 101, 115, 115, 115, 8, 97, 115, 115, 101, 116, 45, 105, 100, 119, 0, 14, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 116, 111, 107, 101, 110, 1, 18, 4, 1, 49, 115, 112, 117, 116, 110, 105, 107, 58, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 5, 16, 4, 1, 58, 115, 112, 117, 116, 110, 105, 107, 58, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 45, 115, 116, 117, 98, 47, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 4, 0, 11, 35, 1, 0, 29, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 101, 116, 104, 101, 114, 101, 117, 109, 109, 111, 110, 105, 116, 111, 114, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
                     
                     #[inline(never)]
                     #[doc(hidden)]

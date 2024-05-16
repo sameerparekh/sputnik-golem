@@ -9,6 +9,8 @@ use crate::bindings::exports::sputnik::adminapi::api::Error::{
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
+use crate::bindings::sputnik::ethereummonitor_stub::stub_ethereummonitor;
+use crate::bindings::sputnik::ethereummonitor_stub::stub_ethereummonitor::Api;
 use crate::bindings::sputnik::ids_stub::stub_ids;
 use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine;
 use crate::bindings::sputnik::registry::api::{
@@ -33,6 +35,8 @@ trait ExternalServiceApi {
     fn get_registry(&self) -> stub_registry::Api;
     fn get_ids(&self) -> stub_ids::Api;
 
+    fn get_ethereummonitor(&self) -> stub_ethereummonitor::Api;
+
     fn get_new_id(&self) -> u64;
 
     fn create_asset(&self, asset: &Asset) -> Result<Asset, RegistryError>;
@@ -56,6 +60,17 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         };
 
         stub_registry::Api::new(&uri)
+    }
+
+    fn get_ethereummonitor(&self) -> stub_ethereummonitor::Api {
+        let component_id =
+            env::var("ETHEREUMMONITOR_COMPONENT_ID").expect("ETHEREUMMONITOR_COMPONENT_ID not set");
+        let environment = env::var("ENVIRONMENT").expect("ENVIRONMENT NOT SET");
+        let uri = Uri {
+            value: format!("worker://{component_id}/{environment}"),
+        };
+
+        stub_ethereummonitor::Api::new(&uri)
     }
 
     fn get_ids(&self) -> stub_ids::Api {

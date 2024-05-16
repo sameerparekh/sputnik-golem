@@ -43,12 +43,14 @@ IDS_COMPONENT_ID=$("$CMD" --format yaml component list -c ids | yq '.[0].compone
 REGISTRY_COMPONENT_ID=$("$CMD" --format yaml component list -c registry | yq '.[0].componentId')
 MATCHING_ENGINE_COMPONENT_ID=$("$CMD" --format yaml component list -c matching-engine | yq '.[0].componentId')
 ACCOUNTANT_COMPONENT_ID=$("$CMD" --format yaml component list -c accountant | yq '.[0].componentId')
+ETHEREUMMONITOR_COMPONENT_ID=$("$CMD" --format yaml component list -c ethereummonitor | yq '.[0].componentId')
 
 "$CMD" worker add --component-name adminapi --worker-name "$ENVIRONMENT" \
   --env REGISTRY_COMPONENT_ID="$REGISTRY_COMPONENT_ID" \
   --env IDS_COMPONENT_ID="$IDS_COMPONENT_ID" \
   --env MATCHING_ENGINE_COMPONENT_ID="$MATCHING_ENGINE_COMPONENT_ID" \
   --env ACCOUNTANT_COMPONENT_ID="$ACCOUNTANT_COMPONENT_ID" \
+  --env ETHEREUMMONITOR_COMPONENT_ID="$ETHEREUMMONITOR_COMPONENT_ID" \
   --env ENVIRONMENT="$ENVIRONMENT"
 
 "$CMD" worker add --component-name traderapi --worker-name "$ENVIRONMENT" \

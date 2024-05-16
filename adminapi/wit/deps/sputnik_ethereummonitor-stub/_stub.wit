@@ -1,0 +1,22 @@
+package sputnik:ethereummonitor-stub;
+
+interface stub-ethereummonitor {
+  use golem:rpc/types@0.1.0.{uri};
+  use sputnik:ethereummonitor/api.{accountant-error};
+  use sputnik:ethereummonitor/api.{asset-balance};
+  use sputnik:ethereummonitor/api.{error};
+
+  resource api {
+    constructor(location: uri);
+    process-deposit: func(address: string, tx: string, amount: u64, token-address: string, block-height: u64) -> result<asset-balance, error>;
+    complete-block: func(block: u64) -> result<_, error>;
+    block-height: func() -> u64;
+    new-address-for-trader: func(trader: u64) -> string;
+    add-token: func(address: string, asset-id: u64) -> result<_, error>;
+  }
+
+}
+
+world wasm-rpc-stub-ethereummonitor {
+  export stub-ethereummonitor;
+}

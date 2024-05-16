@@ -22,5 +22,6 @@ world adminapi {
   import sputnik: registry-stub/stub-registry;
   import sputnik: matching-engine-stub/stub-matching-engine;
   import sputnik: accountant-stub/stub-accountant;
+  import sputnik: ethereummonitor-stub/stub-ethereummonitor;
   export api;
 }
