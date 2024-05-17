@@ -55,7 +55,8 @@ MONITOR_API=http://"${ENVIRONMENT}".ethereummonitor.sputnik.golem:"${WORKER_SERV
 
 echo "Creating assets/pairs"
 
-USDC_ADDRESS=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+USDC_ADDRESS=0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238
+EURC_ADDRESS=0x08210F9170F89Ab7658F0B5E3fF39b0E03C594D4
 ETH_ADDRESS=0x0000000000000000000000000000000000000000
 
 ETH_ID=$(curl --silent -X POST "$ADMIN_API"/asset/ETH \
@@ -68,10 +69,25 @@ USDC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/USDC \
 
 echo "USDC: $USDC_ID"
 
+EURC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/EURC \
+  --data "{ \"decimals\": 6, \"token_address\": \"$EURC_ADDRESS\" }" | jq '.ok.id')
+
+echo "EURC: $EURC_ID"
+
 ETHUSDC_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/ETHUSDC \
          --data "{ \"numerator\": $ETH_ID, \"denominator\": $USDC_ID }" | jq '.ok.id')
 
-echo "ETHUSDC: $ETHUSDC_ID"
+echo "ETH/USDC: $ETHUSDC_ID"
+
+ETHEURC_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/ETHEURC \
+         --data "{ \"numerator\": $ETH_ID, \"denominator\": $EURC_ID }" | jq '.ok.id')
+
+echo "ETH/EURC: $ETHEURC_ID"
+
+USDCEURC_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/USDCEURC \
+                     --data "{ \"numerator\": $USDC_ID, \"denominator\": $EURC_ID }" | jq '.ok.id')
+
+echo "USDC/EURC: $USDCEURC_ID"
 
 echo "Listing assets & pairs"
 
