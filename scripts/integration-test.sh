@@ -60,7 +60,7 @@ EURC_ADDRESS=0x08210F9170F89Ab7658F0B5E3fF39b0E03C594D4
 ETH_ADDRESS=0x0000000000000000000000000000000000000000
 
 ETH_ID=$(curl --silent -X POST "$ADMIN_API"/asset/ETH \
-  --data "{ \"decimals\": 10, \"token_address\": \"$ETH_ADDRESS\" }" | jq '.ok.id')
+  --data "{ \"decimals\": 18, \"token_address\": \"$ETH_ADDRESS\" }" | jq '.ok.id')
 
 echo "ETH: $ETH_ID"
 
@@ -193,14 +193,12 @@ curl --silent -X GET "$TRADER_API"/balances/"$TRADER_B_ID" | jq .
 echo "Order Book"
 curl --silent -X GET "$TRADER_API"/orderbook/"$ETHUSDC_ID" | jq .
 
-set +ex
-
 echo "ADMIN_API: $ADMIN_API"
 echo "TRADER_API: $TRADER_API"
 echo "MONITOR_API: $MONITOR_API"
 
-echo "TRADER_A_ADDRESS": $TRADER_A_ADDRESS
-echo "TRADER_B_ADDRESS": $TRADER_B_ADDRESS
+echo "TRADER_A_ADDRESS": "$TRADER_A_ADDRESS"
+echo "TRADER_B_ADDRESS": "$TRADER_B_ADDRESS"
 
 export MONITOR_API
 RPC_URL="wss://eth-sepolia.g.alchemy.com/v2/C2AMPkL7J84rizAWoLcCt5rTflAU0tGY"
