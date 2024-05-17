@@ -60,7 +60,7 @@ EURC_ADDRESS=0x08210F9170F89Ab7658F0B5E3fF39b0E03C594D4
 ETH_ADDRESS=0x0000000000000000000000000000000000000000
 
 ETH_ID=$(curl --silent -X POST "$ADMIN_API"/asset/ETH \
-  --data "{ \"decimals\": 18, \"token_address\": \"$ETH_ADDRESS\" }" | jq '.ok.id')
+  --data "{ \"decimals\": 10, \"token_address\": \"$ETH_ADDRESS\" }" | jq '.ok.id')
 
 echo "ETH: $ETH_ID"
 
