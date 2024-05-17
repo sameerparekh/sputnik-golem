@@ -3,13 +3,13 @@ use std::collections::{HashMap, HashSet};
 use std::collections::hash_map::Entry;
 use std::env;
 
+use alloy_primitives::Address;
+use alloy_primitives::hex::FromHexError;
 use bip32::{ChildNumber, PublicKey, XPrv};
-use ethers_core::types::Address;
-use ethers_core::utils::hex::hex::encode;
 use mockall::automock;
 use sha3::{Digest, Keccak256};
 
-use crate::bindings::exports::sputnik::ethereummonitor::api::{Error, Guest};
+use crate::bindings::exports::sputnik::ethereummonitor::api::{BlockHeightResponse, Error, Guest};
 use crate::bindings::exports::sputnik::ethereummonitor::api::Error::{InvalidAddress, TokenExists, TxSeen, UnknownAddress, WrongBlock};
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant::api::Error as AccountantError;
@@ -45,8 +45,8 @@ impl From<AccountantError> for Error {
     }
 }
 
-impl From<rustc_hex::FromHexError> for Error {
-    fn from(value: rustc_hex::FromHexError) -> Self {
+impl From<FromHexError> for Error {
+    fn from(value: FromHexError) -> Self {
         InvalidAddress(value.to_string())
     }
 }
@@ -74,7 +74,7 @@ thread_local! {
         address_idx: 1,
         address_map: HashMap::new(),
         token_asset_map: HashMap::new(),
-        block_height: 5897196,
+        block_height: 5918928,
         external_service_api: Box::new(ExternalServiceApiProd),
         txes: HashSet::new(),
     });
@@ -88,7 +88,7 @@ struct Component;
 impl Guest for Component {
     fn process_deposit(address: String, tx: String, amount: u64, token_address: String, block_height: u64) -> Result<AssetBalance, Error> {
         with_state(|state| {
-            let token_address_parsed = token_address.parse()?;
+            let token_address_parsed: Address = token_address.parse()?;
             if let Some(asset_id) = state.token_asset_map.get(&token_address_parsed) {
                 if block_height != state.block_height {
                     Err(WrongBlock(state.block_height))
@@ -96,7 +96,7 @@ impl Guest for Component {
                     Err(TxSeen(tx))
                 } else {
                     state.txes.insert(tx);
-                    let parsed_address = address.parse()?;
+                    let parsed_address: Address = address.parse()?;
                     if let Some(trader) = state.address_map.get(&parsed_address) {
                         Ok(state.external_service_api.deposit(*trader, *asset_id, amount)?)
                     } else {
@@ -119,9 +119,9 @@ impl Guest for Component {
         })
     }
 
-    fn block_height() -> u64 {
+    fn block_height() -> BlockHeightResponse {
         with_state(|state| {
-            state.block_height
+            BlockHeightResponse { height: state.block_height }
         })
     }
 
@@ -145,7 +145,7 @@ impl Guest for Component {
 
             state.address_idx += 1;
             state.address_map.insert(Address::from(address), trader);
-            encode(address)
+            Address::from(address).to_string()
         })
     }
 

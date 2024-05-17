@@ -13,6 +13,8 @@ coins-bip32 = "0.8.7"
 bip32 = "0.5.1"
 ethers-core = "2.0.14"
 sha3 = "0.11.0-pre.3"
+reqwest = "0.12.4"
+serde = "1.0.202"
 
 [dependencies.alloy]
 git = "https://github.com/alloy-rs/alloy"

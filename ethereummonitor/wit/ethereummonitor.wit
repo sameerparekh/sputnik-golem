@@ -13,9 +13,13 @@ interface api {
     invalid-address(string),
     token-exists(string),
   }
+  record block-height-response {
+    height: u64
+  }
+
   process-deposit: func(address: string, tx: string, amount: u64, token-address: string, block-height: u64) -> result<asset-balance, error>;
   complete-block: func(block: u64) -> result<_, error>;
-  block-height: func() -> u64;
+  block-height: func() -> block-height-response;
   new-address-for-trader: func(trader: u64) -> string;
   add-token: func(address: string, asset-id: u64) -> result<_, error>;
 }

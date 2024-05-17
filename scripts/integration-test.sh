@@ -96,7 +96,7 @@ echo "Funding accounts..."
 TRADER_A_ADDRESS=$(curl --silent -X GET "$TRADER_API"/evm-address/"${TRADER_A_ID}")
 TRADER_B_ADDRESS=$(curl --silent -X GET "$TRADER_API"/evm-address/"${TRADER_B_ID}")
 
-BLOCK_HEIGHT=$(curl --silent -X GET "$MONITOR_API"/blockheight)
+BLOCK_HEIGHT=$(curl --silent -X GET "$MONITOR_API"/blockheight | jq .height )
 
 echo -n "Trader A ETH: "
 curl --silent -X POST "$MONITOR_API"/deposit \
@@ -181,4 +181,12 @@ set +ex
 
 echo "ADMIN_API: $ADMIN_API"
 echo "TRADER_API: $TRADER_API"
+echo "MONITOR_API: $MONITOR_API"
 
+echo "TRADER_A_ADDRESS": $TRADER_A_ADDRESS
+echo "TRADER_B_ADDRESS": $TRADER_B_ADDRESS
+
+export MONITOR_API
+RPC_URL="wss://eth-sepolia.g.alchemy.com/v2/C2AMPkL7J84rizAWoLcCt5rTflAU0tGY"
+export RPC_URL
+cargo run --package chainmonitor
