@@ -7,7 +7,8 @@ use alloy::{
     rpc::client::WsConnect,
 };
 use alloy::eips::BlockNumberOrTag;
-use alloy::primitives::{Address, B256, U256};
+use alloy::primitives::{Address, U256};
+use alloy::primitives::private::derive_more::Display;
 use alloy::rpc::types::eth::{BlockTransactions, Transaction};
 use alloy::signers::wallet::coins_bip39::{English, Mnemonic};
 use bip32::{ChildNumber, Prefix, PublicKey, XPrv};
@@ -46,10 +47,22 @@ async fn finish_block(ethereum_monitor_api: &String, block_height: u64) -> Resul
     Ok(())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
 enum DepositResult {
-    ok(serde_json::Value),
-    err(serde_json::Value),
+    Ok(serde_json::Value),
+    Err(DepositError),
+}
+
+#[derive(Deserialize, Debug, Display)]
+#[serde(rename_all = "kebab-case")]
+pub enum DepositError {
+    WrongBlock(u64),
+    TxSeen(String),
+    AccountantError(serde_json::Value),
+    UnknownAddress(String),
+    InvalidAddress(String),
+    TokenExists(String),
 }
 
 async fn deposit(ethereum_monitor_api: &String, deposit: &Deposit) -> Result<String, reqwest::Error> {
@@ -60,14 +73,6 @@ static ERC20_PREFIX: &'static [u8] = &[169, 5, 156, 187];
 static ZERO: &str = "0x0000000000000000000000000000000000000000";
 
 fn tx_to_deposit(tx: &Transaction, block_height: u64) -> Option<Deposit> {
-    let hash = tx.hash;
-    if hash == "0xdecf5a32a00bcc1bc4ef7017607f4b3f75c8ae9d22a18df035f0de1e312d4c4c".parse::<B256>().unwrap() {
-        println!("got eth")
-    }
-    if hash == "0x738df13b43b8a443b2fa0539f4b9e4c7d147713eda443015db1a1ced2e7588f9".parse::<B256>().unwrap() {
-        println!("got usdc")
-    }
-
     if let Some(to) = tx.to {
         let input = tx.input.to_vec();
         // println!("{} {}", encode(input.clone()), encode(tx.hash));
@@ -89,17 +94,13 @@ fn tx_to_deposit(tx: &Transaction, block_height: u64) -> Option<Deposit> {
             })
         } else {
             let amount = tx.value.to_base_be(10000000000000000000).collect::<Vec<_>>();
-            if amount.len() == 0 {
-                None
-            } else {
-                Some(Deposit {
-                    address: to.to_string(),
-                    tx: tx.hash.to_string(),
-                    amount: *amount.first().unwrap(),
-                    token_address: ZERO.parse().unwrap(),
-                    block_height,
-                })
-            }
+            Some(Deposit {
+                address: to.to_string(),
+                tx: tx.hash.to_string(),
+                amount: *amount.first().unwrap_or(&0),
+                token_address: ZERO.parse().unwrap(),
+                block_height,
+            })
         }
     } else {
         None
@@ -188,9 +189,10 @@ async fn monitor(rpc_url: String, ethereum_monitor_url: String) {
                 if let Some(dep) = tx_to_deposit(&tx, num) {
                     let result = deposit(&ethereum_monitor_url, &dep).await.unwrap();
                     match serde_json::from_str::<DepositResult>(&result) {
-                        Ok(DepositResult::ok(deposit)) => println!("Got deposit {deposit}"),
-                        Ok(DepositResult::err(_)) => (),
-                        Err(_) => (),
+                        Ok(DepositResult::Ok(deposit)) => println!("Deposit: {deposit}"),
+                        Ok(DepositResult::Err(DepositError::WrongBlock(expected_block))) => println!("Wrong block: {num} Expecting: {expected_block}"),
+                        Ok(DepositResult::Err(_)) => (), // Ignore other failed deposits
+                        Err(err) => println!("Error: {err}")
                     }
                 }
             }
