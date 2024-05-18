@@ -200,7 +200,8 @@ echo "MONITOR_API: $MONITOR_API"
 echo "TRADER_A_ADDRESS": "$TRADER_A_ADDRESS"
 echo "TRADER_B_ADDRESS": "$TRADER_B_ADDRESS"
 
-export MONITOR_API
+
 RPC_URL="wss://eth-sepolia.g.alchemy.com/v2/C2AMPkL7J84rizAWoLcCt5rTflAU0tGY"
-export RPC_URL
-cargo run --package chainmonitor
+
+set -ex
+cargo run --package chainmonitor -- monitor --rpc-url "$RPC_URL" --ethereum-monitor-url "$MONITOR_API"

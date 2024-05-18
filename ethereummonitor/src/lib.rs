@@ -74,7 +74,7 @@ thread_local! {
         address_idx: 1,
         address_map: HashMap::new(),
         token_asset_map: HashMap::new(),
-        block_height: 5918928,
+        block_height: env::var("BLOCK_HEIGHT").expect("BLOCK_HEIGHT not set").parse().unwrap(),
         external_service_api: Box::new(ExternalServiceApiProd),
         txes: HashSet::new(),
     });
