@@ -42,7 +42,11 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          override: true
+          default: true
+      - name: Setup Rust Nightly For rustfmt
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
       - uses: davidB/rust-cargo-make@v1
       - name: Install Protoc
         uses: arduino/setup-protoc@v3
