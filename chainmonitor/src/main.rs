@@ -2,15 +2,15 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use std::string::ToString;
 
+use alloy::eips::BlockNumberOrTag;
+use alloy::primitives::private::derive_more::Display;
+use alloy::primitives::{Address, U256};
+use alloy::rpc::types::eth::{BlockTransactions, Transaction};
+use alloy::signers::wallet::coins_bip39::{English, Mnemonic};
 use alloy::{
     providers::{Provider, ProviderBuilder},
     rpc::client::WsConnect,
 };
-use alloy::eips::BlockNumberOrTag;
-use alloy::primitives::{Address, U256};
-use alloy::primitives::private::derive_more::Display;
-use alloy::rpc::types::eth::{BlockTransactions, Transaction};
-use alloy::signers::wallet::coins_bip39::{English, Mnemonic};
 use bip32::{ChildNumber, Prefix, PublicKey, XPrv};
 use clap::{Parser, Subcommand};
 use futures_util::StreamExt;
@@ -33,17 +33,33 @@ struct Deposit {
 
 impl Display for Deposit {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}, {}, {}, {}, {}", self.address, self.tx, self.amount, self.token_address, self.block_height)
+        write!(
+            f,
+            "{}, {}, {}, {}, {}",
+            self.address, self.tx, self.amount, self.token_address, self.block_height
+        )
     }
 }
 
 async fn get_last_block(ethereum_monitor_api: &String) -> Result<u64, reqwest::Error> {
-    let response = reqwest::Client::new().get(format!("{}/blockheight", ethereum_monitor_api)).send().await?;
+    let response = reqwest::Client::new()
+        .get(format!("{}/blockheight", ethereum_monitor_api))
+        .send()
+        .await?;
     Ok(response.json::<BlockHeight>().await?.height)
 }
 
-async fn finish_block(ethereum_monitor_api: &String, block_height: u64) -> Result<(), reqwest::Error> {
-    reqwest::Client::new().post(format!("{}/completeblock/{}", ethereum_monitor_api, block_height)).send().await?;
+async fn finish_block(
+    ethereum_monitor_api: &String,
+    block_height: u64,
+) -> Result<(), reqwest::Error> {
+    reqwest::Client::new()
+        .post(format!(
+            "{}/completeblock/{}",
+            ethereum_monitor_api, block_height
+        ))
+        .send()
+        .await?;
     Ok(())
 }
 
@@ -65,8 +81,17 @@ pub enum DepositError {
     TokenExists(String),
 }
 
-async fn deposit(ethereum_monitor_api: &String, deposit: &Deposit) -> Result<String, reqwest::Error> {
-    reqwest::Client::new().post(format!("{}/deposit", ethereum_monitor_api)).json(&deposit).send().await?.text().await
+async fn deposit(
+    ethereum_monitor_api: &String,
+    deposit: &Deposit,
+) -> Result<String, reqwest::Error> {
+    reqwest::Client::new()
+        .post(format!("{}/deposit", ethereum_monitor_api))
+        .json(&deposit)
+        .send()
+        .await?
+        .text()
+        .await
 }
 
 static ERC20_PREFIX: &'static [u8] = &[169, 5, 156, 187];
@@ -84,7 +109,9 @@ fn tx_to_deposit(tx: &Transaction, block_height: u64) -> Option<Deposit> {
 
             let mut amount_bytes: [u8; 32] = [0; 32];
             amount_bytes.copy_from_slice(&input[36..68]);
-            let amount = U256::from_be_bytes(amount_bytes).to_base_be(10000000000000000000).collect::<Vec<_>>();
+            let amount = U256::from_be_bytes(amount_bytes)
+                .to_base_be(10000000000000000000)
+                .collect::<Vec<_>>();
             Some(Deposit {
                 address: receiver.to_string(),
                 tx: tx.hash.to_string(),
@@ -93,7 +120,10 @@ fn tx_to_deposit(tx: &Transaction, block_height: u64) -> Option<Deposit> {
                 block_height,
             })
         } else {
-            let amount = tx.value.to_base_be(10000000000000000000).collect::<Vec<_>>();
+            let amount = tx
+                .value
+                .to_base_be(10000000000000000000)
+                .collect::<Vec<_>>();
             Some(Deposit {
                 address: to.to_string(),
                 tx: tx.hash.to_string(),
@@ -174,12 +204,24 @@ async fn monitor(rpc_url: String, ethereum_monitor_url: String) {
         let blocks = last_block..=number;
         for num in blocks {
             println!("Block: {num}");
-            let by_number = provider.get_block_by_number(BlockNumberOrTag::Number(num), true).await.unwrap().unwrap();
+            let by_number = provider
+                .get_block_by_number(BlockNumberOrTag::Number(num), true)
+                .await
+                .unwrap()
+                .unwrap();
             let txes = match by_number.transactions {
                 BlockTransactions::Full(txes) => txes,
-                BlockTransactions::Hashes(hashes) => futures::future::join_all(hashes.iter().map(|hash| async {
-                    provider.get_transaction_by_hash(*hash).await.unwrap()
-                }).collect::<Vec<_>>()).await,
+                BlockTransactions::Hashes(hashes) => {
+                    futures::future::join_all(
+                        hashes
+                            .iter()
+                            .map(|hash| async {
+                                provider.get_transaction_by_hash(*hash).await.unwrap()
+                            })
+                            .collect::<Vec<_>>(),
+                    )
+                    .await
+                }
                 BlockTransactions::Uncle => {
                     vec![]
                 }
@@ -190,9 +232,11 @@ async fn monitor(rpc_url: String, ethereum_monitor_url: String) {
                     let result = deposit(&ethereum_monitor_url, &dep).await.unwrap();
                     match serde_json::from_str::<DepositResult>(&result) {
                         Ok(DepositResult::Ok(deposit)) => println!("Deposit: {deposit}"),
-                        Ok(DepositResult::Err(DepositError::WrongBlock(expected_block))) => println!("Wrong block: {num} Expecting: {expected_block}"),
+                        Ok(DepositResult::Err(DepositError::WrongBlock(expected_block))) => {
+                            println!("Wrong block: {num} Expecting: {expected_block}")
+                        }
                         Ok(DepositResult::Err(_)) => (), // Ignore other failed deposits
-                        Err(err) => println!("Error: {err}")
+                        Err(err) => println!("Error: {err}"),
                     }
                 }
             }
@@ -207,6 +251,9 @@ pub async fn main() {
     let cli = Cli::parse();
     match cli.command {
         Commands::GenKey { phrase } => gen_key(phrase),
-        Commands::Monitor { rpc_url, ethereum_monitor_url } => monitor(rpc_url, ethereum_monitor_url).await,
+        Commands::Monitor {
+            rpc_url,
+            ethereum_monitor_url,
+        } => monitor(rpc_url, ethereum_monitor_url).await,
     }
 }

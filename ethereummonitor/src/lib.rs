@@ -1,16 +1,18 @@
 use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
 use std::collections::hash_map::Entry;
+use std::collections::{HashMap, HashSet};
 use std::env;
 
-use alloy_primitives::Address;
 use alloy_primitives::hex::FromHexError;
+use alloy_primitives::Address;
 use bip32::{ChildNumber, PublicKey, XPrv};
 use mockall::automock;
 use sha3::{Digest, Keccak256};
 
+use crate::bindings::exports::sputnik::ethereummonitor::api::Error::{
+    InvalidAddress, TokenExists, TxSeen, UnknownAddress, WrongBlock,
+};
 use crate::bindings::exports::sputnik::ethereummonitor::api::{BlockHeightResponse, Error, Guest};
-use crate::bindings::exports::sputnik::ethereummonitor::api::Error::{InvalidAddress, TokenExists, TxSeen, UnknownAddress, WrongBlock};
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant::api::Error as AccountantError;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
@@ -34,7 +36,12 @@ struct Configuration {}
 trait ExternalServiceApi {
     fn get_accountant(&self, trader_id: u64) -> stub_accountant::Api;
 
-    fn deposit(&self, trader_id: u64, asset_id: u64, amount: u64) -> Result<AssetBalance, AccountantError>;
+    fn deposit(
+        &self,
+        trader_id: u64,
+        asset_id: u64,
+        amount: u64,
+    ) -> Result<AssetBalance, AccountantError>;
 }
 
 struct ExternalServiceApiProd;
@@ -63,8 +70,12 @@ impl ExternalServiceApi for ExternalServiceApiProd {
         stub_accountant::Api::new(&uri)
     }
 
-
-    fn deposit(&self, trader_id: u64, asset_id: u64, amount: u64) -> Result<AssetBalance, AccountantError> {
+    fn deposit(
+        &self,
+        trader_id: u64,
+        asset_id: u64,
+        amount: u64,
+    ) -> Result<AssetBalance, AccountantError> {
         self.get_accountant(trader_id).deposit(asset_id, amount)
     }
 }
@@ -86,7 +97,13 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 struct Component;
 
 impl Guest for Component {
-    fn process_deposit(address: String, tx: String, amount: u64, token_address: String, block_height: u64) -> Result<AssetBalance, Error> {
+    fn process_deposit(
+        address: String,
+        tx: String,
+        amount: u64,
+        token_address: String,
+        block_height: u64,
+    ) -> Result<AssetBalance, Error> {
         with_state(|state| {
             let token_address_parsed: Address = token_address.parse()?;
             if let Some(asset_id) = state.token_asset_map.get(&token_address_parsed) {
@@ -98,7 +115,9 @@ impl Guest for Component {
                     state.txes.insert(tx);
                     let parsed_address: Address = address.parse()?;
                     if let Some(trader) = state.address_map.get(&parsed_address) {
-                        Ok(state.external_service_api.deposit(*trader, *asset_id, amount)?)
+                        Ok(state
+                            .external_service_api
+                            .deposit(*trader, *asset_id, amount)?)
                     } else {
                         Err(UnknownAddress(address))
                     }
@@ -111,7 +130,9 @@ impl Guest for Component {
 
     fn complete_block(block: u64) -> Result<(), Error> {
         with_state(|state| {
-            if block != state.block_height { Err(WrongBlock(state.block_height)) } else {
+            if block != state.block_height {
+                Err(WrongBlock(state.block_height))
+            } else {
                 state.block_height = block + 1;
                 state.txes.clear();
                 Ok(())
@@ -120,19 +141,22 @@ impl Guest for Component {
     }
 
     fn block_height() -> BlockHeightResponse {
-        with_state(|state| {
-            BlockHeightResponse { height: state.block_height }
+        with_state(|state| BlockHeightResponse {
+            height: state.block_height,
         })
     }
-
 
     fn new_address_for_trader(trader: u64) -> String {
         with_state(|state| {
             let private_key_str = env::var("PRIVATE_KEY").expect("PRIVATE_KEY is not set");
 
-            let xpriv: XPrv = private_key_str.parse().expect("PRIVATE_KEY parses correctly");
+            let xpriv: XPrv = private_key_str
+                .parse()
+                .expect("PRIVATE_KEY parses correctly");
 
-            let derived_key = xpriv.derive_child(ChildNumber(state.address_idx)).unwrap_or_else(|_| panic!("derive_child works for index {}", state.address_idx));
+            let derived_key = xpriv
+                .derive_child(ChildNumber(state.address_idx))
+                .unwrap_or_else(|_| panic!("derive_child works for index {}", state.address_idx));
             let pubkey = derived_key.public_key();
 
             let mut hasher = Keccak256::new();
@@ -155,7 +179,9 @@ impl Guest for Component {
             if let Entry::Vacant(e) = state.token_asset_map.entry(parsed_address) {
                 e.insert(asset_id);
                 Ok(())
-            } else { Err(TokenExists(address)) }
+            } else {
+                Err(TokenExists(address))
+            }
         })
     }
 }

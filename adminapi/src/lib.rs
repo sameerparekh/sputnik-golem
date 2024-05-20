@@ -3,9 +3,11 @@ use std::env;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::adminapi::api::{Error, EthereummonitorError, Guest, Trader};
 use crate::bindings::exports::sputnik::adminapi::api::Error::{
     Internal, UnableToMakeAccountant, UnableToMakeEngine,
+};
+use crate::bindings::exports::sputnik::adminapi::api::{
+    Error, EthereummonitorError, Guest, Trader,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant_stub::stub_accountant;
@@ -169,7 +171,9 @@ impl Guest for Component {
     fn create_asset(name: String, decimals: u8, token_address: String) -> Result<Asset, Error> {
         with_state(|state| {
             let asset_id = state.external_service_api.get_new_id();
-            state.external_service_api.add_token(&token_address, asset_id)?;
+            state
+                .external_service_api
+                .add_token(&token_address, asset_id)?;
             Ok(state.external_service_api.create_asset(&Asset {
                 id: asset_id,
                 name,

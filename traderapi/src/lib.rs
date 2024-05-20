@@ -4,11 +4,11 @@ use std::env;
 use chrono::Utc;
 use mockall::automock;
 
+use crate::bindings::exports::sputnik::traderapi::api::Error;
+use crate::bindings::exports::sputnik::traderapi::api::Error::InternalError;
 use crate::bindings::exports::sputnik::traderapi::api::{
     AssetBalance, Guest, Order, OrderAndStatus,
 };
-use crate::bindings::exports::sputnik::traderapi::api::Error;
-use crate::bindings::exports::sputnik::traderapi::api::Error::InternalError;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::accountant::api::{
     Error as AccountantError, Order as AccountantOrder,

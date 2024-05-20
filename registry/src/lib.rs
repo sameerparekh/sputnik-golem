@@ -125,14 +125,14 @@ mod tests {
             name: "ETH".to_string(),
             decimals: 8,
         })
-            .expect("add asset returns ok");
+        .expect("add asset returns ok");
 
         <Component as Guest>::add_asset(Asset {
             id: 1,
             name: "USDC".to_string(),
             decimals: 4,
         })
-            .expect("add asset returns ok");
+        .expect("add asset returns ok");
 
         <Component as Guest>::add_spot_pair(SpotPair {
             id: 2,
@@ -140,7 +140,7 @@ mod tests {
             numerator_id: 0,
             denominator_id: 1,
         })
-            .expect("add spotpair returns ok");
+        .expect("add spotpair returns ok");
     }
 
     impl PartialEq for SpotPair {
