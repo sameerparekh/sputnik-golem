@@ -22,12 +22,16 @@ interface api {
     sell,
   }
 
+  record big-int {
+    data: list<u64>,
+  }
+
   record order {
     id: u64,
     timestamp: u64,
     side: side,
-    price: u64,
-    size: u64,
+    price: big-int,
+    size: big-int,
     trader: u64,
   }
 
@@ -48,8 +52,8 @@ interface api {
   }
 
   record fill {
-    price: u64,
-    size: u64,
+    price: big-int,
+    size: big-int,
     taker-order-id: u64,
     maker-order-id: u64,
     timestamp: u64,

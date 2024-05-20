@@ -2,12 +2,13 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 
 use mockall::automock;
+use num_bigint::BigUint;
 
-use crate::bindings::exports::sputnik::accountant::api::Error::{
-    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
-};
 use crate::bindings::exports::sputnik::accountant::api::{
     AssetBalance, Error, Fill, Guest, Order, OrderAndStatus, OrderStatus,
+};
+use crate::bindings::exports::sputnik::accountant::api::Error::{
+    AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
@@ -30,7 +31,7 @@ struct Configuration {
 
 struct State {
     configuration: Option<Configuration>,
-    balances: HashMap<u64, u64>,
+    balances: HashMap<u64, BigUint>,
     external_service_api: Box<dyn ExternalServiceApi>,
     orders: HashMap<u64, OrderAndStatus>,
 }
@@ -130,36 +131,36 @@ fn available_balance(state: &mut State, asset_id: u64) -> u64 {
         Some(balance) => {
             *balance
                 - state
-                    .orders
-                    .iter()
-                    .filter_map(|(_, order_and_status)| {
-                        let OrderAndStatus { order, status } = order_and_status;
-                        let spot_pair = spot_pairs
-                            .get(&order.spot_pair)
-                            .expect("spot pair map should have pair");
-                        let remaining_size = status.original_size
-                            - status.fills.iter().map(|fill| fill.size).sum::<u64>();
-                        match order.side {
-                            Buy => {
-                                if spot_pair.denominator.id == asset_id {
-                                    Some(
-                                        remaining_size * order.price
-                                            / decimal_power(spot_pair.numerator.decimals),
-                                    )
-                                } else {
-                                    None
-                                }
-                            }
-                            Sell => {
-                                if spot_pair.numerator.id == asset_id {
-                                    Some(remaining_size)
-                                } else {
-                                    None
-                                }
+                .orders
+                .iter()
+                .filter_map(|(_, order_and_status)| {
+                    let OrderAndStatus { order, status } = order_and_status;
+                    let spot_pair = spot_pairs
+                        .get(&order.spot_pair)
+                        .expect("spot pair map should have pair");
+                    let remaining_size = status.original_size
+                        - status.fills.iter().map(|fill| fill.size).sum::<u64>();
+                    match order.side {
+                        Buy => {
+                            if spot_pair.denominator.id == asset_id {
+                                Some(
+                                    remaining_size * order.price
+                                        / decimal_power(spot_pair.numerator.decimals),
+                                )
+                            } else {
+                                None
                             }
                         }
-                    })
-                    .sum::<u64>()
+                        Sell => {
+                            if spot_pair.numerator.id == asset_id {
+                                Some(remaining_size)
+                            } else {
+                                None
+                            }
+                        }
+                    }
+                })
+                .sum::<u64>()
         }
         None => ZERO,
     }
@@ -190,9 +191,9 @@ fn process_fill(state: &mut State, is_taker: bool, fill: &matching_engine::api::
     };
     match state.orders.get(&order_id) {
         Some(OrderAndStatus {
-            order,
-            status: _status,
-        }) => {
+                 order,
+                 status: _status,
+             }) => {
             let configuration = state.configuration.clone().expect("Must be configured");
             let spot_pairs = state.external_service_api.get_spot_pairs(configuration);
             let spot_pair = match spot_pairs.get(&order.spot_pair) {
@@ -372,9 +373,9 @@ impl Guest for Component {
             match state.orders.get_mut(&fill.maker_order_id) {
                 None => panic!("No order {}", fill.maker_order_id),
                 Some(OrderAndStatus {
-                    order: _order,
-                    status,
-                }) => status.fills.push(fill),
+                         order: _order,
+                         status,
+                     }) => status.fills.push(fill),
             }
         })
     }
@@ -390,13 +391,13 @@ mod tests {
 
     use assert_unordered::assert_eq_unordered;
 
+    use crate::{Component, Guest, MockExternalServiceApi, with_state};
     use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
     use crate::bindings::sputnik::matching_engine::api::Fill;
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair};
-    use crate::{with_state, Component, Guest, MockExternalServiceApi};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {
@@ -605,7 +606,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
@@ -638,7 +639,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
@@ -671,7 +672,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
@@ -715,7 +716,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
@@ -759,7 +760,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
@@ -803,7 +804,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
@@ -848,7 +849,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
@@ -861,7 +862,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 2 }
@@ -874,7 +875,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 3 }
@@ -887,7 +888,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 4 }
@@ -931,7 +932,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
@@ -989,7 +990,7 @@ mod tests {
             price: 6000000,
             size: 25000000,
         })
-        .expect("success");
+            .expect("success");
         assert_eq!(
             status,
             crate::bindings::exports::sputnik::accountant::api::OrderStatus { id: 1 }
