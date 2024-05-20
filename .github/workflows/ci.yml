@@ -49,10 +49,6 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: cargo-bins/cargo-binstall@main
-      - name: Install cargos
-        run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-component golem-wasm-rpc-stubgen
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm --locked golem-cli
       - name: Lint
         run: RUSTFLAGS="-A unused" cargo clippy -- -D warnings
       - name: Fmt
@@ -71,6 +67,10 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: sameerparekh/sputnik-golem
 # Integration tests need to be able to connect to a subdomain.host that points to the local machine
+#      - name: Install cargos
+#        run: |
+#          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-component golem-wasm-rpc-stubgen
+#          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm --locked golem-cli
 #      - name: Start up docker
 #        run: docker-compose up -d
 #      - name: Integration tests
