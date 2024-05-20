@@ -1415,10 +1415,12 @@ dependencies = [
  "bip32",
  "clap",
  "coins-bip32",
+ "dotenv",
  "ethers-core",
  "futures",
  "futures-util",
  "hdwallet",
+ "once_cell",
  "reqwest 0.12.4",
  "secp256k1",
  "serde",
@@ -1907,6 +1909,12 @@ dependencies = [
  "const-oid 0.10.0-pre.2",
  "crypto-common 0.2.0-pre.5",
 ]
+
+[[package]]
+name = "dotenv"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
 name = "downcast"

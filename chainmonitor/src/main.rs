@@ -2,20 +2,25 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use std::string::ToString;
 
-use alloy::eips::BlockNumberOrTag;
-use alloy::primitives::private::derive_more::Display;
-use alloy::primitives::{Address, U256};
-use alloy::rpc::types::eth::{BlockTransactions, Transaction};
-use alloy::signers::wallet::coins_bip39::{English, Mnemonic};
 use alloy::{
     providers::{Provider, ProviderBuilder},
     rpc::client::WsConnect,
 };
+use alloy::eips::BlockNumberOrTag;
+use alloy::primitives::{Address, U256};
+use alloy::primitives::private::derive_more::Display;
+use alloy::rpc::types::eth::{BlockTransactions, Transaction};
+use alloy::signers::wallet::coins_bip39::{English, Mnemonic, MnemonicError};
+use alloy::transports::{RpcError, TransportErrorKind};
 use bip32::{ChildNumber, Prefix, PublicKey, XPrv};
 use clap::{Parser, Subcommand};
-use futures_util::StreamExt;
+use dotenv::dotenv;
+use futures_util::{FutureExt, StreamExt};
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Keccak256};
+
+use crate::MonitorError::ReqwestError;
 
 #[derive(Deserialize)]
 struct BlockHeight {
@@ -94,8 +99,8 @@ async fn deposit(
         .await
 }
 
-static ERC20_PREFIX: &'static [u8] = &[169, 5, 156, 187];
-static ZERO: &str = "0x0000000000000000000000000000000000000000";
+static ERC20_PREFIX: &[u8] = &[169, 5, 156, 187];
+static ZERO: Lazy<Address> = Lazy::new(|| Address::from_slice(&[0u8; 20]));
 
 fn tx_to_deposit(tx: &Transaction, block_height: u64) -> Option<Deposit> {
     if let Some(to) = tx.to {
@@ -128,7 +133,7 @@ fn tx_to_deposit(tx: &Transaction, block_height: u64) -> Option<Deposit> {
                 address: to.to_string(),
                 tx: tx.hash.to_string(),
                 amount: *amount.first().unwrap_or(&0),
-                token_address: ZERO.parse().unwrap(),
+                token_address: ZERO.to_string(),
                 block_height,
             })
         }
@@ -163,17 +168,35 @@ struct Cli {
     command: Commands,
 }
 
-fn gen_key(phrase: String) {
-    let mnemonic: Mnemonic<English> = Mnemonic::new_from_phrase(&phrase).unwrap();
-    let seed = mnemonic.to_seed(None).unwrap();
+#[derive(Display)]
+enum GenKeyError {
+    MnemonicError(MnemonicError),
+    Bip32Error(bip32::Error),
+}
 
-    let priv_key = XPrv::new(&seed).unwrap();
-    let encoded_key = priv_key.to_extended_key(Prefix::XPRV).to_string();
+impl From<MnemonicError> for GenKeyError {
+    fn from(value: MnemonicError) -> Self {
+        GenKeyError::MnemonicError(value)
+    }
+}
+
+impl From<bip32::Error> for GenKeyError {
+    fn from(value: bip32::Error) -> Self {
+        GenKeyError::Bip32Error(value)
+    }
+}
+
+fn gen_key(phrase: String) -> Result<(), GenKeyError> {
+    let mnemonic: Mnemonic<English> = Mnemonic::new_from_phrase(&phrase)?;
+    let seed = mnemonic.to_seed(None)?;
+
+    let private_key = XPrv::new(seed)?;
+    let encoded_key = private_key.to_extended_key(Prefix::XPRV).to_string();
     println!("Private Key: {:?}", encoded_key);
 
-    let xpriv: XPrv = XPrv::from_str(&encoded_key).unwrap();
+    let xpriv: XPrv = XPrv::from_str(&encoded_key)?;
 
-    let derived_key = xpriv.derive_child(ChildNumber(1)).unwrap();
+    let derived_key = xpriv.derive_child(ChildNumber(1))?;
     let pubkey = derived_key.public_key();
 
     let mut hasher = Keccak256::new();
@@ -184,64 +207,106 @@ fn gen_key(phrase: String) {
     let mut address = [0u8; 20];
     address.copy_from_slice(&result[12..32]);
     println!("Address: {}", Address::from(address));
+    Ok(())
 }
 
-async fn monitor(rpc_url: String, ethereum_monitor_url: String) {
-    let ws = WsConnect::new(rpc_url);
-    let provider = ProviderBuilder::new().on_ws(ws).await.unwrap();
+#[derive(Display)]
+enum MonitorError {
+    WrongBlock,
+    InternalError(String),
+    ReqwestError(reqwest::Error),
+}
 
-    let sub = provider.subscribe_blocks().await.unwrap();
+impl From<dotenv::Error> for MonitorError {
+    fn from(value: dotenv::Error) -> Self {
+        MonitorError::InternalError(format!("{}", value))
+    }
+}
+
+impl From<reqwest::Error> for MonitorError {
+    fn from(value: reqwest::Error) -> Self {
+        ReqwestError(value)
+    }
+}
+
+impl From<RpcError<TransportErrorKind>> for MonitorError {
+    fn from(value: RpcError<TransportErrorKind>) -> Self {
+        MonitorError::InternalError(format!("{}", value))
+    }
+}
+
+async fn monitor(rpc_url: String, ethereum_monitor_url: String) -> Result<(), MonitorError> {
+    dotenv()?;
+    let ws = WsConnect::new(rpc_url);
+    let provider = ProviderBuilder::new().on_ws(ws).await?;
+
+    let sub = provider.subscribe_blocks().await?;
 
     // Wait and take the next 4 blocks.
     let mut stream = sub.into_stream();
 
-    let mut last_block = get_last_block(&ethereum_monitor_url).await.unwrap();
+    let mut last_block = get_last_block(&ethereum_monitor_url).await?;
     println!("Starting block {last_block}");
 
     loop {
-        let block = stream.next().await.unwrap();
-        let number = block.header.number.unwrap();
+        let block = match stream.next().await {
+            Some(block) => block,
+            None => {
+                println!("No block received!");
+                continue;
+            }
+        };
+        let number = match block.header.number {
+            Some(number) => number,
+            None => {
+                println!("Block has no number!");
+                continue;
+            }
+        };
         let blocks = last_block..=number;
         for num in blocks {
             println!("Block: {num}");
-            let by_number = provider
+            if let Some(by_number) = provider
                 .get_block_by_number(BlockNumberOrTag::Number(num), true)
-                .await
-                .unwrap()
-                .unwrap();
-            let txes = match by_number.transactions {
-                BlockTransactions::Full(txes) => txes,
-                BlockTransactions::Hashes(hashes) => {
-                    futures::future::join_all(
-                        hashes
-                            .iter()
-                            .map(|hash| async {
-                                provider.get_transaction_by_hash(*hash).await.unwrap()
-                            })
-                            .collect::<Vec<_>>(),
-                    )
-                    .await
-                }
-                BlockTransactions::Uncle => {
-                    vec![]
-                }
-            };
+                .await? {
+                let txes = match by_number.transactions {
+                    BlockTransactions::Full(txes) => txes,
+                    BlockTransactions::Hashes(hashes) => {
+                        futures::future::join_all(
+                            hashes
+                                .iter()
+                                .map(|hash| async {
+                                    match provider.get_transaction_by_hash(*hash).await {
+                                        Ok(tx) => Some(tx),
+                                        Err(_) => None
+                                    }
+                                })
+                                .collect::<Vec<_>>(),
+                        ).await.into_iter().flatten().collect::<Vec<_>>()
+                    }
+                    BlockTransactions::Uncle => {
+                        vec![]
+                    }
+                };
 
-            for tx in txes {
-                if let Some(dep) = tx_to_deposit(&tx, num) {
-                    let result = deposit(&ethereum_monitor_url, &dep).await.unwrap();
-                    match serde_json::from_str::<DepositResult>(&result) {
-                        Ok(DepositResult::Ok(deposit)) => println!("Deposit: {deposit}"),
-                        Ok(DepositResult::Err(DepositError::WrongBlock(expected_block))) => {
-                            println!("Wrong block: {num} Expecting: {expected_block}")
+                for tx in txes {
+                    if let Some(dep) = tx_to_deposit(&tx, num) {
+                        let result = deposit(&ethereum_monitor_url, &dep).await?;
+                        match serde_json::from_str::<DepositResult>(&result) {
+                            Ok(DepositResult::Ok(deposit)) => println!("Deposit: {deposit}"),
+                            Ok(DepositResult::Err(DepositError::WrongBlock(expected_block))) => {
+                                println!("Wrong block: {num} Expecting: {expected_block}");
+                                return Err(MonitorError::WrongBlock);
+                            }
+                            Ok(DepositResult::Err(_)) => (), // Ignore other failed deposits
+                            Err(err) => println!("Error: {err}"),
                         }
-                        Ok(DepositResult::Err(_)) => (), // Ignore other failed deposits
-                        Err(err) => println!("Error: {err}"),
                     }
                 }
+                finish_block(&ethereum_monitor_url, num).await?;
             }
-            finish_block(&ethereum_monitor_url, num).await.unwrap();
         }
+
         last_block = number;
     }
 }
@@ -250,10 +315,12 @@ async fn monitor(rpc_url: String, ethereum_monitor_url: String) {
 pub async fn main() {
     let cli = Cli::parse();
     match cli.command {
-        Commands::GenKey { phrase } => gen_key(phrase),
+        Commands::GenKey { phrase } => gen_key(phrase).unwrap_or_else(|err| panic!("GenKey failed: {}", err)),
         Commands::Monitor {
             rpc_url,
             ethereum_monitor_url,
-        } => monitor(rpc_url, ethereum_monitor_url).await,
+        } => monitor(rpc_url, ethereum_monitor_url)
+            .await
+            .unwrap_or_else(|err| panic!("Monitor failed: {}", err)),
     }
 }
