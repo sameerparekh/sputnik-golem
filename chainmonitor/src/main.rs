@@ -4,16 +4,16 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use std::string::ToString;
 
+use alloy::eips::BlockNumberOrTag;
+use alloy::primitives::private::derive_more::Display;
+use alloy::primitives::{Address, U256};
+use alloy::rpc::types::eth::{BlockTransactions, Transaction};
+use alloy::signers::wallet::coins_bip39::{English, Mnemonic, MnemonicError};
+use alloy::transports::{RpcError, TransportErrorKind};
 use alloy::{
     providers::{Provider, ProviderBuilder},
     rpc::client::WsConnect,
 };
-use alloy::eips::BlockNumberOrTag;
-use alloy::primitives::{Address, U256};
-use alloy::primitives::private::derive_more::Display;
-use alloy::rpc::types::eth::{BlockTransactions, Transaction};
-use alloy::signers::wallet::coins_bip39::{English, Mnemonic, MnemonicError};
-use alloy::transports::{RpcError, TransportErrorKind};
 use bip32::{ChildNumber, Prefix, PublicKey, XPrv};
 use clap::{Parser, Subcommand};
 use dotenv::dotenv;
@@ -278,22 +278,25 @@ async fn monitor(rpc_url: String, ethereum_monitor_url: String) -> Result<(), Mo
             println!("Block: {num}");
             if let Some(by_number) = provider
                 .get_block_by_number(BlockNumberOrTag::Number(num), true)
-                .await? {
+                .await?
+            {
                 let txes = match by_number.transactions {
                     BlockTransactions::Full(txes) => txes,
-                    BlockTransactions::Hashes(hashes) => {
-                        futures::future::join_all(
-                            hashes
-                                .iter()
-                                .map(|hash| async {
-                                    match provider.get_transaction_by_hash(*hash).await {
-                                        Ok(tx) => Some(tx),
-                                        Err(_) => None
-                                    }
-                                })
-                                .collect::<Vec<_>>(),
-                        ).await.into_iter().flatten().collect::<Vec<_>>()
-                    }
+                    BlockTransactions::Hashes(hashes) => futures::future::join_all(
+                        hashes
+                            .iter()
+                            .map(|hash| async {
+                                match provider.get_transaction_by_hash(*hash).await {
+                                    Ok(tx) => Some(tx),
+                                    Err(_) => None,
+                                }
+                            })
+                            .collect::<Vec<_>>(),
+                    )
+                    .await
+                    .into_iter()
+                    .flatten()
+                    .collect::<Vec<_>>(),
                     BlockTransactions::Uncle => {
                         vec![]
                     }
@@ -325,7 +328,9 @@ async fn monitor(rpc_url: String, ethereum_monitor_url: String) -> Result<(), Mo
 pub async fn main() {
     let cli = Cli::parse();
     match cli.command {
-        Commands::GenKey { phrase } => gen_key(phrase).unwrap_or_else(|err| panic!("GenKey failed: {}", err)),
+        Commands::GenKey { phrase } => {
+            gen_key(phrase).unwrap_or_else(|err| panic!("GenKey failed: {}", err))
+        }
         Commands::Monitor {
             rpc_url,
             ethereum_monitor_url,

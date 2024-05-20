@@ -56,7 +56,7 @@ jobs:
       - name: Lint
         run: RUSTFLAGS="-A unused" cargo clippy -- -D warnings
       - name: Fmt
-        run: cargo fmt +nightly --check
+        run: cargo +nightly fmt --check
       - name: Unit tests
         run: cargo test
       - name: Install cargo-llvm-cov
