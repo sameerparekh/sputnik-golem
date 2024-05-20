@@ -1,4 +1,4 @@
 ignore = [
     "**/src/bindings.rs",
-    "*-stub/lib.rs",
+    "*-stub/src/lib.rs",
 ]
