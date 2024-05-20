@@ -44,3 +44,10 @@ docker-compose up -d
 scripts/integration-test.sh
 docker-compose down
 ```
+
+## Testing CI
+
+```shell
+brew install act
+act -P ubuntu-latest=-self-hosted --container-architecture linux/amd64
+```
