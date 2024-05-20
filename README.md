@@ -26,9 +26,18 @@ cargo test
 
 ## Integration Testing
 
-Integration testing requires `dnsmasq` so that all requests to *.golem
-resolve to localhost. Note that integration testing is not currently
-working with Golem Cloud.
+1. Generate a private key:
+
+```shell
+cargo run --package chainmonitor -- gen-key --phrase 'seed phrase'
+```
+
+2. Copy .env.example to .env and update values appropriately.
+3. Install `dnsmasq`.
+
+   Configure `dnsmasq` so that all requests to `*.golem` resolve to localhost.
+
+Note that integration testing is not currently working with Golem Cloud.
 
 ```shell
 docker-compose up -d

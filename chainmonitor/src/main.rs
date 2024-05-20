@@ -1,3 +1,5 @@
+use std::env;
+use std::env::VarError;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use std::string::ToString;
@@ -15,7 +17,7 @@ use alloy::transports::{RpcError, TransportErrorKind};
 use bip32::{ChildNumber, Prefix, PublicKey, XPrv};
 use clap::{Parser, Subcommand};
 use dotenv::dotenv;
-use futures_util::{FutureExt, StreamExt};
+use futures_util::StreamExt;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Keccak256};
@@ -215,6 +217,7 @@ enum MonitorError {
     WrongBlock,
     InternalError(String),
     ReqwestError(reqwest::Error),
+    EnvError(env::VarError),
 }
 
 impl From<dotenv::Error> for MonitorError {
@@ -229,6 +232,12 @@ impl From<reqwest::Error> for MonitorError {
     }
 }
 
+impl From<VarError> for MonitorError {
+    fn from(value: VarError) -> Self {
+        MonitorError::EnvError(value)
+    }
+}
+
 impl From<RpcError<TransportErrorKind>> for MonitorError {
     fn from(value: RpcError<TransportErrorKind>) -> Self {
         MonitorError::InternalError(format!("{}", value))
@@ -237,7 +246,8 @@ impl From<RpcError<TransportErrorKind>> for MonitorError {
 
 async fn monitor(rpc_url: String, ethereum_monitor_url: String) -> Result<(), MonitorError> {
     dotenv()?;
-    let ws = WsConnect::new(rpc_url);
+    let api_key = env::var("ALCHEMY_API_KEY")?;
+    let ws = WsConnect::new(format!("{}/{}", rpc_url, api_key));
     let provider = ProviderBuilder::new().on_ws(ws).await?;
 
     let sub = provider.subscribe_blocks().await?;

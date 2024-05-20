@@ -60,6 +60,8 @@ ETHEREUMMONITOR_COMPONENT_ID=$("$CMD" --format yaml component list -c ethereummo
   --env ACCOUNTANT_COMPONENT_ID="$ACCOUNTANT_COMPONENT_ID" \
   --env ENVIRONMENT="$ENVIRONMENT"
 
+source .env
+
 "$CMD" worker add --component-name ethereummonitor --worker-name "$ENVIRONMENT" \
   --env REGISTRY_COMPONENT_ID="$REGISTRY_COMPONENT_ID" \
   --env IDS_COMPONENT_ID="$IDS_COMPONENT_ID" \
