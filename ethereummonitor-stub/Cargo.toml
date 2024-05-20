@@ -1,0 +1,55 @@
+[package]
+name = "ethereummonitor-stub"
+edition = "2021"
+version = "0.0.1"
+
+[package.metadata.component]
+package = "sputnik:ethereummonitor"
+
+[package.metadata.component.target]
+world = "wasm-rpc-stub-ethereummonitor"
+path = "wit"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:accountant"]
+path = "wit/deps/sputnik_accountant"
+
+[package.metadata.component.target.dependencies."sputnik:accountant-stub"]
+path = "wit/deps/sputnik_accountant-stub"
+
+[package.metadata.component.target.dependencies."sputnik:ethereummonitor"]
+path = "wit/deps/sputnik_ethereummonitor"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine"]
+path = "wit/deps/sputnik_matching-engine"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
+path = "wit/deps/sputnik_matching-engine-stub"
+
+[package.metadata.component.target.dependencies."sputnik:registry"]
+path = "wit/deps/sputnik_registry"
+
+[package.metadata.component.target.dependencies."sputnik:registry-stub"]
+path = "wit/deps/sputnik_registry-stub"
+
+[dependencies.golem-wasm-rpc]
+version = "0.0.22"
+features = ["stub"]
+default-features = false
+
+[dependencies.wit-bindgen]
+version = "0.17.0"
+features = ["realloc"]
+default-features = false
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+required-features = []
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

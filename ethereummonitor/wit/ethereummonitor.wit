@@ -1,0 +1,30 @@
+package sputnik: ethereummonitor;
+
+interface api {
+
+  use sputnik: accountant/api.{error as accountant-error};
+  use sputnik: accountant/api.{asset-balance};
+
+  variant error {
+    wrong-block(u64),
+    tx-seen(string),
+    accountant-error(accountant-error),
+    unknown-address(string),
+    invalid-address(string),
+    token-exists(string),
+  }
+  record block-height-response {
+    height: u64
+  }
+
+  process-deposit: func(address: string, tx: string, amount: u64, token-address: string, block-height: u64) -> result<asset-balance, error>;
+  complete-block: func(block: u64) -> result<_, error>;
+  block-height: func() -> block-height-response;
+  new-address-for-trader: func(trader: u64) -> string;
+  add-token: func(address: string, asset-id: u64) -> result<_, error>;
+}
+
+world ethereummonitor {
+  import sputnik: accountant-stub/stub-accountant;
+  export api;
+}

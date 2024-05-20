@@ -1,0 +1,49 @@
+[package]
+name = "ethereummonitor"
+edition = "2021"
+version = "0.1.0"
+
+[package.metadata.component]
+package = "sputnik:ethereummonitor"
+
+[package.metadata.component.target]
+path = "wit"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."sputnik:accountant"]
+path = "wit/deps/sputnik_accountant"
+
+[package.metadata.component.target.dependencies."sputnik:accountant-stub"]
+path = "wit/deps/sputnik_accountant-stub"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine"]
+path = "wit/deps/sputnik_matching-engine"
+
+[package.metadata.component.target.dependencies."sputnik:matching-engine-stub"]
+path = "wit/deps/sputnik_matching-engine-stub"
+
+[package.metadata.component.target.dependencies."sputnik:registry"]
+path = "wit/deps/sputnik_registry"
+
+[package.metadata.component.target.dependencies."sputnik:registry-stub"]
+path = "wit/deps/sputnik_registry-stub"
+
+[dependencies]
+secp256k1 = "0.26.0"
+bip32 = "0.5.1"
+ethers-core = "2.0.14"
+alloy-primitives = "0.7.4"
+sha3 = "0.11.0-pre.3"
+mockall = "0.12.1"
+rustc-hex = "2.1.0"
+
+[dependencies.wit-bindgen]
+version = "0.17.0"
+features = ["realloc"]
+default-features = false
+
+[lib]
+crate-type = ["cdylib"]
+required-features = []

@@ -5,10 +5,10 @@ use std::collections::HashMap;
 use mockall::automock;
 use priority_queue::PriorityQueue;
 
-use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 use sputnik::matching_engine::api::Error::MissingOrder;
 use sputnik::matching_engine::api::Side::{Buy, Sell};
 use sputnik::matching_engine::api::Status::{Canceled, Filled, Open, PartialFilled};
+use sputnik::matching_engine::api::{Error, Fill, Guest, Order, OrderBook, OrderStatus};
 
 use crate::bindings::exports::sputnik;
 use crate::bindings::golem::rpc::types::Uri;
@@ -248,14 +248,14 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Component, Guest, MockExternalServiceApi, with_state};
-    use crate::bindings::exports::sputnik::matching_engine::api::{
-        Fill, Order, OrderBook, OrderStatus,
-    };
     use crate::bindings::exports::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::exports::sputnik::matching_engine::api::Status::{
         Canceled, Filled, Open, PartialFilled,
     };
+    use crate::bindings::exports::sputnik::matching_engine::api::{
+        Fill, Order, OrderBook, OrderStatus,
+    };
+    use crate::{with_state, Component, Guest, MockExternalServiceApi};
 
     fn init() {
         <Component as Guest>::init("".to_string(), "".to_string())

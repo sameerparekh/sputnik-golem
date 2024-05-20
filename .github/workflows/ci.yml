@@ -42,19 +42,23 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          override: true
+          default: true
+          components: clippy
+      - name: Setup Rust Nightly For rustfmt
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: rustfmt
       - uses: davidB/rust-cargo-make@v1
       - name: Install Protoc
         uses: arduino/setup-protoc@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: cargo-bins/cargo-binstall@main
-      - name: Install cargos
-        run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-component golem-wasm-rpc-stubgen
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm --locked golem-cli
       - name: Lint
         run: RUSTFLAGS="-A unused" cargo clippy -- -D warnings
+      - name: Fmt
+        run: cargo +nightly fmt --check
       - name: Unit tests
         run: cargo test
       - name: Install cargo-llvm-cov
@@ -69,6 +73,10 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: sameerparekh/sputnik-golem
 # Integration tests need to be able to connect to a subdomain.host that points to the local machine
+#      - name: Install cargos
+#        run: |
+#          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-component golem-wasm-rpc-stubgen
+#          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm --locked golem-cli
 #      - name: Start up docker
 #        run: docker-compose up -d
 #      - name: Integration tests

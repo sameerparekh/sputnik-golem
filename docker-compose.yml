@@ -153,3 +153,9 @@ volumes:
     driver: local
   component_compiled_store:
     driver: local
+  bitcoin:
+    driver: local
+    driver_opts:
+      o: "size=100g"
+      device: "tmpfs"
+      type: "tmpfs"

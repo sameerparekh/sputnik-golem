@@ -37,3 +37,4 @@ export USE_CLOUD
 
 scripts/deploy-api.sh traderapi
 scripts/deploy-api.sh adminapi
+scripts/deploy-api.sh ethereummonitor

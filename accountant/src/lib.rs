@@ -3,11 +3,11 @@ use std::collections::HashMap;
 
 use mockall::automock;
 
-use crate::bindings::exports::sputnik::accountant::api::{
-    AssetBalance, Error, Fill, Guest, Order, OrderAndStatus, OrderStatus,
-};
 use crate::bindings::exports::sputnik::accountant::api::Error::{
     AlreadyInitialized, InsufficientFunds, InvalidAsset, InvalidSpotPair, MatchingEngineError,
+};
+use crate::bindings::exports::sputnik::accountant::api::{
+    AssetBalance, Error, Fill, Guest, Order, OrderAndStatus, OrderStatus,
 };
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::sputnik::matching_engine;
@@ -27,6 +27,7 @@ struct Configuration {
     registry_component_id: String,
     environment: String,
 }
+
 struct State {
     configuration: Option<Configuration>,
     balances: HashMap<u64, u64>,
@@ -389,13 +390,13 @@ mod tests {
 
     use assert_unordered::assert_eq_unordered;
 
-    use crate::{Component, Guest, MockExternalServiceApi, with_state};
     use crate::bindings::exports::sputnik::accountant::api::{AssetBalance, Order};
     use crate::bindings::sputnik::matching_engine::api::Fill;
     use crate::bindings::sputnik::matching_engine::api::Side::{Buy, Sell};
     use crate::bindings::sputnik::matching_engine::api::Status::{Filled, Open, PartialFilled};
     use crate::bindings::sputnik::matching_engine_stub::stub_matching_engine::OrderStatus;
     use crate::bindings::sputnik::registry::api::{Asset, HydratedSpotPair};
+    use crate::{with_state, Component, Guest, MockExternalServiceApi};
 
     impl PartialEq for AssetBalance {
         fn eq(&self, other: &Self) -> bool {
@@ -431,7 +432,7 @@ mod tests {
                     1,
                     Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8,
                     },
                 ),
@@ -439,7 +440,7 @@ mod tests {
                     2,
                     Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2,
                     },
                 ),
@@ -450,15 +451,15 @@ mod tests {
                 1,
                 HydratedSpotPair {
                     id: 1,
-                    name: "BTCUSD".to_string(),
+                    name: "ETHUSDC".to_string(),
                     numerator: Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8,
                     },
                     denominator: Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2,
                     },
                 },
@@ -515,6 +516,7 @@ mod tests {
     fn perform_withdrawal() -> AssetBalance {
         <Component as Guest>::withdraw(1, 50000000).expect("successful withdrawal")
     }
+
     #[test]
     fn test_deposit() {
         init();
@@ -526,8 +528,8 @@ mod tests {
             AssetBalance {
                 asset: Asset {
                     id: 1,
-                    name: "BTC".to_string(),
-                    decimals: 8
+                    name: "ETH".to_string(),
+                    decimals: 8,
                 },
                 balance: 100000000,
                 available_balance: 100000000,
@@ -546,8 +548,8 @@ mod tests {
             AssetBalance {
                 asset: Asset {
                     id: 1,
-                    name: "BTC".to_string(),
-                    decimals: 8
+                    name: "ETH".to_string(),
+                    decimals: 8,
                 },
                 balance: 50000000,
                 available_balance: 50000000,
@@ -567,8 +569,8 @@ mod tests {
             vec![AssetBalance {
                 asset: Asset {
                     id: 1,
-                    name: "BTC".to_string(),
-                    decimals: 8
+                    name: "ETH".to_string(),
+                    decimals: 8,
                 },
                 balance: 100000000,
                 available_balance: 100000000,
@@ -581,8 +583,8 @@ mod tests {
             vec![AssetBalance {
                 asset: Asset {
                     id: 1,
-                    name: "BTC".to_string(),
-                    decimals: 8
+                    name: "ETH".to_string(),
+                    decimals: 8,
                 },
                 balance: 50000000,
                 available_balance: 50000000,
@@ -614,8 +616,8 @@ mod tests {
             vec![AssetBalance {
                 asset: Asset {
                     id: 1,
-                    name: "BTC".to_string(),
-                    decimals: 8
+                    name: "ETH".to_string(),
+                    decimals: 8,
                 },
                 balance: 100000000,
                 available_balance: 75000000,
@@ -647,8 +649,8 @@ mod tests {
             vec![AssetBalance {
                 asset: Asset {
                     id: 2,
-                    name: "USD".to_string(),
-                    decimals: 2
+                    name: "USDC".to_string(),
+                    decimals: 2,
                 },
                 balance: 6000000,
                 available_balance: 4500000,
@@ -681,7 +683,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8
                     },
                     balance: 87500000,
@@ -690,7 +692,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2
                     },
                     balance: 750000,
@@ -725,7 +727,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8,
                     },
                     balance: 12500000,
@@ -734,7 +736,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2,
                     },
                     balance: 5250000,
@@ -769,7 +771,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8,
                     },
                     balance: 75000000,
@@ -778,7 +780,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2,
                     },
                     balance: 1500000,
@@ -813,7 +815,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8,
                     },
                     balance: 25000000,
@@ -822,7 +824,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2,
                     },
                     balance: 4500000,
@@ -897,7 +899,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8,
                     },
                     balance: 100000000,
@@ -906,7 +908,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2,
                     },
                     balance: 6000000,
@@ -955,7 +957,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8,
                     },
                     balance: 12500000,
@@ -964,7 +966,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2,
                     },
                     balance: 5312500,
@@ -1013,7 +1015,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 1,
-                        name: "BTC".to_string(),
+                        name: "ETH".to_string(),
                         decimals: 8
                     },
                     balance: 87500000,
@@ -1022,7 +1024,7 @@ mod tests {
                 AssetBalance {
                     asset: Asset {
                         id: 2,
-                        name: "USD".to_string(),
+                        name: "USDC".to_string(),
                         decimals: 2
                     },
                     balance: 812500,

@@ -1,0 +1,30 @@
+[package]
+name = "chainmonitor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+alchemy-api = "0.1.0"
+futures = "0.3.30"
+futures-util = "0.3"
+hdwallet = "0.4.1"
+secp256k1 = "0.26.0"
+coins-bip32 = "0.8.7"
+bip32 = "0.5.1"
+ethers-core = "2.0.14"
+sha3 = "0.11.0-pre.3"
+reqwest = "0.12.4"
+serde = "1.0.202"
+clap = { version = "4.5.4", features = ["derive"] }
+serde_json = "1.0.117"
+dotenv = "0.15.0"
+once_cell = "1.19.0"
+
+[dependencies.alloy]
+git = "https://github.com/alloy-rs/alloy"
+rev = "e22d9be"
+features = ["consensus", "kzg", "eips", "contract", "network", "node-bindings", "providers", "provider-http", "provider-ipc", "provider-ws", "rpc-client", "rpc-client-ipc", "rpc-client-ws", "rpc-types-eth", "rpc-types-trace", "signers", "signer-aws", "signer-keystore", "signer-ledger", "signer-mnemonic", "signer-trezor", "signer-wallet", "signer-yubihsm"]
+
+[dependencies.tokio]
+version = "1.37.0"
+features = ["rt", "macros"]

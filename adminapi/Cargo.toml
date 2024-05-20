@@ -18,6 +18,12 @@ path = "wit/deps/sputnik_accountant"
 [package.metadata.component.target.dependencies."sputnik:accountant-stub"]
 path = "wit/deps/sputnik_accountant-stub"
 
+[package.metadata.component.target.dependencies."sputnik:ethereummonitor"]
+path = "wit/deps/sputnik_ethereummonitor"
+
+[package.metadata.component.target.dependencies."sputnik:ethereummonitor-stub"]
+path = "wit/deps/sputnik_ethereummonitor-stub"
+
 [package.metadata.component.target.dependencies."sputnik:ids"]
 path = "wit/deps/sputnik_ids"
 

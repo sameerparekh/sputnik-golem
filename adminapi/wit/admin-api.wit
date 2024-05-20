@@ -5,14 +5,16 @@ interface api {
   use sputnik: registry/api.{hydrated-spot-pair};
   use sputnik: registry/api.{trader};
   use sputnik: ids-stub/stub-ids.{api as ids-api};
+  use sputnik: ethereummonitor/api.{error as ethereummonitor-error};
 
   variant error {
     unable-to-make-engine(string),
     unable-to-make-accountant(string),
     internal(string),
+    ethereummonitor-error(ethereummonitor-error),
   }
 
-  create-asset: func(name: string, decimals: u8) -> result<asset, error>;
+  create-asset: func(name: string, decimals: u8, token-address: string) -> result<asset, error>;
   create-spot-pair: func(name: string, numerator: u64, denominator: u64) -> result<hydrated-spot-pair, error>;
   create-trader: func(name: string) -> result<trader, error>;
 }
@@ -22,5 +24,6 @@ world adminapi {
   import sputnik: registry-stub/stub-registry;
   import sputnik: matching-engine-stub/stub-matching-engine;
   import sputnik: accountant-stub/stub-accountant;
+  import sputnik: ethereummonitor-stub/stub-ethereummonitor;
   export api;
 }

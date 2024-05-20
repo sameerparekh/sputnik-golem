@@ -7,6 +7,8 @@ usage() {
   echo "  component-name: API to update"
 }
 
+#set -ex
+
 USE_CLOUD="${USE_CLOUD:-false}"
 ENVIRONMENT="${ENVIRONMENT:-test}"
 
@@ -43,12 +45,14 @@ fi
 COMPONENT_ID=$("$CMD" --format yaml component list -c "$COMPONENT_NAME" | yq '.[0].componentId')
 MATCHING_ENGINE_ID=$("$CMD" --format yaml component list -c "matching-engine" | yq '.[0].componentId')
 REGISTRY_ID=$("$CMD" --format yaml component list -c "registry" | yq '.[0].componentId')
+ETHEREUMMONITOR_ID=$("$CMD" --format yaml component list -c "ethereummonitor" | yq '.[0].componentId')
 
 TEMP_FILE=$(mktemp)
 jsonnet -V component_id="$COMPONENT_ID" \
         -V matching_engine_id="$MATCHING_ENGINE_ID" \
         -V registry_id="$REGISTRY_ID" \
         -V environment="$ENVIRONMENT" \
+        -V ethereummonitor_id="$ETHEREUMMONITOR_ID" \
         -o "$TEMP_FILE" \
         api/"$COMPONENT_NAME".jsonnet
 

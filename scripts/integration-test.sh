@@ -32,12 +32,6 @@ if [ "$#" -ne 0 ]; then
   exit 0
 fi
 
-if [ "$USE_CLOUD" = 'true' ]; then
-  CMD=golem-cloud-cli
-else
-  CMD=golem-cli
-fi
-
 export USE_CLOUD
 
 if [ "$NO_BUILD" = 'false' ]; then
@@ -57,25 +51,43 @@ echo
 
 ADMIN_API=http://"${ENVIRONMENT}".adminapi.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 TRADER_API=http://"${ENVIRONMENT}".traderapi.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
-#
-#set -ex
+MONITOR_API=http://"${ENVIRONMENT}".ethereummonitor.sputnik.golem:"${WORKER_SERVICE_CUSTOM_REQUEST_PORT}"
 
 echo "Creating assets/pairs"
 
-BTC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/BTC \
-  --data '{ "decimals": 8 }' | jq '.ok.id')
+USDC_ADDRESS=0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238
+EURC_ADDRESS=0x08210F9170F89Ab7658F0B5E3fF39b0E03C594D4
+ETH_ADDRESS=0x0000000000000000000000000000000000000000
 
-echo "BTC: $BTC_ID"
+ETH_ID=$(curl --silent -X POST "$ADMIN_API"/asset/ETH \
+  --data "{ \"decimals\": 10, \"token_address\": \"$ETH_ADDRESS\" }" | jq '.ok.id')
 
-USD_ID=$(curl --silent -X POST "$ADMIN_API"/asset/USD \
-  --data '{ "decimals": 2 }' | jq '.ok.id')
+echo "ETH: $ETH_ID"
 
-echo "USD: $USD_ID"
+USDC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/USDC \
+  --data "{ \"decimals\": 6, \"token_address\": \"$USDC_ADDRESS\" }" | jq '.ok.id')
 
-BTCUSD_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/BTCUSD \
-         --data "{ \"numerator\": $BTC_ID, \"denominator\": $USD_ID }" | jq '.ok.id')
+echo "USDC: $USDC_ID"
 
-echo "BTCUSD: $BTCUSD_ID"
+EURC_ID=$(curl --silent -X POST "$ADMIN_API"/asset/EURC \
+  --data "{ \"decimals\": 6, \"token_address\": \"$EURC_ADDRESS\" }" | jq '.ok.id')
+
+echo "EURC: $EURC_ID"
+
+ETHUSDC_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/ETHUSDC \
+         --data "{ \"numerator\": $ETH_ID, \"denominator\": $USDC_ID }" | jq '.ok.id')
+
+echo "ETH/USDC: $ETHUSDC_ID"
+
+ETHEURC_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/ETHEURC \
+         --data "{ \"numerator\": $ETH_ID, \"denominator\": $EURC_ID }" | jq '.ok.id')
+
+echo "ETH/EURC: $ETHEURC_ID"
+
+USDCEURC_ID=$(curl --silent -X POST "$ADMIN_API"/spot-pair/USDCEURC \
+                     --data "{ \"numerator\": $USDC_ID, \"denominator\": $EURC_ID }" | jq '.ok.id')
+
+echo "USDC/EURC: $USDCEURC_ID"
 
 echo "Listing assets & pairs"
 
@@ -93,38 +105,48 @@ TRADER_B_ID=$(curl --silent -X POST "$ADMIN_API"/trader/traderb \
 echo "Trader A: $TRADER_A_ID"
 echo "Trader B: $TRADER_B_ID"
 
-echo -n "Funding accounts..."
+echo "Funding accounts..."
 
-"$CMD" worker invoke-and-await \
-  --component-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_A_ID}" \
-  --function=sputnik:accountant/api/deposit \
-  --parameters="[$BTC_ID, 100000000]" >/dev/null
+#set -ex
 
-"$CMD" worker invoke-and-await \
-  --component-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_A_ID}" \
-  --function=sputnik:accountant/api/deposit \
-  --parameters="[$USD_ID, 6000000]" >/dev/null
+TRADER_A_ADDRESS=$(curl --silent -X GET "$TRADER_API"/evm-address/"${TRADER_A_ID}")
+TRADER_B_ADDRESS=$(curl --silent -X GET "$TRADER_API"/evm-address/"${TRADER_B_ID}")
 
-"$CMD" worker invoke-and-await \
-  --component-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_B_ID}" \
-  --function=sputnik:accountant/api/deposit \
-  --parameters="[$BTC_ID, 100000000]" >/dev/null
+BLOCK_HEIGHT=$(curl --silent -X GET "$MONITOR_API"/blockheight | jq .height )
 
-"$CMD" worker invoke-and-await \
-  --component-name accountant \
-  --worker-name "${ENVIRONMENT}-${TRADER_B_ID}" \
-  --function=sputnik:accountant/api/deposit \
-  --parameters="[$USD_ID, 6000000]" >/dev/null
+echo -n "Trader A ETH: "
+curl --silent -X POST "$MONITOR_API"/deposit \
+  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx1\", \"amount\": 100000000, \"token_address\": \"$ETH_ADDRESS\", \"block_height\": $BLOCK_HEIGHT}" \
+  | jq .ok.balance
+
+echo -n "Trader A USDC: "
+curl --silent -X POST "$MONITOR_API"/deposit \
+  --data "{\"address\": $TRADER_A_ADDRESS, \"tx\": \"tx2\", \"amount\": 6000000, \"token_address\": \"$USDC_ADDRESS\", \"block_height\": $BLOCK_HEIGHT}" \
+  | jq .ok.balance
+
+echo -n "Trader B ETH: "
+curl --silent -X POST "$MONITOR_API"/deposit \
+  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx3\", \"amount\": 100000000, \"token_address\": \"$ETH_ADDRESS\", \"block_height\": $BLOCK_HEIGHT}" \
+  | jq .ok.balance
+
+echo -n "Trader B USDC: "
+curl --silent -X POST "$MONITOR_API"/deposit \
+  --data "{\"address\": $TRADER_B_ADDRESS, \"tx\": \"tx4\", \"amount\": 6000000, \"token_address\": \"$USDC_ADDRESS\", \"block_height\": $BLOCK_HEIGHT}" \
+  | jq .ok.balance
+
+echo -n "Completing block..."
+curl --silent -X POST "$MONITOR_API"/completeblock/"$BLOCK_HEIGHT" >/dev/null
+echo
+
+echo -n "New block height: "
+curl --silent -X GET "$MONITOR_API"/blockheight
 
 echo
 
 echo -n "Placing trader A order: "
 
 curl --silent -X POST "$TRADER_API"/orders/"$TRADER_A_ID" \
-  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 6000000, \"size\": 10000000}" \
+  --data "{\"spot-pair\": $ETHUSDC_ID, \"side\": \"buy\", \"price\": 6000000, \"size\": 10000000}" \
   | jq .ok
 
 echo -n "Trader A balance: "
@@ -132,28 +154,28 @@ curl --silent -X GET "$TRADER_API"/balances/"$TRADER_A_ID" | jq .
 
 echo -n "Placing trader B order: "
 curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
-  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7000000, \"size\": 10000000}" \
+  --data "{\"spot-pair\": $ETHUSDC_ID, \"side\": \"sell\", \"price\": 7000000, \"size\": 10000000}" \
   | jq .ok
 
 echo -n "Trader B balance: "
 curl --silent -X GET "$TRADER_API"/orders/"$TRADER_B_ID" | jq .
 
 echo "Order Book"
-curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .
+curl --silent -X GET "$TRADER_API"/orderbook/"$ETHUSDC_ID" | jq .
 
 echo -n "Placing trader B order: "
 curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
-  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 6700000, \"size\": 10000000}" \
+  --data "{\"spot-pair\": $ETHUSDC_ID, \"side\": \"sell\", \"price\": 6700000, \"size\": 10000000}" \
   | jq .ok
 
 echo -n "Placing trader B order: "
 curl --silent -X POST "$TRADER_API"/orders/"$TRADER_B_ID" \
-  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"sell\", \"price\": 7500000, \"size\": 10000000}" \
+  --data "{\"spot-pair\": $ETHUSDC_ID, \"side\": \"sell\", \"price\": 7500000, \"size\": 10000000}" \
   | jq .ok
 
 echo -n "Placing trader A order that will match them: "
 curl --silent -X POST "$TRADER_API"/orders/"$TRADER_A_ID" \
-  --data "{\"spot-pair\": $BTCUSD_ID, \"side\": \"buy\", \"price\": 7000000, \"size\": 25000000}" \
+  --data "{\"spot-pair\": $ETHUSDC_ID, \"side\": \"buy\", \"price\": 7000000, \"size\": 25000000}" \
   | jq .ok
 
 echo "Trader A Orders"
@@ -169,10 +191,16 @@ echo "Trader B Balances"
 curl --silent -X GET "$TRADER_API"/balances/"$TRADER_B_ID" | jq .
 
 echo "Order Book"
-curl --silent -X GET "$TRADER_API"/orderbook/"$BTCUSD_ID" | jq .    
-
-set +ex
+curl --silent -X GET "$TRADER_API"/orderbook/"$ETHUSDC_ID" | jq .
 
 echo "ADMIN_API: $ADMIN_API"
 echo "TRADER_API: $TRADER_API"
+echo "MONITOR_API: $MONITOR_API"
 
+echo "TRADER_A_ADDRESS": "$TRADER_A_ADDRESS"
+echo "TRADER_B_ADDRESS": "$TRADER_B_ADDRESS"
+
+RPC_URL="wss://eth-sepolia.g.alchemy.com/v2"
+
+set -ex
+cargo run --package chainmonitor -- monitor --rpc-url "$RPC_URL" --ethereum-monitor-url "$MONITOR_API"

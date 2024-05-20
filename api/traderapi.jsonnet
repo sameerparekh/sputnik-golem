@@ -2,11 +2,26 @@ local component_id = std.extVar('component_id');
 local registry_id = std.extVar('registry_id');
 local environment = std.extVar('environment');
 local matching_engine_id = std.extVar('matching_engine_id');
+local ethereummonitor_id = std.extVar('ethereummonitor_id');
 
 {
   id: "traderapi",
   version: "0.0.1",
+  draft: true,
   routes: [
+      {
+        method: "Get",
+        path: "/evm-address/{trader}",
+        binding: {
+          component: ethereummonitor_id,
+          workerId: environment,
+          functionName: "sputnik:ethereummonitor/api/new-address-for-trader",
+          functionParams: [
+            "${request.path.trader}"
+          ],
+          response: "${{headers: {ContentType: 'json'}, body: worker.response[0], status: 200}}"
+        }
+      },
     {
       method: "Get",
       path: "/orders/{trader}",
