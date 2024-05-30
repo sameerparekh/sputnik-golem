@@ -4,6 +4,7 @@ interface stub-matching-engine {
   use golem:rpc/types@0.1.0.{uri};
   use sputnik:matching-engine/api.{error};
   use sputnik:matching-engine/api.{side};
+  use sputnik:matching-engine/api.{big-int};
   use sputnik:matching-engine/api.{order};
   use sputnik:matching-engine/api.{order-book};
   use sputnik:matching-engine/api.{status};

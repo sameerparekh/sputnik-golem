@@ -107,9 +107,21 @@ for Api {
                             },
                         )
                         .item()
-                        .u64(order.price)
+                        .record()
                         .item()
-                        .u64(order.size)
+                        .list_fn(
+                            &order.price.data,
+                            |item, item_builder| { item_builder.u64(*item) },
+                        )
+                        .finish()
+                        .item()
+                        .record()
+                        .item()
+                        .list_fn(
+                            &order.size.data,
+                            |item, item_builder| { item_builder.u64(*item) },
+                        )
+                        .finish()
                         .item()
                         .u64(order.trader)
                         .finish(),
@@ -143,16 +155,30 @@ for Api {
                                 .list_elements(|item| {
                                     let record = item;
                                     crate::bindings::sputnik::matching_engine::api::Fill {
-                                        price: record
-                                            .field(0usize)
-                                            .expect("record field not found")
-                                            .u64()
-                                            .expect("u64 not found"),
-                                        size: record
-                                            .field(1usize)
-                                            .expect("record field not found")
-                                            .u64()
-                                            .expect("u64 not found"),
+                                        price: {
+                                            let record = record
+                                                .field(0usize)
+                                                .expect("record field not found");
+                                            crate::bindings::sputnik::matching_engine::api::BigInt {
+                                                data: record
+                                                    .field(0usize)
+                                                    .expect("record field not found")
+                                                    .list_elements(|item| item.u64().expect("u64 not found"))
+                                                    .expect("list not found"),
+                                            }
+                                        },
+                                        size: {
+                                            let record = record
+                                                .field(1usize)
+                                                .expect("record field not found");
+                                            crate::bindings::sputnik::matching_engine::api::BigInt {
+                                                data: record
+                                                    .field(0usize)
+                                                    .expect("record field not found")
+                                                    .list_elements(|item| item.u64().expect("u64 not found"))
+                                                    .expect("list not found"),
+                                            }
+                                        },
                                         taker_order_id: record
                                             .field(2usize)
                                             .expect("record field not found")
@@ -275,16 +301,30 @@ for Api {
                                 .list_elements(|item| {
                                     let record = item;
                                     crate::bindings::sputnik::matching_engine::api::Fill {
-                                        price: record
-                                            .field(0usize)
-                                            .expect("record field not found")
-                                            .u64()
-                                            .expect("u64 not found"),
-                                        size: record
-                                            .field(1usize)
-                                            .expect("record field not found")
-                                            .u64()
-                                            .expect("u64 not found"),
+                                        price: {
+                                            let record = record
+                                                .field(0usize)
+                                                .expect("record field not found");
+                                            crate::bindings::sputnik::matching_engine::api::BigInt {
+                                                data: record
+                                                    .field(0usize)
+                                                    .expect("record field not found")
+                                                    .list_elements(|item| item.u64().expect("u64 not found"))
+                                                    .expect("list not found"),
+                                            }
+                                        },
+                                        size: {
+                                            let record = record
+                                                .field(1usize)
+                                                .expect("record field not found");
+                                            crate::bindings::sputnik::matching_engine::api::BigInt {
+                                                data: record
+                                                    .field(0usize)
+                                                    .expect("record field not found")
+                                                    .list_elements(|item| item.u64().expect("u64 not found"))
+                                                    .expect("list not found"),
+                                            }
+                                        },
                                         taker_order_id: record
                                             .field(2usize)
                                             .expect("record field not found")
@@ -413,16 +453,30 @@ for Api {
                                     _ => unreachable!("invalid enum case index"),
                                 }
                             },
-                            price: record
-                                .field(3usize)
-                                .expect("record field not found")
-                                .u64()
-                                .expect("u64 not found"),
-                            size: record
-                                .field(4usize)
-                                .expect("record field not found")
-                                .u64()
-                                .expect("u64 not found"),
+                            price: {
+                                let record = record
+                                    .field(3usize)
+                                    .expect("record field not found");
+                                crate::bindings::sputnik::matching_engine::api::BigInt {
+                                    data: record
+                                        .field(0usize)
+                                        .expect("record field not found")
+                                        .list_elements(|item| item.u64().expect("u64 not found"))
+                                        .expect("list not found"),
+                                }
+                            },
+                            size: {
+                                let record = record
+                                    .field(4usize)
+                                    .expect("record field not found");
+                                crate::bindings::sputnik::matching_engine::api::BigInt {
+                                    data: record
+                                        .field(0usize)
+                                        .expect("record field not found")
+                                        .list_elements(|item| item.u64().expect("u64 not found"))
+                                        .expect("list not found"),
+                                }
+                            },
                             trader: record
                                 .field(5usize)
                                 .expect("record field not found")
@@ -463,16 +517,30 @@ for Api {
                                     _ => unreachable!("invalid enum case index"),
                                 }
                             },
-                            price: record
-                                .field(3usize)
-                                .expect("record field not found")
-                                .u64()
-                                .expect("u64 not found"),
-                            size: record
-                                .field(4usize)
-                                .expect("record field not found")
-                                .u64()
-                                .expect("u64 not found"),
+                            price: {
+                                let record = record
+                                    .field(3usize)
+                                    .expect("record field not found");
+                                crate::bindings::sputnik::matching_engine::api::BigInt {
+                                    data: record
+                                        .field(0usize)
+                                        .expect("record field not found")
+                                        .list_elements(|item| item.u64().expect("u64 not found"))
+                                        .expect("list not found"),
+                                }
+                            },
+                            size: {
+                                let record = record
+                                    .field(4usize)
+                                    .expect("record field not found");
+                                crate::bindings::sputnik::matching_engine::api::BigInt {
+                                    data: record
+                                        .field(0usize)
+                                        .expect("record field not found")
+                                        .list_elements(|item| item.u64().expect("u64 not found"))
+                                        .expect("list not found"),
+                                }
+                            },
                             trader: record
                                 .field(5usize)
                                 .expect("record field not found")
@@ -519,16 +587,30 @@ for Api {
                         .list_elements(|item| {
                             let record = item;
                             crate::bindings::sputnik::matching_engine::api::Fill {
-                                price: record
-                                    .field(0usize)
-                                    .expect("record field not found")
-                                    .u64()
-                                    .expect("u64 not found"),
-                                size: record
-                                    .field(1usize)
-                                    .expect("record field not found")
-                                    .u64()
-                                    .expect("u64 not found"),
+                                price: {
+                                    let record = record
+                                        .field(0usize)
+                                        .expect("record field not found");
+                                    crate::bindings::sputnik::matching_engine::api::BigInt {
+                                        data: record
+                                            .field(0usize)
+                                            .expect("record field not found")
+                                            .list_elements(|item| item.u64().expect("u64 not found"))
+                                            .expect("list not found"),
+                                    }
+                                },
+                                size: {
+                                    let record = record
+                                        .field(1usize)
+                                        .expect("record field not found");
+                                    crate::bindings::sputnik::matching_engine::api::BigInt {
+                                        data: record
+                                            .field(0usize)
+                                            .expect("record field not found")
+                                            .list_elements(|item| item.u64().expect("u64 not found"))
+                                            .expect("list not found"),
+                                    }
+                                },
                                 taker_order_id: record
                                     .field(2usize)
                                     .expect("record field not found")
