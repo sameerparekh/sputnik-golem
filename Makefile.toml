@@ -70,9 +70,7 @@ dependencies = ["generate-ethereummonitor-stub"]
 [tasks.build]
 args = ["build", "--workspace", "--exclude", "chainmonitor"]
 command = "cargo-component"
-# This dependency removed because can't autogen stubs anymore due to circular
-# dependency accountant->matching-engine->accountant
-#dependencies = ["clean", "regenerate-stubs"]
+dependencies = ["clean", "regenerate-stubs"]
 
 [tasks.build-flow]
 dependencies = ["build", "post-build"]
@@ -80,9 +78,7 @@ dependencies = ["build", "post-build"]
 [tasks.build-release]
 args = ["build", "--release", "--workspace", "--exclude", "chainmonitor"]
 command = "cargo-component"
-# This dependency removed because can't autogen stubs anymore due to circular
-# dependency accountant->matching-engine->accountant
-#dependencies = ["clean", "regenerate-stubs"]
+dependencies = ["clean", "regenerate-stubs"]
 
 [tasks.clean]
 args = ["clean"]

@@ -29,7 +29,7 @@ path = "wit/deps/sputnik_registry"
 path = "wit/deps/sputnik_registry-stub"
 
 [dependencies.golem-wasm-rpc]
-version = "0.0.22"
+version = "0.0.22-snap"
 features = ["stub"]
 default-features = false
 

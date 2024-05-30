@@ -58,4 +58,6 @@ interface api {
 
 world matching-engine {
   export api;
+  import sputnik: accountant-stub/stub-accountant;
+
 }

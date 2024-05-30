@@ -1,6 +1,30 @@
 package sputnik: accountant;
 
 interface api {
+  variant matching-engine-error {
+    duplicate-id(u64),
+    missing-order(u64),
+    already-intialized,
+  }
+
+  record engine-status {
+    id: u64,
+    fills: list<fill>,
+    status: status,
+    original-size: u64,
+  }
+
+  record fill {
+    price: u64,
+    size: u64,
+    taker-order-id: u64,
+    maker-order-id: u64,
+    timestamp: u64,
+  }
+
+  enum status {
+    open, filled, partial-filled, canceled,
+  }
 
   variant error {
     duplicate-id(u64),
@@ -12,9 +36,6 @@ interface api {
     matching-engine-error(matching-engine-error),
   }
 
-  use sputnik: matching-engine/api.{error as matching-engine-error};
-  use sputnik: matching-engine/api.{order-status as engine-status};
-
   use sputnik: registry/api.{asset};
 
   record asset-balance {
@@ -23,7 +44,10 @@ interface api {
     available-balance: u64,
   }
 
-  use sputnik: matching-engine/api.{side, fill};
+  enum side {
+    buy,
+    sell,
+  }
 
   record order {
     id: u64,
@@ -59,7 +83,6 @@ interface api {
 }
 
 world accountant {
-  import sputnik: matching-engine-stub/stub-matching-engine;
   import sputnik: registry-stub/stub-registry;
   export api;
 }
